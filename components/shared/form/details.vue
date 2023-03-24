@@ -1,0 +1,31 @@
+<template>
+    <ETransitionExpand>
+        <div v-if="showDetails">
+            <div class="e-field__details">
+                <div class="e-messages" role="alert">
+                    <div class="e-messages__wrapper" :class="textColor">
+                        {{ details }}
+                    </div>
+                </div>
+                <div v-if="counter || limit" class="e-counter" :class="textColor">
+                    {{ modelValue.length }}
+                    <template v-if="limit"> / {{ limit }}</template>
+                </div>
+            </div>
+        </div>
+    </ETransitionExpand>
+</template>
+  
+<script lang="ts" setup>
+export interface Props {
+    modelValue?: any
+    showDetails?: boolean
+    textColor?: string
+    details?: string | boolean
+    limit?: string | number
+    counter?: boolean
+}
+const props = defineProps<Props>()
+
+</script>
+  

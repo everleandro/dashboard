@@ -1,0 +1,1 @@
+export type BarrClassKeys = 'dense' | 'fixed' | 'clipped' | 'depressed' | 'app'

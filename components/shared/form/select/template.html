@@ -1,0 +1,71 @@
+<div :class="selectClass">
+    <div class="e-field__control" v-click-outside="handleOutsideMenu">
+        <div role="button" aria-expanded="false" class="e-field__slot">
+            <div v-if="prependIcon" class="e-field__prepend-inner">
+                <div class="e-field__icon e-field__icon--prepend-inner">
+                    <i aria-hidden="true" class="e-icon e-icon--size-default" :class="prependIcon"></i>
+                </div>
+            </div>
+            <div class="e-select__slot" @click="handleSelectSlotCLick" @mouseenter="handleHover(true)"
+                @mouseleave="handleHover(false)">
+                <label :for="id" class="e-label" :class="textColor" :style="labelStyle">
+                    {{ label }}
+                </label>
+                <div class="e-select__selections">
+                    <div class="e-select__selection" :style="selectionStyle">
+                        {{ selectedText }}
+                        <span v-show="modelValue === undefined || modelValue === null"
+                            class="e-select__selection-placeholder">
+                            {{ placeholder }}
+                        </span>
+                    </div>
+                    <input :id="id" readonly type="text" aria-readonly="false" autocomplete="off" />
+                </div>
+                <transition name="scale">
+                    <div v-show="showClearable" class="e-field__append-inner">
+                        <div class="e-field__icon e-field__icon--clear e-icon--size-default">
+                            <button type="button" v-ripple aria-label="clear icon"
+                                class="e-btn e-btn--icon e-btn--size-x-small" @click="clear">
+                                <EIcon :name="$icon.clear"></EIcon>
+                            </button>
+                        </div>
+                    </div>
+                </transition>
+                <div class="e-field__append-inner">
+                    <div class="e-field__icon e-field__icon--append">
+                        <EIcon :name="$icon.arrowDown"></EIcon>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="appendIcon" class="e-field__append-inner">
+                <div class="e-field__icon e-field__icon--append">
+                    <i aria-hidden="true" class="e-icon e-icon--size-default" :class="appendIcon"></i>
+                </div>
+            </div>
+            <div class="e-menu" @click="closeMenu">
+                <transition name="fade">
+                    <div v-if="opened" class="e-menu__content">
+                        <div :class="['e-list', textColor]">
+                            <div role="listbox" :class="['e-list-group', textColor]">
+                                <div v-ripple="{ color: 'white' }" v-for="(item, index) in items" :key="index"
+                                    tabindex="0" role="option" aria-selected="true" :class="[
+                                        'v-ripple-element',
+                                        'e-list-item',
+                                        { 'e-list-item--active': active(item) }
+                                    ]" @click="handleItemClick(item)">
+                                    <div class="e-list-item__content">
+                                        <slot name="item">
+                                            {{ displayedText(item) }}
+                                        </slot>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </div>
+        <EDetails :details="details" :textColorClass="textColor" :showDetails="showDetails"></EDetails>
+    </div>
+</div>

@@ -1,0 +1,65 @@
+$border-radius-root: 0;
+$root-font-size: 1rem !default;
+$space-base: 12px;
+$grid-cols: 24 !default;
+$root-font-family: 'Roboto', sans-serif;
+
+$icon-close-font-size: 12px;
+$icon-action-select-font-size: 12px;
+
+//colors
+$colors: (
+  'primary': #1DE0B1,
+  'secondary': #2C373C,
+  'input': #4f636b,
+  'tertiary': #4f636b,
+  'black': #18262A,
+
+  'disabled': #2b373c,
+  'switch-off': #e4eaec,
+  'grey': #91a0a8,
+  'error': #f44336,
+  'white': white,
+  'success': #66bb6a,
+  'red': #f44336
+);
+
+$contrast-colors: (
+  'white': #18262A,
+  'e-vue-disabled': #4f636b
+);
+
+$breakpoint: (
+  'xs': 600px,
+  'sm': 960px,
+  'md': 1264px,
+  'lg': 1904px
+);
+
+
+@each $color,
+$value in $colors {
+  .#{$color} {
+    background-color: $value !important;
+    border-color: $value !important;
+
+    &--text {
+      color: $value !important;
+      caret-color: $value !important;
+      fill: $value !important;
+    }
+  }
+}
+
+:root {
+
+  @each $key,
+  $value in $breakpoint {
+    --#{$key}: #{$value};
+  }
+
+  @each $color,
+  $value in $colors {
+    --#{$color}: #{$value};
+  }
+}

@@ -1,0 +1,1 @@
+export type itemType = | string | number | undefined | null | Record<string, any>

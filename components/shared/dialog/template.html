@@ -1,0 +1,10 @@
+<transition name="fade">
+    <div v-show="store.active" role="dialog" ref="dialog" aria-modal="true" class="e-dialog__content" tabindex="0"
+        @click.self="close()">
+        <transition name="scale">
+            <div v-show="store.active" :class="dialogClass" :style="style">
+                <slot></slot>
+            </div>
+        </transition>
+    </div>
+</transition>

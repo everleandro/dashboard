@@ -1,0 +1,43 @@
+.e-form {
+    background-color: white;
+    margin: -$space-base;
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+    $extra_px: 1px;
+
+    &.no-gutters {
+        padding: 0.5px;
+        margin: 0;
+
+        &>.e-field {
+            padding: 0;
+        }
+    }
+
+    &--outlined {
+
+        .e-field {
+            @include e-field-outlined;
+        }
+
+        &.e-form--disabled {
+            .e-field {
+                pointer-events: none;
+
+                &__slot {
+                    border-style: dashed;
+                }
+            }
+        }
+    }
+
+
+    .e-field {
+        flex: 0 0 calc(100% + 1px);
+        max-width: calc(100% + 1px);
+        margin: -0.5px;
+        @include grid-generator(0.9px);
+
+    }
+}
