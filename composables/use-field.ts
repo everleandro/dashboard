@@ -1,12 +1,17 @@
 
 import { fieldClasses, classKey } from "@/components/shared/form/constants"
+import { Form } from "@/components/shared/form/types"
 import { getCurrentInstance } from 'vue'
-export default function () {
+export default function (useFormInjection = true) {
 
     const props = ref(getCurrentInstance()?.props)
     const dirty = ref(false)
     const hovered = ref(false)
-    const localLabelStyle = ref({})
+    const configuration = reactive({
+        labelStyle: {},
+        color: 'green'
+    })
+
     const focused = ref(false)
     const input = ref<HTMLInputElement>()
     const id = `${Math.floor(Math.random() * 999999)}-input`;
@@ -27,8 +32,8 @@ export default function () {
 
     const labelStyle = computed((): Record<string, string> => {
         return props.value?.labelMinWidth
-            ? { ...localLabelStyle.value, minWidth: `${props.value.labelMinWidth}px` }
-            : { ...localLabelStyle.value };
+            ? { ...configuration.labelStyle, minWidth: `${props.value.labelMinWidth}px` }
+            : { ...configuration.labelStyle };
     })
 
     const details = computed((): string => {
@@ -47,7 +52,8 @@ export default function () {
     const hasError: ComputedRef<boolean> = computed((): boolean => {
         const errorFromProps: Array<string> = (props.value?.detailErrors || []) as Array<string>
         const result = !!(dirty.value && errorMessage.value) || !!errorFromProps[0];
-        form?.updateField({ hasError: result, uid: uid || -1 });
+        if (useFormInjection)
+            form?.updateField?.({ hasError: result, uid: uid || -1 });
         return result;
     })
 
@@ -61,7 +67,7 @@ export default function () {
     })
 
     const color = computed((): string => {
-        let result = (props.value?.color || '') as string;
+        let result = (props.value?.color as string) || configuration.color || '';
         (props.value?.disabled) && (result = 'disabled');
         (dirty.value && errorMessage.value) && (result = 'error');
         return result
@@ -96,24 +102,29 @@ export default function () {
         setInputFocus(event);
     }
 
-    const handleFocus = (event: FocusEvent): void => {
+    const handleFocus = (event?: FocusEvent): void => {
         focused.value = true;
         getCurrentInstance()?.emit('focus', event)
     }
 
-    const handleBlur = (event: Event): void => {
+    const handleBlur = (event?: Event): void => {
         focused.value = false;
         dirty.value = true;
         getCurrentInstance()?.emit('blur', event)
     }
-    const setLabelStyle = (value: Record<string, string>): void => {
-        localLabelStyle.value = value
+
+    const setConfiguration = (value: Record<string, any>): void => {
+        value.labelStyle && (configuration.labelStyle = value.labelStyle)
+        value.color && (configuration.color = value.color)
     }
-    const form = inject<any>("EForm");
+
+    const form = inject<Partial<Form> | undefined>("EForm", undefined);
     const uid = getCurrentInstance()?.uid;
 
     const validate = () => {
         dirty.value = true
+        //return true if valid
+        return !hasError.value
     }
 
     const reset = () => {
@@ -121,13 +132,14 @@ export default function () {
     }
 
     onMounted(() => {
-        form?.bindField({ validate, reset, uid: uid || -1, setLabelStyle });
+        if (useFormInjection)
+            form?.bindField?.({ validate, reset, uid: uid || -1, setConfiguration });
     });
 
     return {
         fieldClass, id, dirty, focused, errorMessage, hasError, inputStyle,
         showClearable, showDetails, hovered, details, labelStyle, color,
-        textColor, handleHover, setInputFocus, handleFocus, handleBlur,
-        handleClickAppendIcon, handleClickPrependIcon, setLabelStyle,
+        textColor, handleHover, setInputFocus, handleFocus, handleBlur, configuration,
+        handleClickAppendIcon, handleClickPrependIcon, setConfiguration,
     };
 }

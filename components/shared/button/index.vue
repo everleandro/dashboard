@@ -1,6 +1,7 @@
 <template>
-    <component v-ripple :is="tag" :class="btnClass" :style="style">
-        <span v-if="props.loading" class="e-btn__loader">
+    <component v-ripple :is="tag" :class="btnClass" :style="style" @mouseover="handleHover(true)"
+        @mouseleave="handleHover(false)">
+        <span v-show="props.loading" class="e-btn__loader">
             <slot name="loading">
                 <div role="progressbar" aria-valuemin="0" aria-valuemax="100"
                     class="e-progress-circular e-progress-circular--visible e-progress-circular--indeterminate"
@@ -15,9 +16,19 @@
                 </div>
             </slot>
         </span>
+        <div v-if="prependIcon" class="e-btn__prepend">
+            <EIcon :name="prependIcon" />
+        </div>
         <span class="e-btn__content">
-            <slot name="default"></slot>
+            <slot name="default">
+                <template v-if="icon">
+                    <EIcon :name="icon" />
+                </template>
+            </slot>
         </span>
+        <div v-if="appendIcon" class="e-btn__append">
+            <EIcon :name="appendIcon" />
+        </div>
     </component>
 </template>
 <script lang="ts" setup>
@@ -25,27 +36,32 @@ import { ButtonClassKeys } from './types';
 
 export interface Props {
     disabled?: boolean
+    appendIcon?: string
+    prependIcon?: string
     ripple?: boolean
     loading?: boolean
     color?: string
+    hoverColor?: string
     fab?: boolean
     depressed?: boolean
     text?: boolean
     outlined?: boolean
     block?: boolean
     small?: boolean
-    XSmall?: boolean
+    xSmall?: boolean
     large?: boolean
-    XLarge?: boolean
+    xLarge?: boolean
     rounded?: boolean
-    icon?: boolean
+    stacked?: boolean
+    icon?: string
     height?: string
     width?: boolean
 }
-
+const configuration = reactive({
+    hovered: false
+})
 const attrs = useAttrs()
 const props = defineProps<Props>()
-// const listeners=useLis
 
 const availableRootClasses: Record<ButtonClassKeys, string> = {
     disabled: 'e-btn--disabled',
@@ -58,18 +74,22 @@ const availableRootClasses: Record<ButtonClassKeys, string> = {
     loading: 'e-btn--loading',
     outlined: 'e-btn--outlined',
     rounded: 'e-btn--rounded',
-    XSmall: 'e-btn--size-x-small',
+    xSmall: 'e-btn--size-x-small',
     small: 'e-btn--size-small',
     large: 'e-btn--size-large',
-    XLarge: 'e-btn--size-x-large'
+    stacked: 'e-btn--stacked',
+    xLarge: 'e-btn--size-x-large'
 };
 
 const tag = computed(() => attrs.to ? 'RouterLink' : 'Button')
 
 const btnClass = computed((): Array<string> => {
     const classes = ['e-btn']
-    const defaultSize = !(props.small || props.XSmall || props.large || props.XLarge);
-    props.color && classes.push(`e-btn--${props.color}`)
+    const defaultSize = !(props.small || props.xSmall || props.large || props.xLarge);
+    if (configuration.hovered && props.hoverColor)
+        classes.push(`e-btn--${props.hoverColor}`)
+    else if (props.color)
+        classes.push(`e-btn--${props.color}`)
     defaultSize && classes.push("e-btn--size-default")
 
     const availableRootClassKeys = Object.keys(availableRootClasses) as Array<ButtonClassKeys>
@@ -79,7 +99,9 @@ const btnClass = computed((): Array<string> => {
 
     return [...classes, ...classes2];
 })
-
+const handleHover = (value: boolean) => {
+    configuration.hovered = value;
+}
 const style = (): Record<string, string> => {
     const _height: string = props.height ? `${props.height}px !important;` : 'unset';
     const result: Record<string, string> = {}

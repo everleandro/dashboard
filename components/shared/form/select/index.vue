@@ -1,4 +1,77 @@
-<template src="./template.html"></template>
+<!-- <template src="./template.html"></template> -->
+<template >
+    <div :class="selectClass">
+        <div class="e-field__control" v-click-outside="handleOutsideMenu">
+            <div role="button" aria-expanded="false" class="e-field__slot">
+                <div v-if="prependIcon" class="e-field__prepend-inner" @click="handleClickPrependIcon">
+                    <div class="e-field__icon e-field__icon--prepend-inner">
+                        <i aria-hidden="true" class="e-icon e-icon--size-default" :class="prependIcon"></i>
+                    </div>
+                </div>
+                <div class="e-select__slot" @click="handleSelectSlotCLick" @mouseenter="handleHover(true)"
+                    @mouseleave="handleHover(false)">
+                    <label :for="id" :class="[textColor, 'e-label']" :style="labelStyle">
+                        <slot name="label"> {{ label }} </slot>
+                    </label>
+                    <div v-if="prefix" :class="[textColor, 'e-field__prefix']" @click="setInputFocus">
+                        {{ prefix }}
+                    </div>
+                    <div class="e-select__selections">
+                        <div class="e-select__selection" :style="selectionStyle">
+                            {{ selectedText }}
+                            <span v-show="modelValue === undefined || modelValue === null"
+                                class="e-select__selection-placeholder">
+                                {{ placeholder }}
+                            </span>
+                        </div>
+                        <input :id="id" readonly type="text" aria-readonly="false" autocomplete="off" @blur="handleBlur"
+                            @focus="handleSelectFocus" />
+                    </div>
+                    <div v-if="suffix" :class="[textColor, 'e-field__suffix']" @click="setInputFocus">
+                        {{ suffix }}
+                    </div>
+                    <transition name="scale">
+                        <div v-show="showClearable" class="e-field__append-inner">
+                            <div class="e-field__icon e-field__icon--clear e-icon--size-default">
+                                <EButton :icon="$icon.clear" small @click.stop.prevent="clear" />
+                            </div>
+                        </div>
+                    </transition>
+                    <div class="e-field__append-inner">
+                        <div class="e-field__icon e-field__icon--append">
+                            <EIcon :name="$icon.arrowDown" class="flip-icon"></EIcon>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="appendIcon" class="e-field__append-inner" @click="handleClickAppendIcon">
+                    <div class="e-field__icon e-field__icon--append">
+                        <EIcon :name="appendIcon" />
+                    </div>
+                </div>
+                <div class="e-menu" @click="closeMenu">
+                    <transition name="fade">
+                        <div v-show="opened" class="e-menu__content">
+                            <e-list :color="color">
+                                <e-list-item v-for="(item, index) in items" :key="index"
+                                    :class="{ 'e-list-item--active': active(item) }" @click="handleItemClick(item)">
+                                    <slot name="item">
+                                        {{ displayedText(item) }}
+                                    </slot>
+                                </e-list-item>
+                            </e-list>
+                        </div>
+                    </transition>
+                </div>
+            </div>
+            <EDetails :details="details" :textColorClass="textColor" :showDetails="showDetails"></EDetails>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+export default { name: 'Select' }
+</script>
 
 <script lang="ts" setup>
 export type itemType = string | number | undefined | null | Record<string, any>;
@@ -8,7 +81,7 @@ export type itemType = string | number | undefined | null | Record<string, any>;
 export interface Props {
     disabled?: boolean; dense?: boolean; readonly?: boolean; counter?: boolean; clearable?: boolean;
     labelInline?: boolean; detail?: string; outlined?: boolean; label?: string | number;
-    modelValue?: itemType; placeholder?: string; suffix?: string; autocomplete?: string;
+    modelValue: itemType; placeholder?: string; suffix?: string; autocomplete?: string;
     prefix?: string; inputAlign?: string; color?: string; limit?: string | number;
     returnObject?: boolean
     detailErrors?: Array<string>; detailsOnMessageOnly?: boolean; type?: string; appendIcon?: string;
@@ -26,11 +99,11 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: string | number): void
 }>()
 
-const props = withDefaults(defineProps<Props>(), { itemText: 'text', itemValue: 'value', inputAlign: 'start', color: 'primary' })
+const props = withDefaults(defineProps<Props>(), { itemText: 'text', itemValue: 'value', inputAlign: 'start' })
 const opened = ref<boolean>(false)
-const { fieldClass, dirty, inputStyle, id, focused, showClearable, showDetails, textColor,
-    details, hasError, labelStyle, handleHover, handleBlur, handleClickPrependIcon,
-    handleClickAppendIcon, handleFocus, setInputFocus, setLabelStyle } = useField()
+const { fieldClass, dirty, id, focused, showClearable, showDetails, textColor, color,
+    details, labelStyle, handleHover, handleBlur, handleClickPrependIcon,
+    handleClickAppendIcon, handleFocus, setInputFocus } = useField()
 const { gridClass } = useGrid('e-field')
 const { isObject } = useUtils()
 
@@ -54,6 +127,12 @@ const handleExcListener = ({ key }: KeyboardEvent): void => {
         closeMenu()
     }
 }
+
+const handleSelectFocus = (event: FocusEvent): void => {
+    opened.value = true;
+    handleFocus(event)
+}
+
 const openMenu = (): void => {
     opened.value = true;
 }
@@ -74,7 +153,6 @@ const handleItemClick = (item: itemType): void => {
         changeValue(item);
     } else {
         changeValue((item as Record<string, any>)[props.itemValue]);
-
     }
 }
 
@@ -84,7 +162,7 @@ const active = (item: itemType): boolean => {
     } else if (props.returnObject) {
         return JSON.stringify(item) === JSON.stringify(props.modelValue);
     } else {
-        return (item as Record<string, any>)[props.itemText] === props.modelValue;
+        return (item as Record<string, any>)[props.itemValue] === props.modelValue;
     }
 }
 
@@ -104,7 +182,7 @@ const selectedText = computed((): string => {
         result = item?.[props.itemText];
     } else {
         const item = (props.items || []).find(
-            (e) => (e as Record<string, string>)?.[props.itemValue] === props.itemValue
+            (e) => (e as Record<string, string>)?.[props.itemValue] === props.modelValue
         ) as Record<string, string>;
         result = item?.[props.itemText] || '';
     }

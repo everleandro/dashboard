@@ -1,5 +1,5 @@
 <template>
-    <component :is="tag" v-ripple :active-class="activeClass" tabindex="0" role="option" v-bind="attrs" aria-selected="true"
+    <component :is="tagResult" v-ripple :active-class="activeClass" tabindex="0" role="option" aria-selected="true"
         :class="listItemCLass" @click="handleItemClick">
         <div v-if="hasPrependSlot" class="e-list-item__icon">
             <slot name="prepend-icon"></slot>
@@ -8,6 +8,7 @@
             <EIcon :name="prependIcon"></EIcon>
         </div>
         <div class="e-list-item__content">
+            {{ tag }}
             <slot></slot>
         </div>
     </component>
@@ -21,8 +22,9 @@ export interface Props {
     prependIcon?: string
     isActive?: boolean
     activeClass?: string
+    tag?: string
     color?: string
-    value: Record<string, any> | string | number
+    value?: Record<string, any> | string | number
 }
 
 const props = defineProps<Props>()
@@ -58,9 +60,11 @@ const hasPrependSlot = computed((): boolean => {
     return !!slots.prependIcon;
 })
 
-const tag = computed((): string => {
-    return attrs.to ? "router-link" : "li";
-})
+const tagResult = computed((): string => {
+    if (props.tag)
+        return props.tag
+    return attrs.to ? "router-link" : "li"
+});
 
 const handleItemClick = (evt: MouseEvent): void => {
     emit('click:item', evt)

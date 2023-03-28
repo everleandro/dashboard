@@ -40,6 +40,12 @@ textarea {
   border-left-style: none;
 }
 
+body {
+
+  font-family: $root-font-family;
+  color: var(--root-color);
+}
+
 * {
   box-sizing: border-box;
 }

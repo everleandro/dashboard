@@ -1,4 +1,46 @@
-<template src="./template.html" />
+<template >
+    <div :class="textFieldClass">
+        <div class="e-field__control">
+            <div class="e-field__slot" @mouseenter="handleHover(true)" @mouseleave="handleHover(false)">
+                <div v-if="prependIcon" class="e-field__prepend-inner" @click="handleClickPrependIcon">
+                    <div class="e-field__icon e-field__icon--prepend-inner">
+                        <EIcon :name="prependIcon" />
+                    </div>
+                </div>
+                <div class="e-text-field__slot">
+                    <label :for="id" :class="[textColor, 'e-label']" :style="labelStyle">
+                        <slot name="label">{{ label }}</slot>
+                    </label>
+                    <div v-if="prefix" :class="[textColor, 'e-field__prefix']" @click="setInputFocus">
+                        {{ prefix }}
+                    </div>
+                    <input ref="input" :id="id" :value="modelValue" :readonly="inputReadonly" class="input--text"
+                        :maxlength="limit" :style="inputStyle" :type="type" :placeholder="placeholder"
+                        :autocomplete="autocomplete" @blur="handleBlur" @input="changeValue($event, true)"
+                        @focus="handleFocus" />
+                    <div v-if="suffix" :class="[textColor, 'e-field__suffix']" @click="setInputFocus">
+                        {{ suffix }}
+                    </div>
+                </div>
+                <transition name="scale">
+                    <div v-show="showClearable" class="e-field__append-inner">
+                        <div class="e-field__icon e-field__icon--clear">
+                            <EButton :icon="$icon.clear" small @click.stop.prevent="clear" />
+                        </div>
+                    </div>
+                </transition>
+                <div v-if="appendIcon" class="e-field__append-inner" @click="handleClickAppendIcon">
+                    <div class="e-field__icon e-field__icon--append">
+                        <EIcon :name="appendIcon" />
+                    </div>
+                </div>
+            </div>
+            <EDetails :counter="counter" :details="details" :modelValue="modelValue" :limit="limit" :textColor="textColor"
+                :showDetails="showDetails">
+            </EDetails>
+        </div>
+    </div>
+</template>
 <script lang="ts">
 export default { name: 'TextField' }
 </script>
@@ -8,22 +50,15 @@ export default { name: 'TextField' }
 export interface Props {
     disabled?: boolean; dense?: boolean; readonly?: boolean; counter?: boolean; clearable?: boolean;
     labelInline?: boolean; detail?: string; outlined?: boolean; label?: string | number;
-    modelValue?: string | number; placeholder?: string; suffix?: string; autocomplete?: string;
+    modelValue: string | number; placeholder?: string; suffix?: string; autocomplete?: string;
     prefix?: string; inputAlign?: string; color?: string; limit?: string | number;
     detailErrors?: Array<string>; detailsOnMessageOnly?: boolean; type?: string; appendIcon?: string;
-    labelMinWidth?: string; prependIcon?: string; rules?: Array<(param: any) => string | boolean>;
+    labelMinWidth?: string; prependIcon?: string; rules?: Array<(param: any) => string | true>;
     cols?: string | number; xs?: string | number; sm?: string | number; md?: string | number;
     lg?: string | number; xl?: string | number; inputReadonly?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), { inputAlign: 'start', type: 'text', color: 'primary' })
-
-
-onUpdated(() => {
-
-})
-
-
+const props = withDefaults(defineProps<Props>(), { inputAlign: 'start', type: 'text' })
 
 const emit = defineEmits<{
     (e: 'click:clear'): void, (e: 'focus', value: FocusEvent): void,
@@ -32,8 +67,8 @@ const emit = defineEmits<{
 }>()
 
 const { fieldClass, dirty, inputStyle, id, focused, showClearable, showDetails, textColor,
-    details, hasError, labelStyle, handleHover, handleBlur, handleClickPrependIcon,
-    handleClickAppendIcon, handleFocus, setInputFocus, setLabelStyle } = useField()
+    details, labelStyle, handleHover, handleBlur, handleClickPrependIcon,
+    handleClickAppendIcon, handleFocus, setInputFocus } = useField()
 
 const { gridClass } = useGrid('e-field')
 const textFieldClass = computed(() => [...fieldClass.value, 'e-text-field', ...gridClass.value])
@@ -43,7 +78,11 @@ const changeValue = (value: any, isEvent = false) => {
     emit('update:modelValue', valueResult)
 }
 
-const clear = () => { changeValue(''); emit('click:clear') };
+const clear = () => {
+    changeValue('');
+    emit('click:clear')
+    setInputFocus()
+};
 
 </script>
 <style lang="scss" src="./style.scss"></style>

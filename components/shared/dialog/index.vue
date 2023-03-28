@@ -33,6 +33,8 @@ watch(() => props.modelValue, (value) => {
     }
     store.active = value
 })
+
+
 const dialogClass = computed(() => {
     const classes = ['e-dialog']
     props.fullscreen && classes.push(availableRootClasses.fullscreen)
@@ -62,10 +64,9 @@ const style = computed((): { maxWidth?: string } => {
     return { ...maxWidth };
 })
 
-const close = (): void => {
-    if (props.persistent) {
+const close = (force = false): void => {
+    if (!force && props.persistent) {
         store.animated = true;
-        console.log('ss')
         setTimeout((): void => {
             store.animated = false;
         }, 200);
@@ -73,5 +74,9 @@ const close = (): void => {
         changeValue(false)
     }
 }
+
+provide("EDialog", {
+    close
+});
 </script>
 <style lang="scss" src="./style.scss"></style>

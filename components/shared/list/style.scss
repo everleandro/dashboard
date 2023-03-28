@@ -99,4 +99,15 @@
             min-width: 24px;
         }
     }
+
+    &--dense {
+        .e-list-item {
+            min-height: 40px;
+
+            &__icon {
+                margin-top: 8px;
+                margin-bottom: 8px;
+            }
+        }
+    }
 }

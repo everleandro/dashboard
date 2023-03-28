@@ -4,21 +4,26 @@ $space-base: 12px;
 $grid-cols: 24 !default;
 $root-font-family: 'Roboto', sans-serif;
 
-$icon-close-font-size: 12px;
-$icon-action-select-font-size: 12px;
+$icon-close-font-size: 24px;
 
 //colors
 $colors: (
   'primary': #1DE0B1,
+  // 'primary': #f19933,
   'secondary': #2C373C,
+  'green': #1B5E20,
   'input': #4f636b,
+  'input-placeholder': #b7b9ba,
+  'input-border': #e3e9eb,
+  'label': #536e7d,
   'tertiary': #4f636b,
   'black': #18262A,
+  'root-color': #4F636B,
 
-  'disabled': #2b373c,
+  'disabled': #b7b9ba,
   'switch-off': #e4eaec,
   'grey': #91a0a8,
-  'error': #f44336,
+  'error': #FF1744,
   'white': white,
   'success': #66bb6a,
   'red': #f44336

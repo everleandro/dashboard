@@ -9,6 +9,10 @@
     max-width: 100%;
     text-align: left;
 
+    label {
+        color: var(--label);
+    }
+
     &--dense {
         .e-field__slot {
             margin-bottom: 0;
@@ -43,7 +47,7 @@
 
     .e-label {
         text-transform: capitalize;
-        font-weight: 700;
+        font-weight: 500;
         line-height: 18px;
         margin-bottom: 0;
     }
@@ -55,7 +59,7 @@
 
     &__append-inner {
         margin-left: auto;
-        padding-left: 4px;
+        padding-left: 8px;
     }
 
     &__prepend-inner,
@@ -102,13 +106,15 @@
             cursor: pointer;
             height: 34px;
             position: absolute;
+            overflow: hidden;
             transition: inherit;
             width: 34px;
             left: -12px;
             top: calc(50% - 24px);
             margin: 7px;
 
-            &:before {
+            &:before,
+            &:after {
                 border-radius: inherit;
                 bottom: 0;
                 content: '';
@@ -120,6 +126,25 @@
                 transform-origin: center center;
                 transform: scale(0.2);
                 transition: inherit;
+            }
+
+            &:focus {
+                outline: unset;
+
+                &:after {
+                    background: currentColor;
+                    transform: scale(1.2);
+                    transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+                    transition-property: transform;
+                }
+            }
+
+            &:active {
+
+                &:after {
+                    transform: scale(0.2);
+                    transition: none;
+                }
             }
         }
 
@@ -136,7 +161,7 @@
             @include prefix(user-select, none);
 
             .e-icon {
-                width: 100%;
+                min-width: 100%;
             }
 
             input {
@@ -169,11 +194,15 @@
                 }
             }
 
-            &:hover .e-field--selection-controls__ripple:before {
-                background: currentColor;
-                transform: scale(1.2);
-                transition: none;
+            &:hover {
+                .e-field--selection-controls__ripple:before {
+                    background: currentColor;
+                    transform: scale(1.2);
+                    transition: none;
+                }
             }
+
+
 
             input[role='checkbox'],
             input[role='radio'],
@@ -200,6 +229,7 @@
     }
 
     &__slot {
+        background-color: white;
         max-width: 100%;
         @include prefix(box-sizing, border-box);
         align-items: center;
@@ -212,6 +242,11 @@
         position: relative;
         transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
         width: 100%;
+
+        button {
+            color: currentColor;
+            cursor: pointer;
+        }
     }
 
     &--dense {
@@ -223,11 +258,6 @@
     &--is-disabled:not(.e-field--is-readonly) {
         pointer-events: none;
         color: rgba(0, 0, 0, 0.38);
-    }
-
-    button {
-        color: currentColor;
-        cursor: pointer;
     }
 
     &--outlined {
@@ -251,5 +281,19 @@
         .e-label {
             white-space: nowrap;
         }
+    }
+
+    ::-webkit-input-placeholder {
+        /* Edge */
+        color: var(--input-placeholder)
+    }
+
+    :-ms-input-placeholder {
+        /* Internet Explorer 10-11 */
+        color: var(--input-placeholder)
+    }
+
+    ::placeholder {
+        color: var(--input-placeholder)
     }
 }

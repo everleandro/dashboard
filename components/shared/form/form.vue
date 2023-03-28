@@ -20,7 +20,9 @@ export interface Props {
     outlined?: boolean
     disabled?: boolean
     labelMinWidth?: string
+    color?: string
 }
+
 const props = withDefaults(defineProps<Props>(), { modelValue: undefined })
 const localValue = ref(true)
 const form = ref()
@@ -36,17 +38,20 @@ const state = reactive({
 });
 
 const formClass = computed(() => {
-    const result: Array<string> = ['e-form', 'e-row']
+    const result: Array<string> = ['e-form']
     props.noGutters && result.push('no-gutters')
     props.outlined && result.push('e-form--outlined')
     props.disabled && result.push('e-form--disabled')
     return result
 })
 
-watch(() => state.fieldsChildError, (val: Array<boolean>) => changeValue(!val.find((e) => e)))
+watch(() => state.fieldsChildError, (val: Array<boolean>) => {
+    const valid = !val.find((e) => !!e)
+    changeValue(valid)
+}, { deep: true })
 
 onMounted(() => {
-    setLabelStyle()
+    setConfiguration()
 })
 
 const bindField = (component: Field) => {
@@ -86,20 +91,24 @@ const reset = (): void => {
     });
 }
 
-const setLabelStyle = (): void => {
-    if (props.labelMinWidth)
-        state.fieldsChild.forEach((vueComponent) => {
-            vueComponent.setLabelStyle?.({ minWidth: `${props.labelMinWidth}px` });
-        });
+const setConfiguration = (): void => {
+    state.fieldsChild.forEach((vueComponent) => {
+        const configuration: Record<string, any> = {}
+        props.labelMinWidth && (configuration.labelStyle = { minWidth: `${props.labelMinWidth}px` })
+        props.color && (configuration.color = props.color)
+        vueComponent.setConfiguration?.(configuration);
+    });
 }
 
 const validate = (): boolean => {
-    state.fieldsChild.forEach((vueComponent, index) => {
-        vueComponent.validate?.();
+    let valid = true;
+    state.fieldsChild.forEach((vueComponent) => {
+        if (!vueComponent.validate?.()) {
+            //form is not valid if almost one field is invalid 
+            valid = false
+        }
     });
-    return (
-        (form.value.querySelectorAll('.e-field--has-error') || []).length === 0
-    );
+    return valid
 }
 
 defineExpose({ validate, reset })

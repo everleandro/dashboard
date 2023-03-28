@@ -40,6 +40,30 @@
     }
 }
 
+@mixin e-field-outlined() {
+    &.e-field--is-disabled {
+        .e-field__slot {
+            border-style: dashed;
+        }
+    }
+
+    &.e-field--is-hovered,
+    &.e-field--is-focused,
+    &.e-field--has-error {
+        z-index: 1;
+
+        .e-field__slot {
+            border-color: currentColor;
+        }
+    }
+
+    .e-field__slot {
+        border-style: solid;
+        border-width: 1px;
+        border-color: var(--input-border);
+    }
+}
+
 
 //grid
 @mixin _xs {
@@ -100,30 +124,6 @@
     $base: calc(#{$i} / #{$grid-cols} * 100%);
     $result: calc(#{$base} + #{$extra_px});
     @return $result;
-}
-
-@mixin e-field-outlined() {
-    &.e-field--is-disabled {
-        .e-field__slot {
-            border-style: dashed;
-        }
-    }
-
-    &.e-field--is-hovered,
-    &.e-field--is-focused,
-    &.e-field--has-error {
-        z-index: 1;
-
-        .e-field__slot {
-            border-color: currentColor;
-        }
-    }
-
-    .e-field__slot {
-        border-style: solid;
-        border-width: 1px;
-        border-color: lighten(map-get($colors, 'secondary'), 60%);
-    }
 }
 
 @mixin grid-generator-by-breakpoint($breakpoint_key, $extra_px: 0px) {

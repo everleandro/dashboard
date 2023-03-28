@@ -11,13 +11,68 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-wallet:before {
+  content: "\e90f";
+}
+
+.icon-account-check:before {
+  content: "\e90d";
+}
+
+.icon-account-edit:before {
+  content: "\e90e";
+}
+
+.icon-chevron-down:before {
+  content: "\e903";
+}
+
+.icon-chevron-left:before {
+  content: "\e904";
+}
+
+.icon-chevron-right:before {
+  content: "\e905";
+}
+
+.icon-chevron-up:before {
+  content: "\e906";
+}
+
+.icon-close:before {
+  content: "\e907";
+}
+
+.icon-pencil-off:before {
+  content: "\e908";
+}
+
+.icon-credit-card:before {
+  content: "\e909";
+}
+
+.icon-dashboard:before {
+  content: "\e90a";
+}
+
+.icon-menu:before {
+  content: "\e90b";
+}
+
+.icon-pencil:before {
+  content: "\e902";
+}
+
+.icon-dots-vertical:before {
+  content: "\e90c";
+}
+
+.icon-phone:before {
+  content: "\e901";
+}
 
 .icon-dollar:before {
   content: "\e900";
-}
-
-.icon-card:before {
-  content: "\e903";
 }
 
 .icon-providers:before {
@@ -40,10 +95,6 @@
   content: "\eaa1";
 }
 
-.icon-hamburger:before {
-  content: "\e965";
-}
-
 .icon-remuneration:before {
   content: "\ea09";
 }
@@ -56,12 +107,12 @@
   content: "\e968";
 }
 
-.icon-edit:before {
-  content: "\e9c1";
-}
-
 .icon-list:before {
   content: "\e9c8";
+}
+
+.icon-send-email:before {
+  content: "\e9cf";
 }
 
 .icon-maintenance:before {
@@ -74,10 +125,6 @@
 
 .icon-checking:before {
   content: "\e96b";
-}
-
-.icon-dashboard:before {
-  content: "\e96c";
 }
 
 .icon-events:before {
@@ -114,6 +161,14 @@
 
 .icon-search:before {
   content: "\eb10";
+}
+
+.icon-arrow-right:before {
+  content: "\eb11";
+}
+
+.icon-arrow-left:before {
+  content: "\eb28";
 }
 
 .icon-logout:before {

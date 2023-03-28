@@ -20,15 +20,9 @@
                 margin: 0;
             }
 
-            &.e-btn--icon {
+            &.e-btn--stacked {
                 width: 127px;
-                height: 127px;
-                border-radius: 0;
-
-
-                &:not(:last-child) {
-                    border-bottom: 1px solid var(--tertiary);
-                }
+                border-bottom: 1px solid var(--tertiary);
 
                 &:not(:nth-child(even)) {
                     border-right: 1px solid var(--tertiary);

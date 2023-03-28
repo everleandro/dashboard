@@ -1,4 +1,8 @@
 .e-select {
+    .flip-icon {
+        font-size: 24px;
+    }
+
     .e-menu {
         height: 1px;
         width: 100%;
@@ -21,12 +25,6 @@
             min-width: 100%;
             transform-origin: left top;
             z-index: 8;
-        }
-    }
-
-    .e-field__icon.e-field__icon--append {
-        .e-icon.flip-icon {
-            font-size: $icon-action-select-font-size;
         }
     }
 
@@ -69,7 +67,7 @@
     }
 
     &__selection {
-        padding: 4px;
+        padding: 8px 0 8px 8px;
         max-width: 100%;
         flex: 1 1 auto;
     }

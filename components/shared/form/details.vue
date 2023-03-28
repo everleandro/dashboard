@@ -28,4 +28,18 @@ export interface Props {
 const props = defineProps<Props>()
 
 </script>
+<style lang="scss">
+.e-messages {
+    text-align: left;
+    color: rgba(0, 0, 0, .6);
+    flex: 1 1 auto;
+    font-size: 12px;
+    min-height: 14px;
+    min-width: 1px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+</style>
   

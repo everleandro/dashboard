@@ -10,7 +10,7 @@ export default function (preffix = 'e-col') {
         props?.value?.md && result.push(`${preffix}-md-${props?.value?.md}`)
         props?.value?.lg && result.push(`${preffix}-lg-${props?.value?.lg}`)
         props?.value?.xl && result.push(`${preffix}-xl-${props?.value?.xl}`)
-        return result.length > 0 ? [...result, preffix] : []
+        return result.length > 0 ? [...result, preffix] : [preffix]
     })
 
     return {

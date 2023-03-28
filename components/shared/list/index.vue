@@ -10,12 +10,14 @@ export interface Props {
     disabled?: boolean
     depressed?: boolean
     outlined?: boolean
+    dense?: boolean
     color?: string
 }
 const props = defineProps<Props>()
 const availableRootClasses = {
     disabled: "e-list--disabled",
     depressed: "e-list--depressed",
+    dense: "e-list--dense",
     outlined: "e-list--outlined",
 };
 const listCLass = computed((): Array<string> => {

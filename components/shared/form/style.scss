@@ -1,17 +1,28 @@
 .e-form {
-    background-color: white;
     margin: -$space-base;
     display: flex;
     flex-wrap: wrap;
     flex: 1 1 auto;
-    $extra_px: 1px;
+
+    .e-field__slot {
+        background-color: white;
+    }
+
+    &>.e-field {
+        @include grid-generator();
+
+    }
 
     &.no-gutters {
-        padding: 0.5px;
+        padding: 0 0.5px 0.5px 0;
         margin: 0;
 
         &>.e-field {
+            @include grid-generator(1px);
             padding: 0;
+            margin: -0.5px;
+            flex: 0 0 100%;
+            max-width: 100%;
         }
     }
 
@@ -22,22 +33,17 @@
         }
 
         &.e-form--disabled {
-            .e-field {
-                pointer-events: none;
-
-                &__slot {
-                    border-style: dashed;
-                }
+            .e-field__slot {
+                border-style: dashed;
             }
         }
     }
 
+    &--disabled {
+        .e-field {
+            pointer-events: none;
 
-    .e-field {
-        flex: 0 0 calc(100% + 1px);
-        max-width: calc(100% + 1px);
-        margin: -0.5px;
-        @include grid-generator(0.9px);
-
+        }
     }
+
 }

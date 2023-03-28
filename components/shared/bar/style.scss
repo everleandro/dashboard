@@ -28,7 +28,7 @@ $e-bar-padding-y: 4px;
     flex-grow: 1;
     display: block;
     z-index: 1;
-    height: 75px;
+    height: 64px;
 
     &__content {
         align-items: center;
@@ -36,7 +36,7 @@ $e-bar-padding-y: 4px;
         position: relative;
         z-index: 0;
         padding: $e-bar-padding-y 16px;
-        height: calc(100% - (2 * $e-bar-padding-y));
+        height: 100%;
     }
 
     &--clipped {

@@ -33,6 +33,13 @@ $fab-height: map-merge(('x-small': 32px,
             'x-large': 72px),
         ()) !default;
 
+$stacked-height: map-merge(('x-small': 32px,
+            'small': 40px,
+            'default': 72px,
+            'large': 104px,
+            'x-large': 128px),
+        ()) !default;
+
 $btn-height: map-merge(('x-small': 35px,
             'small': 40px,
             'default': 45px,
@@ -117,6 +124,7 @@ $icon-font-sizes: map-merge(('x-small': 18px,
     &--fab {
         padding: 0;
         min-width: 0;
+        border-radius: 50%;
     }
 
     &--depressed,
@@ -144,6 +152,14 @@ $icon-font-sizes: map-merge(('x-small': 18px,
         }
     }
 
+    &__prepend {
+        margin-right: 8px;
+    }
+
+    &__append {
+        margin-left: 8px;
+    }
+
     @each $key,
     $value in $colors {
         &--#{$key} {
@@ -167,10 +183,8 @@ $icon-font-sizes: map-merge(('x-small': 18px,
     @each $key,
     $value in $btn-font-sizes {
         &--size-#{$key} {
-            &:not(.e-btn--fab) {
-                font-size: $value;
-                height: map-get($btn-height, $key);
-            }
+            font-size: $value;
+            height: map-get($btn-height, $key);
 
             &.e-btn--icon {
                 height: map-get($btn-height, $key);
@@ -200,7 +214,27 @@ $icon-font-sizes: map-merge(('x-small': 18px,
                     }
                 }
             }
+
+            &.e-btn--stacked {
+                height: auto;
+                height: map-get($stacked-height, $key);
+            }
         }
+    }
+
+    &--stacked {
+        flex-direction: column;
+
+        .e-btn {
+            &__prepend {
+                margin: 0 0 4px 0;
+            }
+
+            &__append {
+                margin: 4px 0 0 0;
+            }
+        }
+
     }
 
     &--outlined {
@@ -238,8 +272,13 @@ $icon-font-sizes: map-merge(('x-small': 18px,
     &--loading {
         pointer-events: none;
 
-        .e-btn__content {
-            opacity: 0;
+        .e-btn {
+
+            &__content,
+            &__append,
+            &__prepend {
+                opacity: 0;
+            }
         }
     }
 

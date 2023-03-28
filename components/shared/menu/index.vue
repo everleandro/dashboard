@@ -22,7 +22,7 @@ const ContainerUnmounted = ref(true)
 const node = ref<HTMLElement | null>(null)
 const attrs = useAttrs()
 
-const container = () => (ContainerReference.value || { openMenu: () => { } }) as ContainerMenuClass
+const container = () => (ContainerReference.value || { openMenu: () => { } }) as ContainerMenuInterface
 const root: VNode = h(() => slots.activator?.({ onClick: openMenu, ref: MenuReference, 'aria-hasmenu': true }))
 
 onMounted(() => {
@@ -30,7 +30,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    console.log(' container()', container())
     container().destroyComponent()
     node.value?.remove()
 })
@@ -40,9 +39,9 @@ const createMenu = () => {
         const containerComponent = createApp(defineComponent({
             extends: EMenuContainer,
             setup() {
-                return () => h(EMenuContainer, { ref: ContainerReference, target: MenuReference.value.$el, ...attrs }, { default: () => slots?.default?.() })
+                return () => h(EMenuContainer, { ref: ContainerReference, target: MenuReference.value?.$el, ...attrs }, { default: () => slots?.default?.() })
             }
-        }), { target: MenuReference.value.$el })
+        }), { target: MenuReference.value?.$el })
 
         node.value = document.createElement('div');
         document.body.appendChild(node.value);

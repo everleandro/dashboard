@@ -11,7 +11,7 @@
 </template>
 <script lang="ts">
 export default {
-    name: 'EMenuCOntainer'
+    name: 'EMenuContainer'
 }
 </script>
 <script setup lang="ts">

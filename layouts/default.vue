@@ -1,18 +1,12 @@
 <template>
     <e-app>
-        <e-bar app color="secondary">
-            <e-button icon color="white" large rounded @click="closeDrawer()">
-                <e-icon :name="$icon.hamburger"></e-icon>
-            </e-button>
+        <e-bar app fixed color="secondary">
+            <e-button :icon="$icon.menu" color="white" large @click="closeDrawer()" />
             <e-spacer />
-            <e-button icon color="white" rounded large @click="closeDrawer()">
-                <e-icon :name="$icon.maintenance"></e-icon>
-            </e-button>
+            <e-button :icon="$icon.maintenance" color="white" large @click="closeDrawer()" />
             <EMenu width="200" origin="right bottom">
                 <template #activator="attrs">
-                    <e-button icon color="white" rounded v-bind="attrs" large>
-                        <e-icon :name="$icon.notification"></e-icon>
-                    </e-button>
+                    <e-button color="white" v-bind="attrs" :icon="$icon.notification" large />
                 </template>
                 <e-list color="primary">
                     <e-list-item :prepend-icon="$icon.remuneration" :value='1'>
@@ -26,9 +20,8 @@
         <EDrawer v-model="drawerModel" nav class="secondary">
             <div class="nav__header primary"></div>
             <div class="nav__body">
-                <e-button v-for="({ icon, text, to }, index) in drawerLinks" :key="index" :to="to" icon x-large
-                    color="tertiary">
-                    <e-icon :name="icon"></e-icon>
+                <e-button v-for="({ icon, text, to }, index) in drawerLinks" stacked :key="index" :to="to"
+                    :prepend-icon="icon" x-large color="secondary">
                     <span class="nav-button-info">{{ text }}</span>
                 </e-button>
             </div>

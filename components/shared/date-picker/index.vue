@@ -19,9 +19,7 @@
         <div class="e-date-picker-header">
           <slot name="header" :prev="prevButtonAction" :next="nextButtonAction" :change-view-mode="changeViewMode"
             :page-date="store.pageDate">
-            <EButton icon aria-label="Previous month" @click="prevButtonAction()">
-              <EIcon :name="$icon.pickerIconPrev" />
-            </EButton>
+            <EButton :icon="$icon.pickerIconPrev" aria-label="Previous month" x-small @click="prevButtonAction()" />
 
             <div class="e-date-picker-header__value">
               <transition :name="store.globalContentAnimation">
@@ -33,9 +31,7 @@
               </transition>
             </div>
 
-            <EButton icon aria-label="Previous month" @click="nextButtonAction()">
-              <EIcon :name="$icon.pickerIconNext" />
-            </EButton>
+            <EButton :icon="$icon.pickerIconNext" aria-label="Previous month" x-small @click="nextButtonAction()" />
           </slot>
         </div>
 
@@ -78,12 +74,14 @@
 import { Lng as Lnguage, suportedLng } from '@/locales/index';
 import { DatesConfiguration, datePickerViewType, Day, Month } from "./types"
 import UtilDate from '@/models/date';
+import { EDIalog } from '@/components/shared/dialog/types';
 
 export interface Props {
   landscape?: boolean
   closeOnDateChange?: boolean
   color?: string
   noTitle?: boolean
+  closeOnChange?: boolean
   modelValue?: Date | string
   weekStart?: number
   format?: string
@@ -96,6 +94,8 @@ export interface Props {
 const textColor = computed(() => {
   return `${props.color}--text`
 })
+
+const dialog = inject<EDIalog | undefined>("EDialog", undefined);
 
 const props = withDefaults(defineProps<Props>(), {
   color: 'primary',
@@ -143,6 +143,9 @@ const changeView = (value: datePickerViewType) => {
 }
 const changeValue = (value: UtilDate) => {
   updatePageConfiguration(value);
+  if (props.closeOnChange) {
+    setTimeout(() => dialog?.close(true), 300)
+  }
   emit('update:modelValue', value.date);
 }
 
