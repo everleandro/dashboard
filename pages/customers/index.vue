@@ -13,11 +13,11 @@
 
         </EBar>
         <EForm @submit="search">
-            <ETextField v-model="filters.searchValue" placeholder="Buscar Cliente" label="asd" sm="24" md="9" lg="7"
+            <ETextField v-model="filters.searchValue" placeholder="Buscar Cliente" cols="24" md="9" lg="7"
                 :append-icon="$icon.search" clearable :readonly="filters.loading" />
-            <ESelect v-model="filters.order" label="Ordenar por:" :items="availableOrder" sm="16" md="9" lg="7"
+            <ESelect v-model="filters.order" label="Ordenar por:" :items="availableOrder" cols="24" sm="16" md="9" lg="7"
                 :readonly="filters.loading" />
-            <EFormColumn sm="8" md="6" lg="5">
+            <EFormColumn cols="24" sm="8" md="6" lg="5" class="d-flex justify-flex-end">
                 <EButton to="/customers/new" color="primary">Añadir cliente</EButton>
             </EFormColumn>
         </EForm>

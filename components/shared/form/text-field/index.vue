@@ -7,17 +7,19 @@
                         <EIcon :name="prependIcon" />
                     </div>
                 </div>
-                <div class="e-text-field__slot">
+                <div class="e-text-field__slot e-field__field">
                     <label :for="id" :class="[textColor, 'e-label']" :style="labelStyle">
                         <slot name="label">{{ label }}</slot>
                     </label>
                     <div v-if="prefix" :class="[textColor, 'e-field__prefix']" @click="setInputFocus">
                         {{ prefix }}
                     </div>
+
                     <input ref="input" :id="id" :value="modelValue" :readonly="inputReadonly" class="input--text"
                         :maxlength="limit" :style="inputStyle" :type="type" :placeholder="placeholder"
                         :autocomplete="autocomplete" @blur="handleBlur" @input="changeValue($event, true)"
                         @focus="handleFocus" />
+
                     <div v-if="suffix" :class="[textColor, 'e-field__suffix']" @click="setInputFocus">
                         {{ suffix }}
                     </div>
