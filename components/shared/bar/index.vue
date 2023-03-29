@@ -28,7 +28,7 @@ const availableRootClasses = {
     fixed: 'e-bar--fixed',
     clipped: 'e-bar--clipped',
     depressed: 'e-bar--depressed',
-    app: 'e-app-bar',
+    app: 'e-bar--app',
     outlined: 'outlined'
 };
 

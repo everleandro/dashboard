@@ -53,7 +53,7 @@ const handleContentClick = (): boolean => props.closeOnContentClick && closeMenu
 
 const handleExcListener = ({ key }: KeyboardEvent): boolean => key === 'Escape' && closeMenu()
 
-const targetDOMRect = (): DOMRect => props.target.getBoundingClientRect()
+const targetDOMRect = (): DOMRect => props.target?.getBoundingClientRect() || {}
 
 const destroyComponent = (): void => {
     document.removeEventListener('keydown', handleExcListener);

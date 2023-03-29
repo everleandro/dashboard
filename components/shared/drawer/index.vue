@@ -31,7 +31,7 @@ const availableRootClasses: Record<DrawerClassKeys, string> = {
   modelValue: 'e-drawer--open',
 };
 
-
+const route = useRoute()
 const absoluteComputed = computed(() => props.absolute || mdBreakpoint.value)
 const tag = computed(() => props.nav ? 'nav' : 'aside')
 
@@ -43,9 +43,12 @@ onMounted(() => {
   setOverlay();
   observeBreakpoint();
   refreshLayoutStyle();
-  setTimeout(function () {
+  nextTick(() => {
     window?.addEventListener('resize', observeBreakpoint);
-  }, 0);
+    if (props.modelValue && mdBreakpoint.value) {
+      changeValue(false)
+    }
+  });
 })
 
 onUnmounted(() => {
@@ -76,6 +79,13 @@ watch(() => mdBreakpoint.value, () => {
   refreshLayoutStyle()
 });
 
+watch(() => route, () => {
+  if (props.modelValue && mdBreakpoint.value) {
+    changeValue(false)
+  }
+
+}, { deep: true });
+
 const setOverlay = (): void => {
   if (props.modelValue && absoluteComputed.value) {
     if (!overlayNode) {
@@ -95,7 +105,7 @@ const setOverlay = (): void => {
 
 const refreshLayoutStyle = (): void => {
   const eMainNode = document.querySelector('.e-main[data-layout="true"]') as HTMLElement
-  const eBarNode = document.querySelector('.e-bar.e-app-bar[data-layout="true"]') as HTMLElement
+  const eBarNode = document.querySelector('.e-bar.e-bar--app[data-layout="true"]') as HTMLElement
   const propertyValue =
     absoluteComputed.value || !props.modelValue ? '0px' : `${props.width}px`;
 

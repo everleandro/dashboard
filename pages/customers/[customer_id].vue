@@ -1,22 +1,23 @@
 <template>
     <div class="customer_page">
-        <EBar depressed>
-            <div class="d-flex align-center">
+        <ERow class="mb-12">
+            <ECol class="d-flex align-center">
                 <EAvatar color="primary" src="https://cdn.vuetifyjs.com/images/john.jpg"></EAvatar>
                 <div class="ml-4">
                     <h1>Ever</h1>
                     <p>Santiesteban</p>
                 </div>
-            </div>
+            </ECol>
             <ESpacer></ESpacer>
-
-            <EButton :prepend-icon="editionEnabled ? $icon.accountCheck : $icon.accountEdit" color="primary"
-                :loading="store.savingProfile" :disabled="!profileValid" @click="editAction">
-                {{ editionEnabled ? 'Guardar' : 'Editar' }}
-            </EButton>
-            <EButton :icon="$icon.customerInfo" large />
-            <EButton :icon="$icon.wallet" large />
-        </EBar>
+            <ECol class="d-flex justify-flex-end align-center">
+                <EButton :prepend-icon="editionEnabled ? $icon.accountCheck : $icon.accountEdit" color="primary"
+                    :loading="store.savingProfile" :disabled="!profileValid" @click="editAction">
+                    {{ editionEnabled ? 'Guardar' : 'Editar' }}
+                </EButton>
+                <EButton :icon="$icon.customerInfo" large />
+                <EButton :icon="$icon.wallet" large />
+            </ECol>
+        </ERow>
 
         <EDialog v-model="store.dialogBirthDate" maxWidth="290" persistent>
             <EDatePicker v-model="identificativeData.birthDate" close-on-change />
@@ -24,8 +25,8 @@
         <!-- <ETimePicker /> -->
         <EExpansion header-title="Datos Identificativos">
             <EExpansionContent>
-                <EForm ref="identificativeDataForm" v-model="identificativeData.formValid" :readonl="store.savingProfile"
-                    :disabled="!editionEnabled" outlined no-gutters label-min-width="125">
+                <EForm ref="identificativeDataForm" v-model="identificativeData.formValid" :disabled="store.savingProfile"
+                    outlined no-gutters label-min-width="125">
                     <ETextField v-model="identificativeData.name" :rules="[_required]" placeholder="Nombre" label="Nombre"
                         clearable sm="12" lg="11" />
                     <ERadioGroup v-model="identificativeData.gender" mandatory row label="Sexo" sm="12" lg="7">
@@ -59,8 +60,8 @@
 
         <EExpansion header-title="Datos de facturación">
             <EExpansionContent>
-                <EForm ref="paymentDataForm" v-model="paymentData.formValid" :readonl="store.savingProfile"
-                    :disabled="!editionEnabled" outlined no-gutters label-min-width="125">
+                <EForm ref="paymentDataForm" v-model="paymentData.formValid" :disabled="store.savingProfile" outlined
+                    no-gutters label-min-width="125">
                     <ETextField v-model="paymentData.name" placeholder="Nombre/Razón social" lg="18" label="Nombre" />
                     <ETextField v-model="paymentData.dni" placeholder="A000000" lg="6" label="Dni" />
                     <ETextField v-model="paymentData.address" placeholder="Direccion" lg="18" label="Direccion" />
@@ -78,8 +79,7 @@
 import UtilDate from '@/models/date'
 const { _email, _required } = useRules()
 
-const rules = [(val: string) => { return val == "t" || "error" }]
-const editionEnabled: Ref<boolean> = ref<boolean>(false)
+const editionEnabled: Ref<boolean> = ref<boolean>(true)
 
 
 
@@ -115,21 +115,21 @@ const profileValid = computed(() => {
 const birthDateFormatted = computed(() => new UtilDate(identificativeData.birthDate).format('month-DD/month-MM/year-YYYY'))
 
 const editAction = async () => {
-    if (editionEnabled.value) {
-        identificativeDataForm.value.validate()
-        paymentDataForm.value.validate()
-        await nextTick()
-        if (profileValid.value) {
-            store.savingProfile = true;
+    // if (editionEnabled.value) {
+    identificativeDataForm.value.validate()
+    paymentDataForm.value.validate()
+    await nextTick()
+    if (profileValid.value) {
+        store.savingProfile = true;
 
-            setTimeout(() => {
-                store.savingProfile = false;
-                editionEnabled.value = false
-            }, 3000)
-        }
-    } else {
-        editionEnabled.value = true
-
+        setTimeout(() => {
+            store.savingProfile = false;
+            // editionEnabled.value = false
+        }, 3000)
     }
+    // } else {
+    //     editionEnabled.value = true
+
+    // }
 }
 </script>

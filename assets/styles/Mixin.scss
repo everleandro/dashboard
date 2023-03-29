@@ -171,8 +171,8 @@ $breakpoint_keys: "-", "-sm-", "-md-", "-lg-", "-xl-";
 
 @mixin grid-generator($extra_px: 0px) {
     padding: $space-base;
-    box-sizing: border-box;
-    flex: 1 1 auto;
+    flex-basis: 0;
+    flex-grow: 1;
     max-width: 100%;
 
     @each $key in $breakpoint_keys {

@@ -8,7 +8,7 @@
                         <i aria-hidden="true" class="e-icon e-icon--size-default" :class="prependIcon"></i>
                     </div>
                 </div>
-                <div class="e-select__slot" @click="handleSelectSlotCLick" @mouseenter="handleHover(true)"
+                <div class="e-select__slot e-field__field" @click="handleSelectSlotCLick" @mouseenter="handleHover(true)"
                     @mouseleave="handleHover(false)">
                     <label :for="id" :class="[textColor, 'e-label']" :style="labelStyle">
                         <slot name="label"> {{ label }} </slot>

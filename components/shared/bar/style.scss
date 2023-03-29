@@ -1,43 +1,49 @@
 $e-bar-padding-y: 4px;
 
-.e-app-bar {
-    background-color: #f5f5f5;
-    position: absolute;
-    right: 0;
-    left: 0;
-    z-index: 3;
-}
-
-.e-bar {
-    contain: layout;
-    display: block;
-    flex: 1 1 auto;
-    right: 0px;
-    max-width: 100%;
-    transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-    &:not(.outlined):not(.e-bar--depressed) {
-        box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%),
-            0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
-    }
-
-    margin-bottom: $space-base * 4;
-}
 
 .e-bar {
     flex-grow: 1;
     display: block;
     z-index: 1;
-    height: 64px;
+    box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%),
+        0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
+    contain: layout;
+    display: block;
+    flex: 1 1 auto;
+    max-width: 100%;
+    transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: $space-base * 4;
+    right: 0;
+    left: 0;
+
+    &--outlined,
+    &--depressed {
+        box-shadow: none;
+    }
 
     &__content {
         align-items: center;
         display: flex;
         position: relative;
         z-index: 0;
-        padding: $e-bar-padding-y 16px;
         height: 100%;
+        flex-wrap: wrap;
     }
+
+    &--app {
+        height: 64px;
+        background-color: #f5f5f5;
+        position: absolute;
+        left: 0;
+        z-index: 3;
+
+        .e-bar__content {
+            padding: $e-bar-padding-y 16px;
+            flex-wrap: nowrap;
+        }
+    }
+
+
 
     &--clipped {
         z-index: 3;
