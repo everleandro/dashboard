@@ -7,6 +7,7 @@
                         <EIcon :name="prependIcon" />
                     </div>
                 </div>
+                <div class="e-field__overlay"></div>
                 <div class="e-text-field__slot e-field__field">
                     <label :for="id" :class="[textColor, 'e-label']" :style="labelStyle">
                         <slot name="label">{{ label }}</slot>
@@ -36,6 +37,7 @@
                         <EIcon :name="appendIcon" />
                     </div>
                 </div>
+                <div v-if="!outlined" class="e-field__line"></div>
             </div>
             <EDetails :counter="counter" :details="details" :modelValue="modelValue" :limit="limit" :textColor="textColor"
                 :showDetails="showDetails">
@@ -68,7 +70,7 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: string | number): void
 }>()
 
-const { fieldClass, dirty, inputStyle, id, focused, showClearable, showDetails, textColor,
+const { fieldClass, inputStyle, id, showClearable, showDetails, textColor,
     details, labelStyle, handleHover, handleBlur, handleClickPrependIcon,
     handleClickAppendIcon, handleFocus, setInputFocus } = useField()
 

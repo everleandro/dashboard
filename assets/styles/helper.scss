@@ -28,6 +28,10 @@ $value in $spaces-states {
             &-#{$i} {
                 #{$value}: $i * $space-step !important;
             }
+
+            &-n#{$i} {
+                #{$value}: -$i * $space-step !important;
+            }
         }
     }
 }
@@ -48,6 +52,11 @@ $value in $spaces-states {
     .mx-#{$i} {
         margin-right: calc(#{$i} * #{$space-step}) !important;
         margin-left: calc(#{$i} * #{$space-step}) !important;
+    }
+
+    .mx-n#{$i} {
+        margin-right: calc(#{$i} * #{$space-step} * -1) !important;
+        margin-left: calc(#{$i} * #{$space-step} * -1) !important;
     }
 
     .my-#{$i} {

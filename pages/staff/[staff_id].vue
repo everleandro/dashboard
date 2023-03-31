@@ -4,8 +4,8 @@
             <ECol class="d-flex align-center">
                 <EAvatar color="primary" src="https://cdn.vuetifyjs.com/images/john.jpg"></EAvatar>
                 <div class="ml-4">
-                    <h1>Ever</h1>
-                    <p>Santiesteban</p>
+                    <h1>Ever Santiesteban</h1>
+                    <p>monitor fitness</p>
                 </div>
             </ECol>
             <ESpacer></ESpacer>
@@ -14,8 +14,6 @@
                     :loading="store.savingProfile" :disabled="!profileValid" @click="editAction">
                     {{ editionEnabled ? 'Guardar' : 'Editar' }}
                 </EButton>
-                <EButton :icon="$icon.customerInfo" large />
-                <EButton :icon="$icon.wallet" large />
             </ECol>
         </ERow>
 
@@ -60,18 +58,10 @@
             </EExpansionContent>
         </EExpansion>
 
-        <EExpansion header-title="Datos de facturación">
+        <EExpansion header-title="Permisos de Empleado">
             <EExpansionContent>
-                <EForm ref="paymentDataForm" v-model="paymentData.formValid" :disabled="store.savingProfile" outlined
-                    no-gutters label-min-width="125">
-                    <ETextField v-model="paymentData.name" placeholder="Nombre/Razón social" lg="18" label="Nombre" />
-                    <ETextField v-model="paymentData.dni" placeholder="A000000" lg="6" label="Dni" />
-                    <ETextField v-model="paymentData.address" placeholder="Direccion" lg="18" label="Direccion" />
-                    <ETextField v-model="paymentData.cp" placeholder="00000" lg="6" label="C.P." />
-                    <ETextField v-model="paymentData.locality" placeholder="Localidad" lg="12" label="Localidad" />
-                    <ETextField v-model="paymentData.province" placeholder="Provincia" lg="12" label="Provincia" />
-                    <ETextField v-model="paymentData.province" placeholder="email@ejemplo.com" lg="24" label="Emails" />
-                    <ESwitch v-model="paymentData.copyIdentificativeData" lg="12" label="switch" />
+                <EForm ref="permissionsForm" v-model="permissionsData.formValid" :disabled="store.savingProfile">
+                    <ECheckbox v-model="permissionsData.schedule" label="Ver Horarios" />
                 </EForm>
             </EExpansionContent>
         </EExpansion>
@@ -102,16 +92,13 @@ const identificativeData = reactive({
     formValid: true,
 })
 
-const paymentDataForm = ref()
-const paymentData = reactive({
-    copyIdentificativeData: '',
-    name: '', dni: '', address: '',
-    cp: '', locality: '', formValid: true,
-    province: '', emails: '',
+const permissionsForm = ref()
+const permissionsData = reactive({
+    schedule: false, formValid: true,
 })
 
 const profileValid = computed(() => {
-    return identificativeData.formValid && paymentData.formValid
+    return identificativeData.formValid && permissionsData.formValid
 })
 
 const birthDateFormatted = computed(() => new UtilDate(identificativeData.birthDate).format('month-DD/month-MM/year-YYYY'))
@@ -119,7 +106,7 @@ const birthDateFormatted = computed(() => new UtilDate(identificativeData.birthD
 const editAction = async () => {
     // if (editionEnabled.value) {
     identificativeDataForm.value.validate()
-    paymentDataForm.value.validate()
+    permissionsForm.value.validate()
     await nextTick()
     if (profileValid.value) {
         store.savingProfile = true;

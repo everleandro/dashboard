@@ -13,7 +13,7 @@ export default function (useFormInjection = true) {
     })
 
     const focused = ref(false)
-    const input = ref<HTMLInputElement>()
+
     const id = `${Math.floor(Math.random() * 999999)}-input`;
 
     const fieldClass = computed((): Array<string> => {
@@ -93,7 +93,6 @@ export default function (useFormInjection = true) {
 
     const setInputFocus = (event?: FocusEvent): void => {
         focused.value = true;
-        input.value?.focus();
         getCurrentInstance()?.emit('focus', event)
     }
 

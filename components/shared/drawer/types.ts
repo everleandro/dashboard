@@ -1,1 +1,1 @@
-export type DrawerClassKeys = 'disabled' | 'right' | 'modelValue' 
+export type DrawerClassKeys = 'disabled' | 'right' | 'modelValue' | 'fixed' 

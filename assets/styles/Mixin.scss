@@ -175,6 +175,7 @@ $breakpoint_keys: "-", "-sm-", "-md-", "-lg-", "-xl-";
     flex-grow: 1;
     max-width: 100%;
 
+
     @each $key in $breakpoint_keys {
         @include grid-generator-by-breakpoint($key, $extra_px);
     }

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="https://unpkg.com/konva@8.4.3/konva.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            (function () {
+                'use strict';
+
+                var width = window.innerWidth;
+                var height = window.innerHeight;
+
+                var stage = new Konva.Stage({
+                    container: 'container',
+                    width: width,
+                    height: height
+                });
+
+                var layer = new Konva.Layer();
+
+                var boxHeight = 40;
+                var boxWidth = boxHeight * 2;
+                var clockRadius = boxHeight * 5;
+
+                var circle = new Konva.Circle({
+                    x: stage.getWidth() / 2,
+                    y: stage.getHeight() / 2,
+                    radius: clockRadius,
+                    fill: 'black',
+                    stroke: 'white',
+                    strokeWidth: 2
+                });
+
+                var dateGroup = new Konva.Group();
+                var date = new Date();
+
+                var dateBox = new Konva.Rect({
+                    x: stage.getWidth() / 2 - 2 * boxWidth,
+                    y: stage.getHeight() / 2 - boxHeight / 2,
+                    width: boxWidth,
+                    height: boxHeight,
+                    fill: 'black',
+                    stroke: 'white',
+                    strokeWidth: 1
+                });
+
+                var dateText = new Konva.Text({
+                    x: stage.getWidth() / 2 - 2 * boxWidth,
+                    y: stage.getHeight() / 2 - boxHeight / 4,
+                    text: date.getMonth() + "/" + date.getDate() + "/" + date.getYear(),
+                    fontSize: 22,
+                    fontFamily: 'Calibri',
+                    fill: '#fff',
+                    height: boxHeight,
+                    width: boxWidth,
+                    padding: 0,
+                    align: 'center'
+                });
+
+                dateGroup.add(dateBox);
+                dateGroup.add(dateText);
+
+
+                var timeGroup = new Konva.Group();
+
+                var timeBox = new Konva.Rect({
+                    x: stage.getWidth() / 2 + boxWidth,
+                    y: stage.getHeight() / 2 - boxHeight / 2,
+                    width: boxWidth,
+                    height: boxHeight,
+                    fill: 'black',
+                    stroke: 'white',
+                    strokeWidth: 1
+                });
+
+                var timeText = new Konva.Text({
+                    x: stage.getWidth() / 2 + boxWidth,
+                    y: stage.getHeight() / 2 - boxHeight / 4,
+                    text: 'Current Time',
+                    fontSize: 22,
+                    fontFamily: 'Calibri',
+                    fill: '#fff',
+                    height: boxHeight,
+                    width: boxWidth,
+                    padding: 0,
+                    align: 'center'
+                });
+
+                timeGroup.add(timeBox);
+                timeGroup.add(timeText);
+
+
+
+                var secondHand = new Konva.Rect({
+                    x: stage.getWidth() / 2,
+                    y: stage.getHeight() / 2,
+                    width: boxHeight / 10,
+                    height: clockRadius - clockRadius / 6,
+                    fill: 'white',
+                    offset: {
+                        x: boxHeight / 12,
+                        y: 0
+                    }
+                });
+
+
+                // add the shape to the layer
+                layer.add(circle);
+                layer.add(dateGroup);
+                layer.add(timeGroup);
+                layer.add(secondHand);
+
+                // add the layer to the stage
+                stage.add(layer);
+
+
+
+                var anim = new Konva.Animation(function (frame) {
+                    var time = frame.time;
+                    var timeDiff = frame.timeDiff;
+                    var frameRate = frame.frameRate;
+
+                    var now = new Date();
+                    var second = now.getSeconds();
+
+                    // update stuff
+                    var angularSpeed = 6;
+                    var angleDiff = timeDiff * angularSpeed / 1000;
+                    secondHand.rotate(angleDiff);
+
+                    timeText.setText(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds());
+                }, layer);
+
+
+                anim.start();
+
+
+            })();
+
+        }); </script>
+</head>
+
+<body>
+    <div id="container"></div>
+</body>
+
+</html>

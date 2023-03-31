@@ -23,26 +23,8 @@ $transition-duration: 0.3s;
     transform: scale3d(0.3, 0.3, 0.3);
 }
 
-.tab-reverse-transition-leave-to {
-    transform: translateX(-100%);
-}
-
-
-.tab-reverse-transition-leave-active {
-    position: absolute;
-}
-
-.tab-reverse-transition-enter-active {
-    transform: translatex(100%);
-}
-
-.tab-reverse-transition-enter-to {
-    transform: translateX(0);
-}
-
-
 .tab-transition-leave-to {
-    transform: translateX(100%);
+    transform: translateX(-100%);
 }
 
 
@@ -51,9 +33,27 @@ $transition-duration: 0.3s;
 }
 
 .tab-transition-enter-active {
-    transform: translatex(-100%);
+    transform: translatex(100%);
 }
 
 .tab-transition-enter-to {
+    transform: translateX(0);
+}
+
+
+.tab-reverse-transition-leave-to {
+    transform: translateX(100%);
+}
+
+
+.tab-reverse-transition-leave-active {
+    position: absolute;
+}
+
+.tab-reverse-transition-enter-active {
+    transform: translatex(-100%);
+}
+
+.tab-reverse-transition-enter-to {
     transform: translateX(0);
 }

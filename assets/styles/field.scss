@@ -17,6 +17,78 @@
         }
     }
 
+    &__line {
+        --v-field-border-width: 1px;
+        --v-field-border-opacity: 0.38;
+        align-items: stretch;
+        contain: layout;
+        display: flex;
+        height: 100%;
+        left: 0px;
+        pointer-events: none;
+        position: absolute;
+        right: 0px;
+        width: 100%;
+        z-index: 9;
+
+        &:before {
+            opacity: var(--v-field-border-opacity);
+            content: "";
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            border-style: solid;
+            border-width: 0 0 var(--v-field-border-width);
+            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1) 0s;
+        }
+
+        &::after {
+            transform: scaleX(0);
+            content: "";
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            border-color: currentcolor;
+            border-style: solid;
+            border-width: 0px 0px 2px;
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0s;
+        }
+    }
+
+    &--is-hovered,
+    &--is-focused {
+        .e-field__overlay {
+            opacity: 0.08;
+        }
+    }
+
+    &--is-focused {
+        .e-field__line {
+            opacity: 1;
+
+            &:after {
+                transform: scaleX(1);
+            }
+        }
+    }
+
+    &__overlay {
+        background-color: currentcolor;
+        opacity: 0.04;
+        pointer-events: none;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1) 0s;
+    }
+
     &__suffix,
     &__prefix {
         font-weight: 700;
@@ -93,7 +165,6 @@
     }
 
     &--selection-controls {
-        margin-top: 16px;
         padding-top: 4px;
 
         .e-radio,
@@ -108,14 +179,20 @@
         &__ripple {
             border-radius: 50%;
             cursor: pointer;
-            height: 34px;
+            height: 40px;
             position: absolute;
             overflow: hidden;
             transition: inherit;
-            width: 34px;
-            left: -12px;
-            top: calc(50% - 24px);
-            margin: 7px;
+            width: 40px;
+            left: 0;
+            top: 0;
+            margin: 0;
+            transform: translate(-8px, -8px);
+            transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+
+            &.v-ripple-element {
+                position: absolute;
+            }
 
             &:before,
             &:after {
@@ -123,32 +200,13 @@
                 bottom: 0;
                 content: '';
                 position: absolute;
-                opacity: 0.2;
+                opacity: 0.1;
                 left: 0;
                 right: 0;
                 top: 0;
                 transform-origin: center center;
                 transform: scale(0.2);
                 transition: inherit;
-            }
-
-            &:focus {
-                outline: unset;
-
-                &:after {
-                    background: currentColor;
-                    transform: scale(1.2);
-                    transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
-                    transition-property: transform;
-                }
-            }
-
-            &:active {
-
-                &:after {
-                    transform: scale(0.2);
-                    transition: none;
-                }
             }
         }
 
@@ -199,11 +257,11 @@
                 }
             }
 
-            &:hover {
+            &:hover,
+            &[data-focused="true"] {
                 .e-field--selection-controls__ripple:before {
                     background: currentColor;
                     transform: scale(1.2);
-                    transition: none;
                 }
             }
 
@@ -229,12 +287,13 @@
         height: auto;
         flex-grow: 1;
         flex-wrap: wrap;
+        position: relative;
         min-width: 0;
         width: 100%;
     }
 
     &__slot {
-        background-color: white;
+        // background-color: white;
         max-width: 100%;
         align-items: center;
         color: inherit;
