@@ -5,9 +5,10 @@
             <div role="button" aria-expanded="false" class="e-field__slot">
                 <div v-if="prependIcon" class="e-field__prepend-inner" @click="handleClickPrependIcon">
                     <div class="e-field__icon e-field__icon--prepend-inner">
-                        <i aria-hidden="true" class="e-icon e-icon--size-default" :class="prependIcon"></i>
+                        <EIcon :name="prependIcon" />
                     </div>
                 </div>
+                <div class="e-field__overlay"></div>
                 <div class="e-select__slot e-field__field" @click="handleSelectSlotCLick" @mouseenter="handleHover(true)"
                     @mouseleave="handleHover(false)">
                     <label :for="id" :class="[textColor, 'e-label']" :style="labelStyle">
@@ -49,6 +50,7 @@
                         <EIcon :name="appendIcon" />
                     </div>
                 </div>
+                <div v-if="!outlined" class="e-field__line"></div>
                 <div class="e-menu" @click="closeMenu">
                     <transition name="fade">
                         <div v-show="opened" class="e-menu__content">

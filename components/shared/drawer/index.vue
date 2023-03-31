@@ -15,6 +15,7 @@ export interface Props {
   modelValue?: boolean
   absolute?: boolean
   disabled?: boolean
+  fixed?: boolean
   nav?: boolean
   right?: boolean
   width?: string | number
@@ -28,6 +29,7 @@ let overlayNode: HTMLElement | null = null;
 const availableRootClasses: Record<DrawerClassKeys, string> = {
   disabled: 'e-drawer--disabled',
   right: 'e-drawer--right',
+  fixed: 'e-drawer--fixed',
   modelValue: 'e-drawer--open',
 };
 

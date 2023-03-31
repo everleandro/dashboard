@@ -17,7 +17,7 @@
             </EMenu>
         </e-bar>
 
-        <EDrawer v-model="drawerModel" nav class="secondary">
+        <EDrawer v-model="drawerModel" fixed nav class="secondary">
             <div class="nav__header primary"></div>
             <div class="nav__body">
                 <e-button v-for="({ icon, text, to }, index) in drawerLinks" stacked :key="index" :to="to"

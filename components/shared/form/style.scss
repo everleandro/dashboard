@@ -4,9 +4,6 @@
     flex-wrap: wrap;
     flex: 1 1 auto;
 
-    .e-field__slot {
-        background-color: white;
-    }
 
     &>.e-field {
         @include grid-generator();
@@ -24,12 +21,20 @@
             flex: 0 0 100%;
             max-width: 100%;
         }
+
+        .e-field__slot {
+            background-color: white;
+        }
     }
 
     &--outlined {
 
         .e-field {
             @include e-field-outlined;
+
+            .e-field__line {
+                display: none;
+            }
         }
 
         &.e-form--disabled {

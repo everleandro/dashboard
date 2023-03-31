@@ -1,6 +1,7 @@
 <template>
     <div :class="cardClass" :style="cardStyle">
         <slot> </slot>
+        <slot name="footer"> </slot>
     </div>
 </template>
 <script lang="ts" setup>

@@ -1,7 +1,7 @@
 
 <template>
-    <div :class="radioClass" @click="changeModelValue()">
-        <div class="e-field--selection-controls__field">
+    <div :class="radioClass" @click="changeModelValue(true)">
+        <div :class="['e-field--selection-controls__field']" :data-focused="controlFocused">
             <span aria-hidden="true" class="e-icon" :class="radioColor"><svg xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24" role="img" aria-hidden="true" class="e-icon__svg">
                     <path v-if="active"
@@ -12,9 +12,10 @@
                     </path>
                 </svg>
             </span>
-            <input :aria-checked="active" :id="id" tabindex="-1" role="radio" type="radio" :name="id" :value="modelValue" />
-            <div :class="['e-field--selection-controls__ripple', radioColor]" tabindex="-1" @focus="handleFocus"
-                @blur="handleBlur">
+            <input ref="input" :aria-checked="active" :id="id" role="radio" type="radio" :name="id" :value="modelValue"
+                @input="changeModelValue()" @focus="handleFocus" @blur="handleBlur" />
+
+            <div v-ripple :class="['e-field--selection-controls__ripple', radioColor]">
             </div>
         </div>
         <label :class="[textColor, 'e-label']" :for="id" :labelStyle="labelStyle">
@@ -29,12 +30,12 @@ export default { name: 'Radio' }
 <script lang="ts" setup>
 import { radioType, RadioGroup } from "@/components/shared/form/types"
 
-
 export interface Props {
     disabled?: boolean; readonly?: boolean; label?: string | number;
     modelValue: radioType; color?: string; labelMinWidth?: string;
 }
-
+const controlFocused = ref(false)
+const input = ref<HTMLInputElement>()
 const { fieldClass, id, textColor, labelStyle, setConfiguration, configuration } = useField(false)
 
 const radioGroup = inject<Partial<RadioGroup> | undefined>("ERadioGroup", undefined);
@@ -48,29 +49,23 @@ const radioColor = computed(() => {
     return textColor.value || color ? `${color}--text` : ''
 })
 
-const addSpaceListener = () => document.addEventListener('keyup', evt => (evt.code === 'Space') && changeModelValue())
-
-const removeSpaceListener = () => document.removeEventListener('keyup', addSpaceListener)
-
 const active = computed(() => radioGroup?.modelValue?.value === props.modelValue)
 
-const changeModelValue = (): void => {
+const changeModelValue = (forceFocus = false): void => {
+    forceFocus && input.value?.focus();
     radioGroup?.changeModelValue?.(props.modelValue)
 }
 
 const handleFocus = (evt: FocusEvent): void => {
-    addSpaceListener()
+    controlFocused.value = true
     radioGroup?.handleFocus?.(evt)
 }
 
 const handleBlur = (evt: FocusEvent): void => {
-    removeSpaceListener()
+    controlFocused.value = false
     radioGroup?.handleBlur?.(evt)
 }
 
-onUnmounted(() => {
-    removeSpaceListener()
-})
 const uid = getCurrentInstance()?.uid;
 
 onMounted(() => {

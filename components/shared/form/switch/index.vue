@@ -2,16 +2,15 @@
     <div :class="swithcClass" @mouseenter="handleHover(true)" @mouseleave="handleHover(false)">
         <div class="e-field__control">
             <div class="e-field__slot" @click="change">
+                <div class="e-field__overlay"></div>
                 <label :class="[textColor, 'e-label']" :style="labelStyle">
                     <slot name="label"> {{ label }} </slot>
                 </label>
-                <div :class="['e-field--selection-controls__field', switchColor]">
+                <div :class="['e-field--selection-controls__field', switchColor]" :data-focused="focused">
                     <input :value="modelValue" :aria-checked="active" :id="id" role="switch" type="checkbox"
                         aria-disabled="false" @focus="handleFocus" @blur="handleBlur" />
-                    <div :class="['e-field--selection-controls__ripple', switchColor]" tabindex="0"></div>
-                    <div class="e-field-switch__track">
-
-                    </div>
+                    <div :class="['e-field--selection-controls__ripple', switchColor]"></div>
+                    <div :class="['e-field-switch__track', switchColor]"></div>
                     <div class="e-field-switch__thumb">
                         <div v-show="loading" role="progressbar" aria-valuemin="0" aria-valuemax="100"
                             class="e-progress-circular e-progress-circular--visible e-progress-circular--indeterminate"
@@ -26,6 +25,7 @@
                         </div>
                     </div>
                 </div>
+                <div v-if="!outlined" class="e-field__line"></div>
             </div>
             <EDetails :details="details" :textColor="textColor" :showDetails="showDetails" />
         </div>
@@ -45,7 +45,7 @@ export interface Props {
 }
 const props = withDefaults(defineProps<Props>(), { falseValue: false, trueValue: true })
 
-const { fieldClass, id, showDetails, textColor, configuration, details, labelStyle,
+const { fieldClass, id, showDetails, textColor, configuration, details, labelStyle, focused,
     handleHover, handleBlur, handleFocus } = useField()
 
 const emit = defineEmits<{

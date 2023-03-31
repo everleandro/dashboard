@@ -6,11 +6,11 @@ export const drawerLinks = [
         text: 'dashboard',
         to: '/'
     },
-    // {
-    //     icon: iconFactory.staff,
-    //     text: 'staff',
-    //     to: '/staff'
-    // },
+    {
+        icon: iconFactory.staff,
+        text: 'staff',
+        to: '/staff'
+    },
     // {
     //     icon: iconFactory.events,
     //     text: 'eventos',

@@ -1,13 +1,15 @@
 <template>
     <div :class="radioGroupClass" @mouseenter="handleHover(true)" @mouseleave="handleHover(false)">
         <div class="e-field__control">
-            <div class="e-field__slot">
+            <div class="e-field__slot ">
+                <div class="e-field__overlay"></div>
                 <label :class="[textColor, 'e-label']" :style="labelStyle">
                     <slot name="label"> {{ label }} </slot>
                 </label>
                 <div role="radiogroup" :aria-labelledby="id" class="e-field--radio-group__field">
                     <slot></slot>
                 </div>
+                <div v-if="!outlined" class="e-field__line"></div>
             </div>
             <EDetails :details="details" :modelValue="modelValue" :textColor="textColor" :showDetails="showDetails">
             </EDetails>
