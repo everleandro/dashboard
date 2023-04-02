@@ -2,8 +2,8 @@
     <div>
         <EBar depressed>
             <div>
-                <h1>Empleados</h1>
-                <p>12 clientes</p>
+                <h1>Horario</h1>
+                
             </div>
 
             <ESpacer></ESpacer>
