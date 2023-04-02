@@ -1,6 +1,7 @@
 <template>
     <div :class="checkboxClass" @mouseenter="handleHover(true)" @mouseleave="handleHover(false)">
         <div class="e-field__control">
+            <div class="e-field__overlay"></div>
             <div class="e-field__slot">
                 <div :class="['e-field--selection-controls__field']" :data-focused="controlFocused">
                     <span aria-hidden="true" class="e-icon" :class="checkboxColor"><svg xmlns="http://www.w3.org/2000/svg"
@@ -16,7 +17,8 @@
 
                     <input ref="input" :aria-checked="checked" :id="id" role="checkbox" type="checkbox" @input="change"
                         :value="checked" @focus="handleCheckboxFocus" @blur="handleCheckboxBlur" />
-                    <div v-ripple class="e-field--selection-controls__ripple" :class="checkboxColor" @click="change"></div>
+                    <div v-ripple="{ center: true }" class="e-field--selection-controls__ripple" :class="checkboxColor"
+                        @click="change"></div>
                 </div>
                 <label :class="[textColor, 'e-label']" :for="id">
                     <slot name="label"> {{ label }} </slot>
@@ -44,7 +46,7 @@ const emit = defineEmits<{
 }>()
 
 const checkboxClass = computed(() => {
-    return [...fieldClass.value, ' e-field--selection-controls', 'e-field--checkbox', ...gridClass.value]
+    return [...fieldClass.value, ' e-field--selection-controls', 'e-checkbox-field', ...gridClass.value]
 })
 
 const { fieldClass, id, showDetails, textColor, details, handleHover, handleBlur, handleFocus, configuration } = useField()

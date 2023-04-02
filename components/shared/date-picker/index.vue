@@ -19,7 +19,8 @@
         <div class="e-date-picker-header">
           <slot name="header" :prev="prevButtonAction" :next="nextButtonAction" :change-view-mode="changeViewMode"
             :page-date="store.pageDate">
-            <EButton :icon="$icon.pickerIconPrev" aria-label="Previous month" x-small @click="prevButtonAction()" />
+            <EButton :icon="iconPrev || $icon?.pickerIconPrev" aria-label="Previous month" x-small
+              @click="prevButtonAction()" />
 
             <div class="e-date-picker-header__value">
               <transition :name="store.globalContentAnimation">
@@ -31,7 +32,8 @@
               </transition>
             </div>
 
-            <EButton :icon="$icon.pickerIconNext" aria-label="Previous month" x-small @click="nextButtonAction()" />
+            <EButton :icon="iconNext || $icon?.pickerIconNext" aria-label="Previous month" x-small
+              @click="nextButtonAction()" />
           </slot>
         </div>
 
@@ -75,10 +77,10 @@ import { Lng as Lnguage, suportedLng } from '@/locales/index';
 import { DatesConfiguration, datePickerViewType, Day, Month } from "./types"
 import UtilDate from '@/models/date';
 import { EDIalog } from '@/components/shared/dialog/types';
+import { ContainerMenuInterface } from '@/components/shared/menu/types';
 
 export interface Props {
   landscape?: boolean
-  closeOnDateChange?: boolean
   color?: string
   noTitle?: boolean
   closeOnChange?: boolean
@@ -86,6 +88,8 @@ export interface Props {
   weekStart?: number
   format?: string
   lng?: suportedLng
+  iconPrev?: string
+  iconNext?: string
   disabled?: DatesConfiguration
   highlighted?: DatesConfiguration
   view?: datePickerViewType
@@ -94,8 +98,10 @@ export interface Props {
 const textColor = computed(() => {
   return `${props.color}--text`
 })
+const { $icon } = useNuxtApp() || {}
 
 const dialog = inject<EDIalog | undefined>("EDialog", undefined);
+const menuContainer = inject<ContainerMenuInterface | undefined>("EMenuContainer", undefined);
 
 const props = withDefaults(defineProps<Props>(), {
   color: 'primary',
@@ -144,7 +150,10 @@ const changeView = (value: datePickerViewType) => {
 const changeValue = (value: UtilDate) => {
   updatePageConfiguration(value);
   if (props.closeOnChange) {
-    setTimeout(() => dialog?.close(true), 300)
+    setTimeout(() => {
+      dialog?.close(true)
+      menuContainer?.closeMenu()
+    }, 400)
   }
   emit('update:modelValue', value.date);
 }
@@ -303,23 +312,6 @@ const isHighlightEnd = (date: Date): boolean => {
   );
 }
 
-watch(() => store.valueTimestamp, (newTimestamp: number, oldTimestamp: number) => {
-  if (
-    newTimestamp !== oldTimestamp &&
-    isIntoMenuContainer.value &&
-    props.closeOnDateChange
-  ) {
-    setTimeout(() => {
-      console.log(getCurrentInstance())
-      // (this.$parent as ContainerMenuClass).closeMenu();
-    }, 200);
-  }
-})
-
-
-const isIntoMenuContainer = computed((): boolean => {
-  return false;
-})
 
 onMounted(() => {
   store.pageDate = props.modelValue ? new Date(props.modelValue) : new Date();

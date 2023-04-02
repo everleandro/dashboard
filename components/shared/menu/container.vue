@@ -117,5 +117,8 @@ const updatemenuContentStyle = (): void => {
 
 
 defineExpose({ openMenu, destroyComponent })
+provide("EMenuContainer", {
+    closeMenu
+});
 
 </script>

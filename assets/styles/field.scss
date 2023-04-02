@@ -9,6 +9,7 @@
 
     label {
         color: var(--label);
+        white-space: nowrap;
     }
 
     &--dense {
@@ -29,7 +30,6 @@
         position: absolute;
         right: 0px;
         width: 100%;
-        z-index: 9;
 
         &:before {
             opacity: var(--v-field-border-opacity);

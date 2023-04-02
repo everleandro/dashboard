@@ -20,7 +20,6 @@
         <EDialog v-model="store.dialogBirthDate" maxWidth="290" :persistent="!identificativeData.birthDate">
             <EDatePicker v-model="identificativeData.birthDate" close-on-change />
         </EDialog>
-        <!-- <ETimePicker /> -->
         <EExpansion header-title="Datos Identificativos">
             <EExpansionContent>
                 <EForm ref="identificativeDataForm" v-model="identificativeData.formValid" :disabled="store.savingProfile"
@@ -61,7 +60,12 @@
         <EExpansion header-title="Permisos de Empleado">
             <EExpansionContent>
                 <EForm ref="permissionsForm" v-model="permissionsData.formValid" :disabled="store.savingProfile">
-                    <ECheckbox v-model="permissionsData.schedule" label="Ver Horarios" />
+                    <ECheckbox v-model="permissionsData.pSchedule" md="12" lg="6" label="Ver Horarios" />
+                    <ECheckbox v-model="permissionsData.pCustomer" md="12" lg="6" label="Gestionar Clientes" />
+                    <ECheckbox v-model="permissionsData.pProviders" md="12" lg="6" label="Gestionar Proveedores" />
+                    <ECheckbox v-model="permissionsData.pBooking" md="12" lg="6" label="Gestionar Reservas" />
+                    <ECheckbox v-model="permissionsData.pAccounting" md="12" lg="6" label="Gestionar Contabilidad" />
+                    <ECheckbox v-model="permissionsData.pAccounting" md="12" label="Gestionar Productos/servicios" />
                 </EForm>
             </EExpansionContent>
         </EExpansion>
@@ -72,8 +76,6 @@ import UtilDate from '@/models/date'
 const { _email, _required } = useRules()
 
 const editionEnabled: Ref<boolean> = ref<boolean>(true)
-
-
 
 const store = reactive({
     savingProfile: false,
@@ -94,7 +96,9 @@ const identificativeData = reactive({
 
 const permissionsForm = ref()
 const permissionsData = reactive({
-    schedule: false, formValid: true,
+    formValid: true, pSchedule: false,
+    pCustomer: true, pProviders: false,
+    pBooking: false, pAccounting: false,
 })
 
 const profileValid = computed(() => {

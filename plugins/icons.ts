@@ -2,6 +2,7 @@
 export const iconFactory: Record<string, string> = {
     accountCheck: "account-check",
     accountEdit: "account-edit",
+    accountCancel: "account-cancel",
     arrowUp: "chevron-up",
     arrowRight: "chevron-right",
     arrowLeft: "chevron-left",
@@ -10,6 +11,7 @@ export const iconFactory: Record<string, string> = {
     ads: "ads",
     booking: "booking",
     card: "card",
+    calendar: "calendar",
     customerInfo: "customer-info",
     checking: "checking",
     clear: "close",
@@ -18,6 +20,7 @@ export const iconFactory: Record<string, string> = {
     dashboard: "dashboard",
     dotsVertical: "dots-vertical",
     events: "events",
+    email: "email",
     pencil: "pencil",
     grid: "grid",
     holidays: "holidays",

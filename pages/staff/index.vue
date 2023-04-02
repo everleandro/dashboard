@@ -3,7 +3,7 @@
         <EBar depressed>
             <div>
                 <h1>Empleados</h1>
-                <p>12 clientes</p>
+                <p>12 empleados</p>
             </div>
 
             <ESpacer></ESpacer>
@@ -43,7 +43,7 @@
                             <e-list-item :prepend-icon="$icon.accountEdit" @click:item="goToCustomerDetail(1)">
                                 editar
                             </e-list-item>
-                            <e-list-item :prepend-icon="$icon.customer">
+                            <e-list-item :prepend-icon="$icon.accountCancel">
                                 Desactivar
                             </e-list-item>
                         </e-list>

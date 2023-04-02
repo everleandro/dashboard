@@ -37,10 +37,10 @@
                             <EButton v-bind="attrs" :icon="$icon.dotsVertical" />
                         </template>
                         <e-list color="primary" dense>
-                            <e-list-item :prepend-icon="$icon.accountEdit" @click:item="goToCustomerDetail(1)">
+                            <e-list-item :prepend-icon="$icon.accountEdit" to="/1">
                                 editar
                             </e-list-item>
-                            <e-list-item :prepend-icon="$icon.customer">
+                            <e-list-item :prepend-icon="$icon.accountCancel">
                                 Desactivar
                             </e-list-item>
                         </e-list>
