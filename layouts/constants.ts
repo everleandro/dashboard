@@ -21,11 +21,11 @@ export const drawerLinks = [
     //     text: 'sesiones',
     //     to: '/sessions'
     // },
-    // {
-    //     icon: iconFactory.schedule,
-    //     text: 'Horarios',
-    //     to: '/schedule'
-    // },
+    {
+        icon: iconFactory.schedule,
+        text: 'Horarios',
+        to: '/schedule'
+    },
     // {
     //     icon: iconFactory.booking,
     //     text: 'reservas',

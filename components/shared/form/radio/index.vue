@@ -15,7 +15,7 @@
             <input ref="input" :aria-checked="active" :id="id" role="radio" type="radio" :name="id" :value="modelValue"
                 @input="changeModelValue()" @focus="handleFocus" @blur="handleBlur" />
 
-            <div v-ripple :class="['e-field--selection-controls__ripple', radioColor]">
+            <div v-ripple="{ center: true }" :class="['e-field--selection-controls__ripple', radioColor]">
             </div>
         </div>
         <label :class="[textColor, 'e-label']" :for="id" :labelStyle="labelStyle">

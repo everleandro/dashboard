@@ -35,12 +35,18 @@
     }
 
     &--is-open {
-        z-index: 2;
+        &.e-field {
+            z-index: 3;
+        }
 
         .e-field__icon.e-field__icon--append {
             .e-icon.flip-icon {
                 transform: rotate(180deg);
             }
+        }
+
+        .e-field__line {
+            z-index: 9;
         }
     }
 

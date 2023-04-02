@@ -11,6 +11,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-send-email:before {
+  content: "\e910";
+}
+
+.icon-email:before {
+  content: "\e911";
+}
+
+.icon-account-cancel:before {
+  content: "\e912";
+}
+
 .icon-wallet:before {
   content: "\e90f";
 }
@@ -107,12 +119,12 @@
   content: "\e968";
 }
 
-.icon-list:before {
-  content: "\e9c8";
+.icon-calendar:before {
+  content: "\e9be";
 }
 
-.icon-send-email:before {
-  content: "\e9cf";
+.icon-list:before {
+  content: "\e9c8";
 }
 
 .icon-maintenance:before {

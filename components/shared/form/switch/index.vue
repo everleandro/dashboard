@@ -25,7 +25,6 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="!outlined" class="e-field__line"></div>
             </div>
             <EDetails :details="details" :textColor="textColor" :showDetails="showDetails" />
         </div>

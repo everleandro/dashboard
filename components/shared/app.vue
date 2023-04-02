@@ -20,7 +20,6 @@ const props = withDefaults(defineProps<Props>(), { theme: 'light' })
     min-height: 100vh;
     max-width: 100%;
     position: relative;
-    background-color: #f0f0f0;
 }
 </style>
   
