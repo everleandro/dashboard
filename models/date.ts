@@ -166,6 +166,8 @@ export default class UtilDate {
         const year = this.date.getFullYear()
         const month = this.date.getMonth() + 1
         const day = this.date.getDate()
+        const hours = this.date.getHours()
+        const minutes = this.date.getMinutes()
 
         return format
             .replace(/week-dddd/, this.weekdayName)
@@ -173,6 +175,10 @@ export default class UtilDate {
             .replace(/week-dd/, this.weekdaysMinName)
             .replace(/month-DD/, ('0' + day).slice(-2))
             .replace(/month-D/, `${day}`)
+            .replace(/hour-hh/, ('0' + hours).slice(-2))
+            .replace(/hour-h/, `${hours}`)
+            .replace(/minutes-mm/, ('0' + minutes).slice(-2))
+            .replace(/minutes-m/, `${minutes}`)
             .replace(/year-YYYY/, `${year}`)
             .replace(/year-YY/, String(year).slice(2))
             .replace(/month-mmmm/, this.monthName)

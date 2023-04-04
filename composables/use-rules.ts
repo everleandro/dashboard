@@ -1,7 +1,8 @@
 
 export default function () {
     const _required = (val: any) => {
-        return !!val || val === 0 || 'Este campo es requerido';
+        const valid = Array.isArray(val) ? val.length !== 0 : (!!val || val === 0)
+        return valid || 'Este campo es requerido';
     }
 
     const _email = (value: string) => {

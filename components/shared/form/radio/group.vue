@@ -17,16 +17,13 @@
     </div>
 </template>
   
-<script lang="ts">
-export default { name: 'RadioGroup' }
-</script>
 <script lang="ts" setup>
 import { Radio } from "@/components/shared/form/types"
 import { radioType } from "@/components/shared/form/types"
 
 export interface Props {
     mandatory?: boolean, modelValue: radioType, row?: boolean, label?: string,
-    labelMinWidth?: string, disabled?: boolean, color?: string,
+    labelMinWidth?: string, disabled?: boolean, color?: string, retainColor?: boolean;
     readonly?: boolean, outlined?: boolean, dense?: boolean; inputReadonly?: boolean
     labelInline?: boolean; detail?: string; detailErrors?: Array<string>;
     detailsOnMessageOnly?: boolean; rules?: Array<(param: any) => string | boolean>;

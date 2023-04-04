@@ -1,5 +1,5 @@
 <template>
-    <form ref="form" :class="formClass">
+    <form ref="form" :class="formClass" @submit="submit">
         <slot></slot>
     </form>
 </template>
@@ -19,6 +19,7 @@ export interface Props {
     noGutters?: boolean
     outlined?: boolean
     disabled?: boolean
+    retainColor?: boolean
     labelMinWidth?: string
     color?: string
 }
@@ -29,6 +30,7 @@ const form = ref()
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void
+    (e: 'submit', value: SubmitEvent): void
 }>()
 
 const state = reactive({
@@ -53,6 +55,10 @@ watch(() => state.fieldsChildError, (val: Array<boolean>) => {
 onMounted(() => {
     setConfiguration()
 })
+const submit = (event: Event): void => {
+    event.preventDefault()
+    emit('submit', event as SubmitEvent)
+}
 
 const bindField = (component: Field) => {
     state.fieldsChild.push(component);
@@ -91,16 +97,20 @@ const reset = (): void => {
     });
 }
 
+watch(() => props.color, () => setConfiguration())
+watch(() => props.retainColor, () => setConfiguration())
+
 const setConfiguration = (): void => {
     state.fieldsChild.forEach((vueComponent) => {
         const configuration: Record<string, any> = {}
         props.labelMinWidth && (configuration.labelStyle = { minWidth: `${props.labelMinWidth}px` })
         props.color && (configuration.color = props.color)
+        props.retainColor && (configuration.retainColor = props.retainColor)
         vueComponent.setConfiguration?.(configuration);
     });
 }
 
-const validate = (): boolean => {
+const validate = async (): Promise<boolean> => {
     let valid = true;
     state.fieldsChild.forEach((vueComponent) => {
         if (!vueComponent.validate?.()) {
@@ -108,6 +118,7 @@ const validate = (): boolean => {
             valid = false
         }
     });
+    await nextTick()
     return valid
 }
 

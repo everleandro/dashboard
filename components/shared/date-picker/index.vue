@@ -76,7 +76,7 @@
 import { Lng as Lnguage, suportedLng } from '@/locales/index';
 import { DatesConfiguration, datePickerViewType, Day, Month } from "./types"
 import UtilDate from '@/models/date';
-import { EDIalog } from '@/components/shared/dialog/types';
+import { EDIalog } from '@/components/shared/dialog/index.vue';
 import { ContainerMenuInterface } from '@/components/shared/menu/types';
 
 export interface Props {

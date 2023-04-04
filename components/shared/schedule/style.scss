@@ -108,6 +108,7 @@
     }
 
     &__header {
+        color: var(--label);
 
         &[role='cell'] {
             height: 10px;

@@ -36,7 +36,7 @@
 export interface Props {
     disabled?: boolean; dense?: boolean; readonly?: boolean; color?: string; loading?: boolean
     labelInline?: boolean; detail?: string; outlined?: boolean; label?: string | number;
-    detailErrors?: Array<string>; detailsOnMessageOnly?: boolean; appendIcon?: string;
+    detailErrors?: Array<string>; detailsOnMessageOnly?: boolean; appendIcon?: string; retainColor?: boolean;
     labelMinWidth?: string; prependIcon?: string; rules?: Array<(param: any) => string | boolean>;
     cols?: string | number; xs?: string | number; sm?: string | number; md?: string | number;
     lg?: string | number; xl?: string | number; modelValue: string | number | boolean;

@@ -9,7 +9,7 @@
 </template>
   
 <script lang="ts" setup>
-import { DrawerClassKeys } from './types';
+export type DrawerClassKeys = 'disabled' | 'right' | 'modelValue' | 'fixed'
 
 export interface Props {
   modelValue?: boolean

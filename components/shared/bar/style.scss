@@ -4,7 +4,6 @@ $e-bar-padding-y: 4px;
 .e-bar {
     flex-grow: 1;
     display: block;
-    z-index: 10;
     box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%),
         0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
     contain: layout;
@@ -15,6 +14,7 @@ $e-bar-padding-y: 4px;
     margin-bottom: $space-base * 4;
     right: 0;
     left: 0;
+    position: relative;
 
     &--outlined,
     &--depressed {
@@ -25,7 +25,7 @@ $e-bar-padding-y: 4px;
         align-items: center;
         display: flex;
         position: relative;
-        z-index: 0;
+        z-index: 1;
         height: 100%;
         flex-wrap: wrap;
     }

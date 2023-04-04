@@ -11,15 +11,17 @@ export interface Field {
 export interface Form {
     bindField: (component: Partial<Field>) => void
     unbindField: (uid: number) => void
+    validate: () => Promise<boolean>
+    reset: () => void
     updateField: (component: Partial<Field>) => void
 }
-export type radioType = string | number | undefined | null;
+
+
 
 export interface Radio {
     uid: number,
     modelValue: radioType,
     setConfiguration: (value: Record<string, string>) => void
-
 }
 
 export interface RadioGroup {
@@ -30,3 +32,6 @@ export interface RadioGroup {
     handleBlur: (value?: Event) => void
     modelValue: ComputedRef<radioType>
 }
+
+export type radioType = string | number | undefined | null;
+export type classKey = 'disabled' | 'readonly' | 'hasError' | 'outlined' | 'focused' | 'labelInline' | 'hovered' | 'dense'

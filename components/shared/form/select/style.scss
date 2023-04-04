@@ -63,6 +63,7 @@
     &__selections {
         color: rgba(0, 0, 0, 0.87);
         min-height: 10px;
+        align-self: center;
         align-items: center;
         display: flex;
         flex: 1 1;
@@ -86,6 +87,36 @@
             max-width: 0;
             pointer-events: none;
             position: absolute;
+        }
+    }
+
+    &--multiple {
+        .e-select__selection {
+            flex: unset;
+            padding: 4px 0 4px 8px;
+            display: block;
+        }
+
+        .e-field__slot {
+            height: unset;
+            min-height: 48px;
+            align-items: unset;
+        }
+
+        .e-select__selections {
+            padding: 4px 0;
+            height: 100%;
+        }
+    }
+
+    &--columns-variant {
+        .e-list {
+            display: flex;
+            flex-wrap: wrap;
+
+            &-item {
+                flex: 1 1 var(--list-item-percent);
+            }
         }
     }
 

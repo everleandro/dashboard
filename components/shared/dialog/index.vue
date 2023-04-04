@@ -1,5 +1,16 @@
 
-<template src="./template.html"></template>
+<template>
+    <transition name="fade">
+        <div v-show="store.active" role="dialog" aria-modal="true" class="e-dialog__content" tabindex="0"
+            @click.self="close()">
+            <transition name="scale">
+                <div v-show="store.active" :class="dialogClass" :style="style">
+                    <slot></slot>
+                </div>
+            </transition>
+        </div>
+    </transition>
+</template>
 <script lang="ts" setup>
 
 export interface Props {
@@ -7,6 +18,9 @@ export interface Props {
     modelValue?: boolean
     persistent?: boolean
     maxWidth?: string | number
+}
+export interface EDIalog {
+    close: (forece?: boolean) => void
 }
 
 const availableRootClasses = {
@@ -21,6 +35,7 @@ const store = reactive({
     animated: false,
     active: false
 })
+
 const emit = defineEmits<{
     (e: 'update:modelValue', value: boolean): void
 }>()
