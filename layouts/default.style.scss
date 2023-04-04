@@ -75,3 +75,9 @@
         }
     }
 }
+
+div.e-menu-container[data-notification-menu] {
+    z-index: 10;
+    position: fixed;
+
+}

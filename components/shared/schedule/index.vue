@@ -6,7 +6,7 @@
                 <span></span>
             </div>
             <div role="cell" v-for="(hour, hourIndex) in hourList" :key="hourIndex" class="e-schedule__hour">
-                <span :class="`${color}--text`">
+                <span>
                     <span class="hour-label e-vue-input--text">{{ hour }}</span>
                 </span>
             </div>
@@ -14,11 +14,12 @@
         <transition-group :name="local.globalContentAnimation">
             <div v-for="(data, colIndex) in headerLabels" :key="data.dayOfWeek + '-' + data.dayOfMonth" role="col">
                 <div role="cell" class="e-schedule__header">
-                    <span :class="`${color}--text`">
+                    <span>
                         <span data-day-of-week="true"> {{ data.dayOfWeek }}</span>
                         <EButton class="mt-1 e-schedule-btn--day" :color="color" :text="!data.today" depressed
-                            @click="handleHeaderLabelClick(data.date)">{{
-                                data.dayOfMonth }}</EButton>
+                            @click="handleHeaderLabelClick(data.date)">
+                            {{ data.dayOfMonth }}
+                        </EButton>
                     </span>
                 </div>
                 <div role="cell" v-for="(hour, hourIndex) in hourList" :key="hourIndex" class="e-schedule__event">
@@ -55,10 +56,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ScheduleEvent, Space, Mode, Point, EmptySlotEvent } from "./types"
+import { ScheduleEvent, Space, Mode, Point, SlotEvent } from "./types"
 import { Lng as Lnguage, suportedLng } from '@/locales/index';
 import UtilDate from '@/models/date';
-import { rollupVersion } from "vite";
 
 export interface Props {
     lng?: suportedLng; color?: string; stickyTopHeader?: string;
@@ -92,7 +92,7 @@ const modeDay = computed(() => props.mode == Mode.day)
 const emit = defineEmits<{
     (e: 'update:modelValue', value: Date): void,
     (e: 'update:mode', value: Mode): void,
-    (e: 'click:empty-slot', value: { data: EmptySlotEvent, nativeEvent: Event }): void,
+    (e: 'click:empty-slot', value: { data: SlotEvent, nativeEvent: Event }): void,
     (e: 'click:event', value: { data: ScheduleEvent, nativeEvent: Event }): void,
     (e: 'update:selected-space', value: Space | undefined): void,
 }>()
@@ -187,7 +187,7 @@ const secondsByDate = (date: Date): number => date.getSeconds() + date.getMinute
 
 const getEvent = ({ x, y }: Point) => local.events[x][y]
 
-const getEmptySlotData = ({ x, y }: Point): EmptySlotEvent => {
+const getEmptySlotData = ({ x, y }: Point): SlotEvent => {
     const timestamp = props.start + x * props.step;
 
     const startHours: number = Math.floor(timestamp / 60 / 60);
@@ -200,10 +200,10 @@ const getEmptySlotData = ({ x, y }: Point): EmptySlotEvent => {
         ? props.modelValue
         : new UtilDate(props.modelValue).add(y, 'days').date;
 
-    const startDate = new UtilDate(selectedDate)
+    const start = new UtilDate(selectedDate)
         .set(startHours, 'hours')
         .set(startMinutes, 'minutes').date;
-    const endDate = new UtilDate(selectedDate)
+    const end = new UtilDate(selectedDate)
         .set(endHours, 'hours')
         .set(endMinutes, 'minutes').date;
 
@@ -211,9 +211,10 @@ const getEmptySlotData = ({ x, y }: Point): EmptySlotEvent => {
         ? props.spaces[y]
         : (computedSelectedSpace.value as Space);
     return {
-        space,
-        startDate,
-        endDate
+        spaceId: space?.id,
+        start,
+        end,
+        name: ""
     };
 }
 
@@ -226,9 +227,9 @@ const eventStyle = (point: Point): Record<string, string> => {
     const from = secondsByDate(new UtilDate(start).date);
     const to = secondsByDate(new UtilDate(end).date);
     const displacement = ((to - from) / props.step)
-    const height = parseInt(props.rowHeight) * (displacement == 0 ? 1 : displacement);
+    const height = parseInt(props.rowHeight) * (displacement == 0 ? 0 : displacement);
     const fillPercent = (from % props.step) / props.step;
-    const top = parseInt(props.rowHeight) * fillPercent;
+    const top = parseInt(props.rowHeight) * fillPercent - 1;
     const backgroundColor = (color || '').indexOf('#') == -1 ? '' : color;
 
     return { height: `${height}px`, top: `${top}px`, backgroundColor, marginTop: '1px' };

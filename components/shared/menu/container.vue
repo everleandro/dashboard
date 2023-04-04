@@ -1,9 +1,9 @@
 
 <template>
-    <div ref="ContainerReference" class="e-menu-container" v-click-outside="handleOutside" :style="menuContentStyle"
-        @click="handleContentClick">
-        <transition :name="transition">
-            <div v-show="opened" class="e-menu-container__wrapper">
+    <div ref="ContainerReference" class="e-menu-container" v-click-outside="handleOutside" v-bind="configuration.attrs"
+        :style="menuContentStyle" @click="handleContentClick">
+        <transition :name="configuration.transition">
+            <div v-show="opened" ref="wrapper" class="e-menu-container__wrapper" :data-id="configuration.dataId">
                 <slot></slot>
             </div>
         </transition>
@@ -15,21 +15,25 @@ export default {
 }
 </script>
 <script setup lang="ts">
+import { Target } from './types'
 
-export interface Props {
-    absolute?: boolean
-    closeOnContentClick?: boolean
-    fullWidth?: boolean
-    holdFocus?: boolean
-    disableMenu?: boolean
-    transition?: string
-    origin?: string
-    maxWidth?: string | number
-    width?: string | number
-    target: HTMLElement
-}
+const configuration: Record<string, any> = reactive({
+    absolute: false,
+    target: <Target>null,
+    dataId: '',
+    closeOnContentClick: false,
+    attrs: {},
+    holdFocus: false,
+    fullWidth: false,
+    checkOffset: false,
+    maxWidth: null,
+    width: null,
+    contentCLass: '',
+    origin: 'bottom left',
+    transition: 'fade'
+})
 
-const props = withDefaults(defineProps<Props>(), { transition: 'fade', origin: 'bottom left' })
+const wrapper = ref()
 const opened = ref(false)
 const timerResize = ref<number>(0);
 const ContainerReference = ref(null)
@@ -47,13 +51,19 @@ onMounted(() => {
     window.addEventListener('resize', handleResize, true);
 })
 
+const setConfiguration = (props: Record<string, any>): void => {
+    Object.keys(props).forEach(
+        (key: string) => configuration[key] = props[key]
+    );
+}
+
 const closeMenu = (): boolean => opened.value = false
 
-const handleContentClick = (): boolean => props.closeOnContentClick && closeMenu()
+const handleContentClick = (): boolean => configuration.closeOnContentClick && closeMenu()
 
 const handleExcListener = ({ key }: KeyboardEvent): boolean => key === 'Escape' && closeMenu()
 
-const targetDOMRect = (): DOMRect => props.target?.getBoundingClientRect() || {}
+const targetDOMRect = (): DOMRect => configuration.target?.getBoundingClientRect() || {}
 
 const destroyComponent = (): void => {
     document.removeEventListener('keydown', handleExcListener);
@@ -75,48 +85,160 @@ const handleResize = (): void => {
     }, 300);
 }
 
-const handleOutside = (evt: MouseEvent) => {
-    const triggerContainer: HTMLElement =
-        (evt.target as HTMLElement).closest('[aria-hasmenu="true"]') ||
-        document.createElement('div');
+const handleOutside = (evt: { target: HTMLElement }) => {
 
-    if (!triggerContainer.isEqualNode(props.target))
-        closeMenu();
+    if (!insideChild(evt)) {
+        const triggerContainer: HTMLElement =
+            (evt.target as HTMLElement).closest('[aria-hasmenu="true"]') ||
+            document.createElement('div');
+
+        if (!triggerContainer.isEqualNode(targetElement())) closeMenu();
+    }
+}
+
+const insideChild = (evt: { target: HTMLElement }): boolean => {
+    let insideMenu = false
+    if (evt.target.classList.contains('e-menu-container__wrapper')) {
+        insideMenu = !!evt.target.closest(`.e-menu-container__wrapper[data-id="${configuration.dataId}"]--child`)
+    } else {
+        insideMenu = !!evt.target.closest('.e-menu-container__wrapper')?.closest(`.e-menu-container__wrapper[data-id="${configuration.dataId}--child"]`)
+    }
+    return insideMenu
+}
+
+const targetElement = (): HTMLElement => {
+    const selectorString = typeof configuration.target === 'string'
+    return selectorString ?
+        (document.querySelector(configuration.target as string) || document.createElement('div')) as HTMLElement :
+        configuration.target as HTMLElement
+
+}
+
+const updatemenuContentStyle = async (): Promise<void> => {
+    await nextTick();
+    const { width, top, left, height, right } = targetDOMRect();
+    const result: Record<string, string | number> = {}
+    if (configuration.fullWidth) {
+        result.minWidth = `${width}px`;
+        result.maxWidth = `${width}px`;
+    }
+
+    const origin: Array<string> = configuration.origin.split(' ');
+    const origin_button = origin.find((position: string) => position == 'bottom')
+    const origin_right = origin.find((position: string) => position == 'right')
+
+    let y = top + window.pageYOffset;
+    if (origin_button) {
+        y += height;
+    }
+
+    let x = left + window.pageXOffset;
+    if (origin_right) {
+        result.transform = 'translateX(-100%)';
+        x += width;
+    }
+
+    if (configuration.checkOffset) {
+        if (y + getHeight() > window.pageYOffset + window.innerHeight) {
+            y -= getHeight();
+            if (origin_button)
+                y -= height;
+            else {
+                y += height;
+            }
+
+            if (y < 0) {
+                y = (window.innerHeight - getHeight()) / 2
+            }
+        }
+
+        if (!origin_right && (x + getWidth() > window.pageXOffset + window.innerWidth)) {
+            x -= (getWidth() - width);
+        }
+
+        if (origin_right && (x - getWidth() < 0)) {
+            result.transform = 'unset';
+            x -= width;
+        }
+
+    }
+
+    result.top = `${y}px`;
+    result.left = `${x}px`;
+    configuration.maxWidth && (result.maxWidth = `${configuration.maxWidth}px`);
+    configuration.width && (result.width = `${configuration.width}px`);
+    menuContentStyle.value = result
 }
 
 
-const updatemenuContentStyle = (): void => {
-    nextTick(() => {
-        const { width, top, left, height, right } = targetDOMRect();
-        const result: Record<string, string | number> = {}
+const getHeight = (): number => {
+    const el = wrapper.value as HTMLElement;
+    if (!el)
+        return 0
+    var el_style = window.getComputedStyle(el),
+        el_display = el_style.display,
+        el_position = el_style.position,
+        el_visibility = el_style.visibility,
+        el_max_height = el_style.maxHeight.replace('px', '').replace('%', ''),
 
-        if (props.fullWidth) {
-            result.minWidth = `${width}px`;
-            result.maxWidth = `${width}px`;
-        }
+        wanted_height = 0;
 
-        const origin = props.origin.split(' ');
+    // if its not hidden we just return normal height
+    if (el_display !== 'none' && el_max_height !== '0') {
+        return el.offsetHeight;
+    }
 
-        let y = top + window.pageYOffset;
-        origin.find((position: string) => position == 'bottom') && (y += height)
+    // the element is hidden so:
+    // making the el block so we can meassure its height but still be hidden
+    el.style.position = 'absolute';
+    el.style.visibility = 'hidden';
+    el.style.display = 'block';
 
-        let x = left + window.pageXOffset;
-        if (origin.find((position: string) => position == 'right')) {
-            x += width;
-            result.transform = 'translateX(-100%)';
-        }
+    wanted_height = el.offsetHeight;
 
-        result.top = `${y}px`;
-        result.left = `${x}px`;
+    // reverting to the original values
+    el.style.display = el_display;
+    el.style.position = el_position;
+    el.style.visibility = el_visibility;
 
-        props.maxWidth && (result.maxWidth = props.maxWidth);
-        props.width && (result.width = `${props.width}px`);
-        menuContentStyle.value = result
-    });
+    return wanted_height;
+}
+
+const getWidth = () => {
+    const el = wrapper.value as HTMLElement
+    if (!el)
+        return 0
+    var el_style = window.getComputedStyle(el),
+        el_display = el_style.display,
+        el_position = el_style.position,
+        el_visibility = el_style.visibility,
+        el_max_width = el_style.maxWidth.replace('px', '').replace('%', ''),
+
+        wanted_width = 0;
+
+    // if its not hidden we just return normal height
+    if (el_display !== 'none' && el_max_width !== '0') {
+        return el.offsetWidth;
+    }
+
+    // the element is hidden so:
+    // making the el block so we can meassure its height but still be hidden
+    el.style.position = 'absolute';
+    el.style.visibility = 'hidden';
+    el.style.display = 'block';
+
+    wanted_width = el.offsetWidth;
+
+    // reverting to the original values
+    el.style.display = el_display;
+    el.style.position = el_position;
+    el.style.visibility = el_visibility;
+
+    return wanted_width;
 }
 
 
-defineExpose({ openMenu, destroyComponent })
+defineExpose({ openMenu, destroyComponent, setConfiguration, closeMenu })
 provide("EMenuContainer", {
     closeMenu
 });

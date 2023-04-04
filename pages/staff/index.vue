@@ -65,7 +65,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { order } from './constants'
+import { order } from "./constants"
 const router = useRouter()
 const route = useRoute()
 

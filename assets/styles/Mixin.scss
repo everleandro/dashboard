@@ -48,7 +48,9 @@
     }
 
     &.e-field--is-hovered,
+    &.e-field--is-hovered,
     &.e-field--is-focused,
+    &.e-field--retain-color,
     &.e-field--has-error {
         z-index: 1;
 

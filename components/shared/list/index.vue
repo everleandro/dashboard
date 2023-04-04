@@ -5,7 +5,7 @@
 </template>
   
 <script lang="ts" setup>
-import { ListClassKeys } from './types';
+export type ListClassKeys = 'disabled' | 'depressed' | 'outlined'
 export interface Props {
     disabled?: boolean
     depressed?: boolean

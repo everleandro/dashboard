@@ -5,9 +5,12 @@ export default defineNuxtConfig({
         { path: "~/components/shared", prefix: "E" },
         { path: "~/components/shared/grid", prefix: "E" },
         { path: "~/components/shared/form", prefix: "E" },
-        "~/components",
+        "~/components/app",
     ],
     vite: {
+        build: {
+            sourcemap: true,
+        },
         css: {
             preprocessorOptions: {
                 scss: {

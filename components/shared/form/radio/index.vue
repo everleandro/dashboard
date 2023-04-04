@@ -23,14 +23,12 @@
         </label>
     </div>
 </template>
-<script lang="ts">
-export default { name: 'Radio' }
-</script>
 
 <script lang="ts" setup>
 import { radioType, RadioGroup } from "@/components/shared/form/types"
 
 export interface Props {
+    retainColor?: boolean;
     disabled?: boolean; readonly?: boolean; label?: string | number;
     modelValue: radioType; color?: string; labelMinWidth?: string;
 }

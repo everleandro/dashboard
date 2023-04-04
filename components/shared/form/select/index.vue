@@ -1,4 +1,4 @@
-<!-- <template src="./template.html"></template> -->
+
 <template >
     <div :class="selectClass">
         <div class="e-field__control" v-click-outside="handleOutsideMenu">
@@ -17,17 +17,24 @@
                     <div v-if="prefix" :class="[textColor, 'e-field__prefix']" @click="setInputFocus">
                         {{ prefix }}
                     </div>
-                    <div class="e-select__selections">
-                        <div class="e-select__selection" :style="selectionStyle">
-                            {{ selectedText }}
-                            <span v-show="modelValue === undefined || modelValue === null"
-                                class="e-select__selection-placeholder">
+                    <div :class="['e-select__selections', textColor]">
+                        <div v-if="showPlaceholder" class="e-select__selection" :style="selectionStyle">
+                            <span class="e-select__selection-placeholder">
                                 {{ placeholder }}
                             </span>
                         </div>
-                        <input :id="id" readonly type="text" aria-readonly="false" autocomplete="off" @blur="handleBlur"
-                            @focus="handleSelectFocus" />
+                        <template v-else-if="multiple">
+                            <div v-for="(item, index) in modelValue" class="e-select__selection" :key="index"
+                                :style="selectionStyle">
+                                <EChip closable @click:close="handleItemClick(item)"> {{ selectedText(item) }}</EChip>
+                            </div>
+                        </template>
+                        <div v-else class="e-select__selection" :style="selectionStyle">
+                            {{ selectedText() }}
+                        </div>
                     </div>
+                    <input :id="id" readonly type="text" aria-readonly="false" autocomplete="off" @blur="handleBlur"
+                        @focus="handleSelectFocus" />
                     <div v-if="suffix" :class="[textColor, 'e-field__suffix']" @click="setInputFocus">
                         {{ suffix }}
                     </div>
@@ -40,7 +47,7 @@
                     </transition>
                     <div class="e-field__append-inner">
                         <div class="e-field__icon e-field__icon--append">
-                            <EIcon :name="$icon.arrowDown" class="flip-icon"></EIcon>
+                            <EIcon :name="arrowDown || $icon?.arrowDown" class="flip-icon"></EIcon>
                         </div>
                     </div>
                 </div>
@@ -51,54 +58,57 @@
                     </div>
                 </div>
                 <div v-if="!outlined" class="e-field__line"></div>
-                <div class="e-menu" @click="closeMenu">
+                <div class="e-menu">
                     <transition name="fade">
                         <div v-show="opened" class="e-menu__content">
-                            <e-list :color="color">
-                                <e-list-item v-for="(item, index) in items" :key="index"
-                                    :class="{ 'e-list-item--active': active(item) }" @click="handleItemClick(item)">
-                                    <slot name="item">
-                                        {{ displayedText(item) }}
+                            <e-list :color="color" :style="listStyle">
+                                <template v-for="(item, index) in items">
+                                    <slot name="item" :attrs="slotItemAttrs(item, index)" :item="item">
+                                        <e-list-item :class="{ 'e-list-item--active': active(item) }"
+                                            @click="handleItemClick(item)" :key="index">
+                                            <slot name="item-text">
+                                                {{ displayedText(item) }}
+                                            </slot>
+                                        </e-list-item>
                                     </slot>
-                                </e-list-item>
+                                </template>
+
                             </e-list>
                         </div>
                     </transition>
                 </div>
             </div>
-            <EDetails :details="details" :textColorClass="textColor" :showDetails="showDetails"></EDetails>
+            <EDetails :details="details" :textColor="textColor" :showDetails="showDetails"></EDetails>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-export default { name: 'Select' }
+export default { name: "Select" }
 </script>
-
 <script lang="ts" setup>
-export type itemType = string | number | undefined | null | Record<string, any>;
 
-
-
+export type itemType = string | number | undefined | null | Record<string, any> | Array<itemType>;
 export interface Props {
-    disabled?: boolean; dense?: boolean; readonly?: boolean; counter?: boolean; clearable?: boolean;
+    arrowDown?: string; multiple?: boolean, returnObject?: boolean; retainColor?: boolean;
+    disabled?: boolean; dense?: boolean; readonly?: boolean; clearable?: boolean; itemCol?: string | number;
     labelInline?: boolean; detail?: string; outlined?: boolean; label?: string | number;
     modelValue: itemType; placeholder?: string; suffix?: string; autocomplete?: string;
     prefix?: string; inputAlign?: string; color?: string; limit?: string | number;
-    returnObject?: boolean
     detailErrors?: Array<string>; detailsOnMessageOnly?: boolean; type?: string; appendIcon?: string;
     labelMinWidth?: string; prependIcon?: string; rules?: Array<(param: any) => string | boolean>;
     cols?: string | number; xs?: string | number; sm?: string | number; md?: string | number;
     lg?: string | number; xl?: string | number;
     itemText?: string
     itemValue?: string
-    items?: Array<any>
+    items: Array<any>
 }
 
+const { $icon } = useNuxtApp() || {}
 const emit = defineEmits<{
     (e: 'click:clear'): void, (e: 'focus', value: FocusEvent): void,
     (e: 'click:prepend'): void, (e: 'click:append'): void, (e: 'blur', value: Event): void,
-    (e: 'update:modelValue', value: string | number): void
+    (e: 'update:modelValue', value: itemType): void
 }>()
 
 const props = withDefaults(defineProps<Props>(), { itemText: 'text', itemValue: 'value', inputAlign: 'start' })
@@ -110,16 +120,26 @@ const { gridClass } = useGrid('e-field')
 const { isObject } = useUtils()
 
 watch(() => opened.value, (val: boolean) => {
-    if (val)
+    if (val) {
         document.addEventListener("keydown", handleExcListener);
+        setInputFocus()
+    }
     else
         document.removeEventListener("keydown", handleExcListener);
-    setInputFocus()
+
+})
+
+watch(() => props.modelValue, (val: itemType) => {
+    if (!props.multiple) {
+        closeMenu()
+    }
 })
 
 const selectClass = computed(() => {
     const result = [...fieldClass.value, 'e-select', ...gridClass.value]
     opened.value && result.push('e-select--is-open')
+    props.itemCol && result.push('e-select--columns-variant')
+    props.multiple && result.push('e-select--multiple')
     return result
 })
 
@@ -138,6 +158,20 @@ const handleSelectFocus = (event: FocusEvent): void => {
 const openMenu = (): void => {
     opened.value = true;
 }
+const showPlaceholder = computed((): boolean => {
+    if (props.multiple) {
+        return (props.modelValue as Array<itemType>)?.length === 0
+    }
+    return props.modelValue === undefined || props.modelValue === null
+})
+const slotItemAttrs = (item: itemType, index: number): Record<string, any> => {
+    const attrs: Record<string, any> = {}
+    attrs.class = { 'e-list-item--active': active(item) }
+    attrs.onClick = () => handleItemClick(item)
+    attrs.key = index
+
+    return attrs;
+}
 
 const closeMenu = (): void => {
     opened.value = false;
@@ -151,7 +185,26 @@ const changeValue = (value: any, isEvent = false) => {
     emit('update:modelValue', valueResult)
 }
 const handleItemClick = (item: itemType): void => {
-    if (props.returnObject || !isObject(item)) {
+    if (props.multiple) {
+        const result: Array<itemType> = [...(props.modelValue as Array<itemType>)]
+
+        let index = -1;
+        if (isObject(item)) {
+            if (props.returnObject) {
+                index = result.findIndex((e) => JSON.stringify(e) === JSON.stringify(item));
+            } else {
+                index = result.findIndex(
+                    (e) => (e as Record<string, string>)?.[props.itemValue] === (item as Record<string, string>)[props.itemValue]
+                );
+            }
+        } else {
+            index = result.findIndex((e) => e === item);
+        }
+
+        index < 0 ? result.push(item) : result.splice(index, 1)
+        changeValue(result);
+
+    } else if (props.returnObject || !isObject(item)) {
         changeValue(item);
     } else {
         changeValue((item as Record<string, any>)[props.itemValue]);
@@ -159,7 +212,24 @@ const handleItemClick = (item: itemType): void => {
 }
 
 const active = (item: itemType): boolean => {
-    if (!isObject(item)) {
+    if (props.multiple) {
+        const model: Array<itemType> = [...(props.modelValue as Array<itemType>)]
+
+        let index = -1;
+        if (isObject(item)) {
+            if (props.returnObject) {
+                index = model.findIndex((e) => JSON.stringify(e) === JSON.stringify(item));
+            } else {
+                index = model.findIndex(
+                    (e) => (e as Record<string, string>)?.[props.itemValue] === (item as Record<string, string>)[props.itemValue]
+                );
+            }
+        } else {
+            index = model.findIndex((e) => e === item);
+        }
+        return index !== -1;
+
+    } else if (!isObject(item)) {
         return item === props.modelValue;
     } else if (props.returnObject) {
         return JSON.stringify(item) === JSON.stringify(props.modelValue);
@@ -168,34 +238,43 @@ const active = (item: itemType): boolean => {
     }
 }
 
-const selectedText = computed((): string => {
-    if (props.modelValue === null || props.modelValue === undefined) {
+const selectedText = (_item?: itemType): string => {
+
+    if (showPlaceholder.value) {
         return '';
     }
-    let result = ''
-    if (!isObject((props.items?.[0] as string) || {})) {
-        result = `${props.modelValue}`;
-    } else if (props.returnObject) {
-        const item = (props.items || []).find(
-            (e) =>
-                (e as Record<string, any>)[props.itemValue] ===
-                (props.modelValue as Record<string, any>)[props.itemValue]
-        ) as Record<string, string>;
-        result = item?.[props.itemText];
-    } else {
-        const item = (props.items || []).find(
-            (e) => (e as Record<string, string>)?.[props.itemValue] === props.modelValue
-        ) as Record<string, string>;
-        result = item?.[props.itemText] || '';
-    }
-    return result
-})
 
+    const isArrayOfObjects = isObject(props.items[0]);
+
+    if (props.returnObject) {
+        const item = (_item || props.modelValue || {}) as Record<string, string>
+        return `${item[props.itemText]}`
+    }
+
+    if (isArrayOfObjects) {
+        if (_item) {
+            return `${(_item as Record<string, any>)[props.itemText]}`
+        }
+        const item = props.items.find(
+            (e) => (e as Record<string, string>)?.[props.itemValue] === props.modelValue
+        );
+
+        return item?.[props.itemText] || '';
+    }
+
+    return _item ? `${_item}` : `${props.modelValue}`
+
+}
 
 const selectionStyle = computed((): Record<string, string> => {
     return { textAlign: props.inputAlign }
-}
-)
+})
+
+const listStyle = computed((): Record<string, string> => {
+    const percent = (1 / parseInt(`${props.itemCol}`, 10) * 100)
+    return { '--list-item-percent': `${percent}%` }
+})
+
 const clear = (): void => {
     changeValue('')
 }

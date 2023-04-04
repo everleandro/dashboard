@@ -57,3 +57,44 @@ $transition-duration: 0.3s;
 .tab-reverse-transition-enter-to {
     transform: translateX(0);
 }
+
+
+
+.picker-transition-leave-to {
+    transform: translateY(-100%);
+}
+
+
+.picker-transition-leave-active {
+    position: absolute !important;
+}
+
+
+.picker-transition-enter-active {
+    transform: translateY(100%);
+    transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1) !important;
+}
+
+.picker-transition-enter-to {
+    transform: translateY(0);
+}
+
+
+.picker-transition-reverse-leave-to {
+    transform: translateY(100%);
+}
+
+
+.picker-transition-reverse-leave-active {
+    position: absolute !important;
+}
+
+
+.picker-transition-reverse-enter-active {
+    transform: translateY(-100%);
+    transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1) !important;
+}
+
+.picker-transition-reverse-enter-to {
+    transform: translateY(0);
+}

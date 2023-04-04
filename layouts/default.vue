@@ -4,7 +4,7 @@
             <e-button :icon="$icon.menu" color="white" large @click="closeDrawer()" />
             <e-spacer />
             <e-button :icon="$icon.maintenance" color="white" large @click="closeDrawer()" />
-            <EMenu width="200" origin="right bottom">
+            <EMenu width="200" origin="right bottom" data-notification-menu>
                 <template #activator="attrs">
                     <e-button color="white" v-bind="attrs" :icon="$icon.notification" large />
                 </template>

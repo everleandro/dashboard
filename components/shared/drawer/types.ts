@@ -1,1 +1,0 @@
-export type DrawerClassKeys = 'disabled' | 'right' | 'modelValue' | 'fixed' 

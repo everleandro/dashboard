@@ -6,7 +6,7 @@
     </header>
 </template>
 <script lang="ts" setup>
-import { BarrClassKeys } from './types'
+export type BarClassKeys = 'dense' | 'fixed' | 'clipped' | 'depressed' | 'app'
 
 export interface Props {
     dense?: boolean
@@ -44,7 +44,7 @@ const barClass: ComputedRef<Array<string>> = computed((): Array<string> => {
     const classes = ['e-bar']
     props.color && classes.push(props.color)
 
-    const availableRootClassKeys = Object.keys(availableRootClasses) as Array<BarrClassKeys>
+    const availableRootClassKeys = Object.keys(availableRootClasses) as Array<BarClassKeys>
     const classes2 = availableRootClassKeys.filter(
         (key) => !!props[key]
     ).map(key => availableRootClasses[key]);

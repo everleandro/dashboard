@@ -28,7 +28,7 @@
                 <transition name="scale">
                     <div v-show="showClearable" class="e-field__append-inner">
                         <div class="e-field__icon e-field__icon--clear">
-                            <EButton :icon="$icon.clear" small @click.stop.prevent="clear" />
+                            <EButton :icon="iconClear || $icon.clear" small @click.stop.prevent="clear" />
                         </div>
                     </div>
                 </transition>
@@ -45,13 +45,11 @@
         </div>
     </div>
 </template>
-<script lang="ts">
-export default { name: 'TextField' }
-</script>
 
 <script setup lang="ts">
 
 export interface Props {
+    iconClear?: string; retainColor?: boolean;
     disabled?: boolean; dense?: boolean; readonly?: boolean; counter?: boolean; clearable?: boolean;
     labelInline?: boolean; detail?: string; outlined?: boolean; label?: string | number;
     modelValue: string | number; placeholder?: string; suffix?: string; autocomplete?: string;
@@ -64,6 +62,7 @@ export interface Props {
 
 const props = withDefaults(defineProps<Props>(), { inputAlign: 'start', type: 'text' })
 
+const { $icon } = useNuxtApp() || {}
 const emit = defineEmits<{
     (e: 'click:clear'): void, (e: 'focus', value: FocusEvent): void,
     (e: 'click:prepend'): void, (e: 'click:append'): void, (e: 'blur', value: Event): void,

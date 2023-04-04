@@ -1,5 +1,6 @@
 
-import { fieldClasses, classKey } from "@/components/shared/form/constants"
+import { fieldClasses } from "@/components/shared/form/constants"
+import { classKey } from "@/components/shared/form/types"
 import { Form } from "@/components/shared/form/types"
 import { getCurrentInstance } from 'vue'
 export default function (useFormInjection = true) {
@@ -9,7 +10,8 @@ export default function (useFormInjection = true) {
     const hovered = ref(false)
     const configuration = reactive({
         labelStyle: {},
-        color: 'green'
+        color: 'primary',
+        retainColor: false
     })
 
     const focused = ref(false)
@@ -26,6 +28,9 @@ export default function (useFormInjection = true) {
         result.push(textColor.value)
         hasError.value && result.push(fieldClasses.hasError)
         hovered.value && result.push(fieldClasses.hovered)
+        if (props.value?.retainColor || configuration.retainColor) {
+            result.push(fieldClasses.retainColor)
+        }
         focused.value && result.push(fieldClasses.focused)
         return [...result, 'e-field']
     })
@@ -79,7 +84,7 @@ export default function (useFormInjection = true) {
 
     const textColor = computed((): string => {
         if (hasError.value) return 'error--text';
-        return (hovered.value || focused.value) ? `${color.value}--text` : '';
+        return (hovered.value || focused.value || props.value?.retainColor || configuration.retainColor) ? `${color.value}--text` : '';
     })
 
     watch(() => props.value?.modelValue, () => dirty.value = true)
@@ -115,6 +120,7 @@ export default function (useFormInjection = true) {
     const setConfiguration = (value: Record<string, any>): void => {
         value.labelStyle && (configuration.labelStyle = value.labelStyle)
         value.color && (configuration.color = value.color)
+        value.retainColor && (configuration.retainColor = value.retainColor)
     }
 
     const form = inject<Partial<Form> | undefined>("EForm", undefined);

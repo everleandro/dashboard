@@ -9,7 +9,15 @@
     </i>
 </template>
 <script lang="ts" setup>
-import { IconPath, IconClassKeys } from './types'
+
+export type IconPath = string | Record<string, string>
+export type IconClassKeys = 'xSmall' | 'small' | 'large' | 'xLarge' | 'disabled'
+
+export interface IconItem {
+    name: string
+    description?: string
+    useLocation?: string
+}
 
 export interface Props {
     color?: string
@@ -19,19 +27,19 @@ export interface Props {
     viewBox?: string,
     path?: Array<IconPath>
     small?: boolean
-    XSmall?: boolean
+    xSmall?: boolean
     large?: boolean
-    XLarge?: boolean
+    xLarge?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), { preffix: 'icon' })
 
 const availableRootClasses = {
-    XSmall: 'e-icon--size-x-small',
-    small: 'e-icon--size-small',
+    xSmall: 'e-icon--size-x-small',
+    small: 'e-icon--size-smalls',
     disabled: 'e-icon--disabled',
     large: 'e-icon--size-large',
-    XLarge: 'e-icon--size-x-large'
+    xLarge: 'e-icon--size-x-large'
 };
 const slots = useSlots()
 
@@ -50,7 +58,7 @@ const bindPathAttributes = (
 
 const iconClass: ComputedRef<Array<string>> = computed((): Array<string> => {
     let classes = ['e-icon icon'];
-    const defaultSize = !(props.small || props.XSmall || props.large || props.XLarge);
+    const defaultSize = !(props.small || props.xSmall || props.large || props.xLarge);
     defaultSize && classes.push("e-icon--size-default")
     props.name && classes.push(`${props.preffix.trim()}-${props.name.trim()}`);
     props.color && (classes.push(`${props.color}--text`));

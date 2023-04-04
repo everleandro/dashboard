@@ -33,7 +33,8 @@
         background: currentcolor;
         border-radius: inherit;
     }
-    + .e-chip{
+
+    +.e-chip {
         margin-left: $space-base;
     }
 
@@ -42,5 +43,18 @@
     &__close {
         align-items: center;
         display: inline-flex;
+    }
+
+    &__close {
+        transform: translateX(8px);
+
+        button {
+            height: 24px;
+            width: 24px;
+
+            i {
+                font-size: 18px;
+            }
+        }
     }
 }
