@@ -9,7 +9,7 @@
             <EButton :icon="$icon.clear" @click="closeMenu" />
         </div>
 
-        <EForm ref="formComponent" class="ma-0" :color="form.color" @submit="submit">
+        <EForm ref="formComponent" v-model="formValid" class="ma-0" :color="form.color" @submit="submit">
             <ETextField v-model="form.name" :rules="[_required]" :readonly="loading" placeholder="Titulo" cols="16" />
             <EColorPicker v-model="form.color" :rules="[_required]" label="Color" cols="8" retain-color />
             <ESelect v-model="form.roles" label="Rol" :rules="[_required]" multiple :items="availableRole" cols="24"
@@ -34,7 +34,7 @@
             <ETimePicker v-model="form.start" :rules="[_required]" />
             <ETimePicker v-model="form.end" :rules="[_required]" />
             <EFormColumn cols="24" class="d-flex justify-flex-end">
-                <EButton :color="form.color" type="submit" :loading="loading">Aceptar</EButton>
+                <EButton :color="form.color" type="submit" :disabled="!formValid" :loading="loading">Aceptar</EButton>
             </EFormColumn>
 
         </EForm>
@@ -55,6 +55,7 @@ export interface Props {
 const { $icon } = useNuxtApp()
 const { _required } = useRules()
 const formComponent = ref<Form>()
+const formValid = ref<boolean>(true)
 const props = defineProps<Props>()
 const loading = ref(false);
 const dialog = inject<EDIalog | undefined>("EDialog", undefined);
@@ -107,17 +108,22 @@ const datePickerChange = (value: Date | string) => {
         emit('update:date', value)
     form.start = new UtilDate(form.start).set(newDay, 'days').date
 }
-const closeMenu = () => emit('click:close', true)
+const closeMenu = () => {
+    emit('click:close', true)
+    nextTick(() => {
+        reset()
+    })
+}
 
 const reset = (): void => {
     form.start = new Date();
     form.name = '';
     form.end = new Date();
-    form.id = 0;
+    form.id = null;
     form.color = 'primary'
-    form.spaceId = 0;
+    form.spaceId = -1;
     form.roles = [];
-    form.user = 0;
+    form.user = null;
     nextTick(() => {
         formComponent.value?.reset()
     })

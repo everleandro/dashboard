@@ -12,7 +12,7 @@
                 <div class="e-select__slot e-field__field" @click="handleSelectSlotCLick" @mouseenter="handleHover(true)"
                     @mouseleave="handleHover(false)">
                     <label :for="id" :class="[textColor, 'e-label']" :style="labelStyle">
-                        <slot name="label"> {{ label }} </slot>
+                        <slot name="label"> {{ label }}</slot>
                     </label>
                     <div v-if="prefix" :class="[textColor, 'e-field__prefix']" @click="setInputFocus">
                         {{ prefix }}
@@ -88,12 +88,12 @@ export default { name: "Select" }
 </script>
 <script lang="ts" setup>
 
-export type itemType = string | number | undefined | null | Record<string, any> | Array<itemType>;
+export type itemType = string | number | null | Record<string, any> | Array<itemType>;
 export interface Props {
     arrowDown?: string; multiple?: boolean, returnObject?: boolean; retainColor?: boolean;
     disabled?: boolean; dense?: boolean; readonly?: boolean; clearable?: boolean; itemCol?: string | number;
     labelInline?: boolean; detail?: string; outlined?: boolean; label?: string | number;
-    modelValue: itemType; placeholder?: string; suffix?: string; autocomplete?: string;
+    modelValue?: itemType; placeholder?: string; suffix?: string; autocomplete?: string;
     prefix?: string; inputAlign?: string; color?: string; limit?: string | number;
     detailErrors?: Array<string>; detailsOnMessageOnly?: boolean; type?: string; appendIcon?: string;
     labelMinWidth?: string; prependIcon?: string; rules?: Array<(param: any) => string | boolean>;
@@ -280,8 +280,10 @@ const clear = (): void => {
 }
 
 const handleOutsideMenu = (): void => {
-    dirty.value = true;
-    closeMenu()
+    if (opened.value) {
+        dirty.value = true;
+        closeMenu()
+    }
 }
 
 const handleSelectSlotCLick = (evt: Event): void => {
