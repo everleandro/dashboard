@@ -77,11 +77,12 @@ const openMenu = async () => {
 }
 
 const handleResize = (): void => {
-    opened.value && closeMenu();
     timerResize.value && clearTimeout(timerResize.value)
 
     timerResize.value = window.setTimeout(() => {
-        updatemenuContentStyle();
+        nextTick(() => {
+            updatemenuContentStyle();
+        })
     }, 300);
 }
 
@@ -115,7 +116,7 @@ const targetElement = (): HTMLElement => {
 }
 
 const updatemenuContentStyle = async (): Promise<void> => {
-    await nextTick();
+
     const { width, top, left, height, right } = targetDOMRect();
     const result: Record<string, string | number> = {}
     if (configuration.fullWidth) {
@@ -139,34 +140,28 @@ const updatemenuContentStyle = async (): Promise<void> => {
     }
 
     if (configuration.checkOffset) {
-        if (y + getHeight() > window.pageYOffset + window.innerHeight) {
-            y -= getHeight();
-            if (origin_button)
-                y -= height;
-            else {
-                y += height;
-            }
+        const margin = 12;
+        const offsetY = window.pageYOffset + window.innerHeight - (y + getHeight() + margin)
 
-            if (y < 0) {
-                y = (window.innerHeight - getHeight()) / 2
-            }
+        if (offsetY < 0) {
+            y += offsetY;
         }
 
-        if (!origin_right && (x + getWidth() > window.pageXOffset + window.innerWidth)) {
+        if (!origin_right && (x + getWidth() + margin > window.pageXOffset + window.innerWidth)) {
             x -= (getWidth() - width);
         }
 
-        if (origin_right && (x - getWidth() < 0)) {
+        if (origin_right && (x - (getWidth() + margin) < 0)) {
             result.transform = 'unset';
             x -= width;
         }
-
     }
 
     result.top = `${y}px`;
     result.left = `${x}px`;
     configuration.maxWidth && (result.maxWidth = `${configuration.maxWidth}px`);
     configuration.width && (result.width = `${configuration.width}px`);
+    await nextTick();
     menuContentStyle.value = result
 }
 
