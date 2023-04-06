@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="schedule-page">
         <EBar depressed>
             <div>
                 <h1>Horario</h1>
@@ -13,37 +13,43 @@
 
         <EForm @submit="search" class="mb-8">
             <ESelect v-model="filters.space" label="Espacio :" :items="spaces" :readonly="filters.loading" item-text="label"
-                return-object item-value="id" cols="24" sm="12" md="8" lg="6" />
+                return-object item-value="id" cols="24" sm="12" lg="6" />
             <ESelect v-model="filters.role" label="Rol:" :items="availableRole" :readonly="filters.loading" clearable
-                cols="24" sm="12" md="8" lg="6" />
+                cols="24" sm="12" lg="6">
+                <template #selection="{ selection, attrs }">
+                    <EChip :prepend-icon="selection?.icon" v-bind="attrs" text>
+                        {{ selection.text }}
+                    </EChip>
+                </template>
+            </ESelect>
 
             <EMenu origin="bottom right" transition="scale">
                 <template #activator="attrs">
                     <ETextField :modelValue="formattedDate" v-bind="attrs" :append-icon="$icon.calendar"
-                        :readonly="filters.loading" cols="24" sm="12" md="8" lg="6" input-readonly />
+                        :readonly="filters.loading" cols="24" sm="12" lg="6" input-readonly />
                 </template>
                 <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
                     close-on-change />
             </EMenu>
             <ESpacer />
-            <ESelect v-model="filters.scheduleModel" :items="modes" :readonly="filters.loading || mdBreakpoint" outlined />
-
+            <ESelect v-model="filters.scheduleMode" class="schedule-mode-select" :items="modes"
+                :readonly="filters.loading || mdBreakpoint" outlined retain-color />
         </EForm>
         <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50" :events="sessionsList"
-            v-model:mode="filters.scheduleModel" :start="60 * 60" :step="60 * 60" :spaces="spaces"
-            @click:empty-slot="handleEmptySlotClick" sticky-top-header="120" />
+            v-model:mode="filters.scheduleMode" :start="60 * 60" :step="60 * 60" :spaces="spaces" sticky-top-header="120"
+            @click:empty-slot="handleScheduleClickClick" @click:event="handleScheduleClickClick" />
     </div>
 </template>
 <script lang="ts" setup>
 import { sessions, spaces } from './constants'
 import UtilDate from '@/models/date';
 import Session from '@/models/session';
-import { SlotEvent, Mode } from '@/components/shared/schedule/types';
+import { SlotEvent, Mode, ScheduleEvent } from '@/components/shared/schedule/types';
 import { Menu } from '@/components/shared/menu/types';
 
 let mdBreakpoint = ref(false);
 let eventMenuRef = ref<Menu>();
-
+const { $icon } = useNuxtApp()
 const session = reactive({
     activator: <HTMLElement | undefined>undefined,
     form: new Session()
@@ -52,12 +58,19 @@ const session = reactive({
 const sessionsList = ref<Array<Session>>([...sessions])
 
 const availableRole = [
-    { text: 'Role 1', value: 1 },
-    { text: 'role 2', value: 2 },
-    { text: 'role 3', value: 3 },
-    { text: 'role 4', value: 4 },
-    { text: 'role 5', value: 5 },
-    { text: 'role 6', value: 6 },
+    { text: 'instructor', value: 1, icon: $icon.roles.instructor },
+    { text: 'monitor de sala', value: 2, icon: $icon.roles.roomInstructor },
+    { text: 'entrenador personal', value: 3, icon: $icon.roles.personalTrainer },
+    { text: 'servicio al cliente', value: 4, icon: $icon.roles.customerService },
+    { text: 'Coordinador', value: 5, icon: $icon.roles.coordination },
+    { text: 'Administracion', value: 6, icon: $icon.roles.administration },
+    { text: 'Direccion', value: 7, icon: $icon.roles.directorate },
+    { text: 'Limpieza', value: 8, icon: $icon.roles.cleaning },
+    { text: 'Mantenimiento', value: 9, icon: $icon.roles.maintenance },
+    { text: 'Operaciones', value: 10, icon: $icon.roles.operations },
+    { text: 'Recepcion', value: 11, icon: $icon.roles.reception },
+    { text: 'Recursos Humanos', value: 12, icon: $icon.roles.humanResources },
+    { text: 'Supervisor', value: 13, icon: $icon.roles.supervisor },
 ]
 
 const modes = [
@@ -68,7 +81,7 @@ const modes = [
 const filters = reactive({
     searchValue: '',
     role: 1,
-    scheduleModel: Mode.day,
+    scheduleMode: Mode.day,
     space: spaces[0],
     date: new Date(),
     loading: false
@@ -86,7 +99,7 @@ const search = (evt: SubmitEvent): void => {
 }
 
 watch(() => mdBreakpoint.value, () => {
-    filters.scheduleModel = Mode.day
+    filters.scheduleMode = Mode.day
 });
 
 onMounted(() => {
@@ -94,7 +107,7 @@ onMounted(() => {
     window?.addEventListener('resize', observeBreakpoint);
     nextTick(() => {
         if (!mdBreakpoint.value) {
-            filters.scheduleModel = Mode.week
+            filters.scheduleMode = Mode.week
         }
     })
 })
@@ -106,6 +119,7 @@ const observeBreakpoint = (): void => {
     const mdValue = getComputedStyle(document.body).getPropertyValue('--md');
     mdBreakpoint.value = windowWidth <= parseInt(mdValue, 10);
 }
+
 const submitSession = (objectSession: Session) => {
     if (session.form.id) {
         const index = sessionsList.value.findIndex(({ id }) => id === session.form.id)
@@ -113,11 +127,9 @@ const submitSession = (objectSession: Session) => {
     } else {
         sessionsList.value.push(objectSession)
     }
-
-
 }
 
-const handleEmptySlotClick = (obj: { data: SlotEvent, nativeEvent: Event }): void => {
+const handleScheduleClickClick = (obj: { data: SlotEvent, nativeEvent: Event }): void => {
     session.form = new Session(obj.data);
     session.activator = obj.nativeEvent.target as HTMLElement
     if (!session.activator?.getAttribute('aria-hasmenu')) {
@@ -139,6 +151,16 @@ const closeMenu = () => eventMenuRef.value?.closeMenu()
 
     @include _from_sm {
         width: 500px;
+    }
+}
+
+.schedule-page {
+    .schedule-mode-select {
+        display: none;
+
+        @include _from_lg {
+            display: flex;
+        }
     }
 }
 </style>

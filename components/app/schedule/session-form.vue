@@ -2,39 +2,58 @@
     <div class="white">
         <div class="d-flex justify-flex-end px-3">
             <div>
-                <h3 :class="['dialog-title', `${form.color}--text`]" v-html="modalTitle"></h3>
+                <h3 :class="['dialog-title', `${state.form.color}--text`]" v-html="modalTitle"></h3>
                 <p>Rellena los campos necesarios para crear una nueva jornada:</p>
             </div>
             <ESpacer />
             <EButton :icon="$icon.clear" @click="closeMenu" />
         </div>
 
-        <EForm ref="formComponent" v-model="formValid" class="ma-0" :color="form.color" @submit="submit">
-            <ETextField v-model="form.name" :rules="[_required]" :readonly="loading" placeholder="Titulo" cols="16" />
-            <EColorPicker v-model="form.color" :rules="[_required]" label="Color" cols="8" retain-color />
-            <ESelect v-model="form.roles" label="Rol" :rules="[_required]" multiple :items="availableRole" cols="24"
-                item-col="2">
+        <EForm ref="formComponent" v-model="state.formValid" class="ma-0" :color="state.form.color" @submit="submit">
+            <ETextField v-model="state.form.name" :rules="[_required]" :readonly="state.loading" placeholder="Titulo"
+                cols="16" />
+            <EColorPicker v-model="state.form.color" :rules="[_required]" label="Color" cols="8" retain-color />
+            <ESelect v-model="state.form.user" :rules="[_required]" label="Usuario" chip placeholder="Selecciona 1 usuario"
+                item-col="2" :items="availableUsers" cols="24">
+                <template #selection="{ selection }">
+                    <EChip :prepend-avatar="selection?.avatar" :avatar-size="32" text>
+                        {{ selection?.text }}
+                    </EChip>
+                </template>
                 <template #item="{ attrs, item }">
-                    <e-list-item v-bind="attrs">
+                    <e-list-item v-bind="attrs" :prepend-avatar="item.avatar">
                         {{ item.text }}
                     </e-list-item>
                 </template>
             </ESelect>
-            <ESelect v-model="form.user" :rules="[_required]" label="Usuario" placeholder="Selecciona 1 usuario"
-                :items="availableUsers" cols="24" />
-            <EMenu origin="bottom right" data-session-form-date-picker transition="scale">
+            <ESelect v-model="state.form.roles" label="Rol" :disabled="!state.form.user" :rules="[_required]" multiple
+                :items="availableRole" cols="24" :detail="roleDetail" item-col="2">
+                <template #selection="{ selection, attrs }">
+                    <EChip :prepend-icon="selection?.icon" v-bind="attrs">
+                        {{ selection.text }}
+                    </EChip>
+                </template>
+                <template #item="{ attrs, item }">
+                    <e-list-item v-bind="attrs" :prepend-icon="item.icon">
+                        {{ item.text }}
+                    </e-list-item>
+                </template>
+            </ESelect>
+
+            <EMenu origin="bottom right" data-session-form-date-picker transition="scale" check-offset offset-x="12">
                 <template #activator="attrs">
                     <ETextField :modelValue="formattedDate" v-bind="attrs" :append-icon="$icon.calendar" cols="24" sm="10"
                         input-readonly />
                 </template>
-                <EDatePicker :model-value="form.start" :rules="[_required]" :icon-next="$icon.pickerIconeNext"
-                    :color="form.color" :icon-prev="$icon.pickerIconPrev" close-on-change
+                <EDatePicker :model-value="state.form.start" :rules="[_required]" :icon-next="$icon.pickerIconeNext"
+                    :color="state.form.color" :icon-prev="$icon.pickerIconPrev" close-on-change
                     @update:model-value="datePickerChange($event)" />
             </EMenu>
-            <ETimePicker v-model="form.start" :rules="[_required]" />
-            <ETimePicker v-model="form.end" :rules="[_required]" />
+            <ETimePicker v-model="state.form.start" :rules="[_required]" />
+            <ETimePicker v-model="state.form.end" :rules="[_required]" />
             <EFormColumn cols="24" class="d-flex justify-flex-end">
-                <EButton :color="form.color" type="submit" :disabled="!formValid" :loading="loading">Aceptar</EButton>
+                <EButton :color="state.form.color" type="submit" :disabled="!state.formValid" :loading="state.loading">
+                    Aceptar</EButton>
             </EFormColumn>
 
         </EForm>
@@ -55,38 +74,48 @@ export interface Props {
 const { $icon } = useNuxtApp()
 const { _required } = useRules()
 const formComponent = ref<Form>()
-const formValid = ref<boolean>(true)
+
+const state = reactive({
+    formValid: true,
+    loading: false,
+    form: new Session()
+})
+
 const props = defineProps<Props>()
-const loading = ref(false);
+
 const dialog = inject<EDIalog | undefined>("EDialog", undefined);
 const menuContainer = inject<ContainerMenuInterface | undefined>("EMenuContainer", undefined);
 
-const form = reactive<Session>(new Session())
 
 const availableRole = [
-    { text: 'Role x-large 1', value: 1 },
-    { text: 'Role x-large 2', value: 2 },
-    { text: 'Role large 3', value: 3 },
-    { text: 'Role 4', value: 4 },
-    { text: 'Role x-large 5', value: 5 },
-    { text: 'Role x-large 6', value: 6 },
+    { text: 'instructor', value: 1, icon: $icon.roles.instructor },
+    { text: 'monitor de sala', value: 2, icon: $icon.roles.roomInstructor },
+    { text: 'entrenador personal', value: 3, icon: $icon.roles.personalTrainer },
+    { text: 'servicio al cliente', value: 4, icon: $icon.roles.customerService },
+    { text: 'Coordinador', value: 5, icon: $icon.roles.coordination },
+    { text: 'Administracion', value: 6, icon: $icon.roles.administration },
+    { text: 'Direccion', value: 7, icon: $icon.roles.directorate },
+    { text: 'Limpieza', value: 8, icon: $icon.roles.cleaning },
+    { text: 'Mantenimiento', value: 9, icon: $icon.roles.maintenance },
+    { text: 'Operaciones', value: 10, icon: $icon.roles.operations },
+    { text: 'Recepcion', value: 11, icon: $icon.roles.reception },
+    { text: 'Recursos Humanos', value: 12, icon: $icon.roles.humanResources },
+    { text: 'Supervisor', value: 13, icon: $icon.roles.supervisor },
 ]
 
 const availableUsers = [
-    { text: 'User 1', value: 1, icon: 'customer' },
-    { text: 'User 2', value: 2, icon: 'customer' },
-    { text: 'User 3', value: 3, icon: 'customer' },
-    { text: 'User 4', value: 4, icon: 'customer' },
+    { text: 'User 1', value: 1, icon: 'customer', avatar: "https://cdn.vuetifyjs.com/images/john.png" },
+    { text: 'User 2', value: 2, icon: 'customer', avatar: "https://cdn.vuetifyjs.com/images/john.png" },
+    { text: 'User 3', value: 3, icon: 'customer', avatar: "https://cdn.vuetifyjs.com/images/john.png" },
+    { text: 'User 4', value: 4, icon: 'customer', avatar: "https://cdn.vuetifyjs.com/images/john.png" },
 ]
 
-const formattedDate = computed(() => new UtilDate(form.start).format('month-DD/month-MM, week-dddd '))
-
+const formattedDate = computed(() => new UtilDate(state.form.start).format('month-DD/month-MM, week-dddd '))
+const roleDetail = computed(() => state.form.user ? '' : 'Seleccione primero un usuario')
 watch(() => props.session, (value: Session | undefined) => {
+    reset()
     if (value) {
-        form.name = "";
-        form.start = value.start;
-        form.spaceId = value.spaceId;
-        form.end = value.end;
+        state.form = value
     }
 })
 
@@ -98,7 +127,7 @@ const emit = defineEmits<{
 
 
 const modalTitle = computed((): string => {
-    const day = new UtilDate(form.start).format('week-dddd')
+    const day = new UtilDate(state.form.start).format('week-dddd')
     return `Crear jornada &#x2022; ${day}`
 })
 
@@ -106,24 +135,14 @@ const datePickerChange = (value: Date | string) => {
     const newDay = new Date(value).getDate()
     if (new Date(props.date).getDate() !== newDay)
         emit('update:date', value)
-    form.start = new UtilDate(form.start).set(newDay, 'days').date
+    state.form.start = new UtilDate(state.form.start).set(newDay, 'days').date
 }
 const closeMenu = () => {
     emit('click:close', true)
-    nextTick(() => {
-        reset()
-    })
 }
 
 const reset = (): void => {
-    form.start = new Date();
-    form.name = '';
-    form.end = new Date();
-    form.id = null;
-    form.color = 'primary'
-    form.spaceId = -1;
-    form.roles = [];
-    form.user = null;
+    state.form = new Session()
     nextTick(() => {
         formComponent.value?.reset()
     })
@@ -131,10 +150,10 @@ const reset = (): void => {
 const submit = async () => {
     const valid = await formComponent.value?.validate()
     if (valid) {
-        loading.value = true;
+        state.loading = true;
         setTimeout(async () => {
-            emit('submit', { ...form })
-            loading.value = false;
+            emit('submit', { ...state.form })
+            state.loading = false;
             dialog?.close(true);
             menuContainer?.closeMenu();
             await nextTick()

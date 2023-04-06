@@ -14,6 +14,8 @@
     border-width: 0;
     border-radius: 9999px;
 
+    transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+
     &--size-default {
         --v-chip-size: 0.875rem;
         --v-chip-height: 32px;
@@ -38,11 +40,21 @@
         margin-left: $space-base;
     }
 
+    &--text {
+        .e-chip__underlay {
+            display: none;
+        }
+    }
+
     &__prepend,
     &__append,
     &__close {
         align-items: center;
         display: inline-flex;
+    }
+
+    &__prepend {
+        transform: translateX(-8px);
     }
 
     &__close {

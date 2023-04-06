@@ -48,7 +48,11 @@
         .e-field {
             pointer-events: none;
 
+            &__line::before {
+                border-style: dashed;
+            }
         }
+
     }
 
 }
