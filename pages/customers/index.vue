@@ -51,10 +51,13 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { order } from './constants'
 const router = useRouter()
 const route = useRoute()
 
+enum order {
+    name,
+    lastName,
+}
 const availableOrder = [
     { text: 'Nombre', value: order.name },
     { text: 'Apellido', value: order.lastName }
@@ -66,7 +69,7 @@ const filters = reactive({
     loading: false
 })
 
-const search = (evt: MouseEvent): void => {
+const search = (evt: SubmitEvent): void => {
     evt.preventDefault()
     filters.loading = true;
     setTimeout(() => {

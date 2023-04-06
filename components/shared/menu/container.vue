@@ -50,7 +50,7 @@ watch(() => opened.value, (value: boolean) => {
 onMounted(() => {
     updatemenuContentStyle();
     window.addEventListener('resize', handleResize, true);
-    window.addEventListener('scroll', handleScroll, true);
+    // window.addEventListener('scroll', handleScroll, true);
 })
 
 const setConfiguration = (props: Record<string, any>): void => {
@@ -70,7 +70,7 @@ const targetDOMRect = (): DOMRect => configuration.target?.getBoundingClientRect
 const destroyComponent = (): void => {
     document.removeEventListener('keydown', handleExcListener);
     window.removeEventListener('resize', handleResize);
-    window.removeEventListener('scroll', handleScroll);
+    // window.removeEventListener('scroll', handleScroll);
 }
 
 const openMenu = async () => {

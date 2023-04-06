@@ -84,11 +84,6 @@ const { _email, _required } = useRules()
 
 const editionEnabled: Ref<boolean> = ref<boolean>(true)
 
-enum order {
-    name,
-    lastName,
-}
-
 const store = reactive({
     savingProfile: false,
     dialogBirthDate: false
