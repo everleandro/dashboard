@@ -9,7 +9,7 @@
                 </div>
             </ECol>
             <ESpacer></ESpacer>
-            <ECol class="d-flex justify-flex-end align-center">
+            <ECol class="d-flex justify-flex-end align-center ">
                 <EButton :prepend-icon="editionEnabled ? $icon.accountCheck : $icon.accountEdit" color="primary"
                     :loading="store.savingProfile" :disabled="!profileValid" @click="editAction">
                     {{ editionEnabled ? 'Guardar' : 'Editar' }}

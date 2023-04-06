@@ -58,6 +58,7 @@ enum order {
     name,
     lastName,
 }
+
 const availableOrder = [
     { text: 'Nombre', value: order.name },
     { text: 'Apellido', value: order.lastName }

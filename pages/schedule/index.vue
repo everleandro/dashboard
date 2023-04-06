@@ -14,12 +14,17 @@
         <EForm @submit="search" class="mb-8">
             <ESelect v-model="filters.space" label="Espacio :" :items="spaces" :readonly="filters.loading" item-text="label"
                 return-object item-value="id" cols="24" sm="12" lg="6" />
-            <ESelect v-model="filters.role" label="Rol:" :items="availableRole" :readonly="filters.loading" clearable
-                cols="24" sm="12" lg="6">
+            <ESelect v-model="filters.role" label="Rol:" :items="availableRole" :readonly="filters.loading" cols="24"
+                sm="12" lg="6">
                 <template #selection="{ selection, attrs }">
                     <EChip :prepend-icon="selection?.icon" v-bind="attrs" text>
                         {{ selection.text }}
                     </EChip>
+                </template>
+                <template #item="{ attrs, item }">
+                    <e-list-item v-bind="attrs" :prepend-icon="item.icon">
+                        {{ item.text }}
+                    </e-list-item>
                 </template>
             </ESelect>
 
@@ -44,7 +49,7 @@
 import { sessions, spaces } from './constants'
 import UtilDate from '@/models/date';
 import Session from '@/models/session';
-import { SlotEvent, Mode, ScheduleEvent } from '@/components/shared/schedule/types';
+import { SlotEvent, Mode } from '@/components/shared/schedule/types';
 import { Menu } from '@/components/shared/menu/types';
 
 let mdBreakpoint = ref(false);
