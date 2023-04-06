@@ -214,6 +214,7 @@ const getEmptySlotData = ({ x, y }: Point): SlotEvent => {
         spaceId: space?.id,
         start,
         end,
+        color: 'primary',
         name: ""
     };
 }

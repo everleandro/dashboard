@@ -1,5 +1,5 @@
 
-export const iconFactory: Record<string, string> = {
+export const iconFactory: Record<string, any> = {
     accountCheck: "account-check",
     accountEdit: "account-edit",
     accountCancel: "account-cancel",
@@ -22,12 +22,12 @@ export const iconFactory: Record<string, string> = {
     events: "events",
     email: "email",
     pencil: "pencil",
-    grid: "grid",
+    grid: "view-grid",
     holidays: "holidays",
     menu: "menu",
     incidents: "incidents",
     logout: "logout",
-    list: "list",
+    list: "view-list",
     message: "message",
     maintenance: "maintenance",
     notification: "notification",
@@ -44,6 +44,21 @@ export const iconFactory: Record<string, string> = {
     search: "search",
     sendEmail: "send-email",
     wallet: "wallet",
+    roles: {
+        instructor: 'instructor',
+        roomInstructor: 'room-instructor',
+        personalTrainer: 'personal-trainer',
+        customerService: 'phone-msg',
+        coordination: 'table-check',
+        administration: 'mouse',
+        directorate: 'direction',
+        cleaning: 'cleaning',
+        maintenance: 'maintenance',
+        operations: 'operations',
+        reception: 'reception',
+        humanResources: 'human-resources',
+        supervisor: 'admin',
+    },
 
 }
 

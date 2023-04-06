@@ -26,11 +26,12 @@ export interface Props {
     transition?: string
     origin?: string
     maxWidth?: string | number
+    offsetX?: string | number
     width?: string | number
 }
 
 const id = `${Math.floor(Math.random() * 999999)}-e-menu`
-const props = withDefaults(defineProps<Props>(), { origin: 'bottom left', transition: 'fade' })
+const props = withDefaults(defineProps<Props>(), { origin: 'bottom left', transition: 'fade', offsetX: 0 })
 const slots = useSlots()
 const MenuReference = ref()
 const ContainerReference = ref()

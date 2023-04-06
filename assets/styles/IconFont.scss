@@ -11,6 +11,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-view-grid:before {
+  content: "\e914";
+}
+
+.icon-view-list:before {
+  content: "\e915";
+}
+
+.icon-phone-msg:before {
+  content: "\e913";
+}
+
 .icon-send-email:before {
   content: "\e910";
 }
@@ -107,6 +119,22 @@
   content: "\eaa1";
 }
 
+.icon-human-resources:before {
+  content: "\ea91";
+}
+
+.icon-cleaning:before {
+  content: "\ea3d";
+}
+
+.icon-direction:before {
+  content: "\ea78";
+}
+
+.icon-operations:before {
+  content: "\ea7b";
+}
+
 .icon-remuneration:before {
   content: "\ea09";
 }
@@ -115,16 +143,8 @@
   content: "\e9f1";
 }
 
-.icon-grid:before {
-  content: "\e968";
-}
-
 .icon-calendar:before {
   content: "\e9be";
-}
-
-.icon-list:before {
-  content: "\e9c8";
 }
 
 .icon-maintenance:before {
@@ -167,6 +187,34 @@
   content: "\e9b2";
 }
 
+.icon-room-instructor:before {
+  content: "\e9ae";
+}
+
+.icon-admin:before {
+  content: "\e972";
+}
+
+.icon-mouse:before {
+  content: "\eac8";
+}
+
+.icon-table-check:before {
+  content: "\eac9";
+}
+
+.icon-instructor:before {
+  content: "\eace";
+}
+
+.icon-personal-trainer:before {
+  content: "\ead3";
+}
+
+.icon-reception:before {
+  content: "\ead6";
+}
+
 .icon-notification:before {
   content: "\eae0";
 }
@@ -175,26 +223,10 @@
   content: "\eb10";
 }
 
-.icon-arrow-right:before {
-  content: "\eb11";
-}
-
-.icon-arrow-left:before {
-  content: "\eb28";
-}
-
 .icon-logout:before {
   content: "\eb44";
 }
 
 .icon-incidents:before {
   content: "\eb47";
-}
-
-.icon-arrow-down:before {
-  content: "\eb49";
-}
-
-.icon-arrow-up:before {
-  content: "\eb4a";
 }

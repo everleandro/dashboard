@@ -8,12 +8,12 @@ export interface SlotEvent {
     spaceId: number | string;
     start: Date | string;
     end: Date | string;
+    color: string;
 }
 
 export interface ScheduleEvent extends SlotEvent {
-    footer?: string;
-    subtitle?: string;
-    color: string;
+    footer?: string | number | null;
+    subtitle?: string | number | null;
 }
 
 export interface Point {

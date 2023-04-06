@@ -36,6 +36,7 @@ const configuration: Record<string, any> = reactive({
 const wrapper = ref()
 const opened = ref(false)
 const timerResize = ref<number>(0);
+const timerScroll = ref<number>(0);
 const ContainerReference = ref(null)
 const menuContentStyle: Ref<Record<string, string | number>> = ref({
     top: 0
@@ -49,6 +50,7 @@ watch(() => opened.value, (value: boolean) => {
 onMounted(() => {
     updatemenuContentStyle();
     window.addEventListener('resize', handleResize, true);
+    // window.addEventListener('scroll', handleScroll, true);
 })
 
 const setConfiguration = (props: Record<string, any>): void => {
@@ -68,6 +70,7 @@ const targetDOMRect = (): DOMRect => configuration.target?.getBoundingClientRect
 const destroyComponent = (): void => {
     document.removeEventListener('keydown', handleExcListener);
     window.removeEventListener('resize', handleResize);
+    // window.removeEventListener('scroll', handleScroll);
 }
 
 const openMenu = async () => {
@@ -80,6 +83,16 @@ const handleResize = (): void => {
     timerResize.value && clearTimeout(timerResize.value)
 
     timerResize.value = window.setTimeout(() => {
+        nextTick(() => {
+            updatemenuContentStyle();
+        })
+    }, 300);
+}
+
+const handleScroll = (): void => {
+    if (timerScroll.value) clearTimeout(timerScroll.value)
+
+    timerScroll.value = window.setTimeout(() => {
         nextTick(() => {
             updatemenuContentStyle();
         })
@@ -156,6 +169,9 @@ const updatemenuContentStyle = async (): Promise<void> => {
             x -= width;
         }
     }
+
+    if (origin_right) { x -= configuration.offsetX }
+    else { x += configuration.offsetX }
 
     result.top = `${y}px`;
     result.left = `${x}px`;

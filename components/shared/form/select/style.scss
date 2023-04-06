@@ -119,6 +119,7 @@
             flex-wrap: wrap;
 
             &-item {
+                $child: var(--list-item-col);
                 flex: 1 1 var(--list-item-percent);
             }
         }

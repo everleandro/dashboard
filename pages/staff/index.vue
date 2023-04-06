@@ -8,8 +8,14 @@
 
             <ESpacer></ESpacer>
 
-            <EButton :prepend-icon="$icon.list" stacked text>Lista</EButton>
-            <EButton :prepend-icon="$icon.grid" stacked text>Grid</EButton>
+            <div class="grid-list-actions">
+                <EButton :prepend-icon="$icon.list" stacked text :color="state.pageMode == mode.list ? 'primary' : 'gray'"
+                    @click="state.pageMode = mode.list">Lista
+                </EButton>
+                <EButton :prepend-icon="$icon.grid" stacked text :color="state.pageMode == mode.grid ? 'primary' : 'gray'"
+                    @click="state.pageMode = mode.grid">Grid
+                </EButton>
+            </div>
 
         </EBar>
         <EForm @submit="search">
@@ -65,9 +71,16 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { order } from "./constants"
 const router = useRouter()
 const route = useRoute()
+
+enum order { name, lastName }
+
+enum mode { list, grid }
+
+const state = reactive({
+    pageMode: mode.list
+})
 
 const availableOrder = [
     { text: 'Nombre', value: order.name },
@@ -86,7 +99,7 @@ const filters = reactive({
     loading: false
 })
 
-const search = (evt: MouseEvent): void => {
+const search = (evt: SubmitEvent): void => {
     evt.preventDefault()
     filters.loading = true;
     setTimeout(() => {

@@ -1,5 +1,5 @@
 
-import { ScheduleEvent } from '@/components/shared/schedule/types';
+import Session from '@/models/session';
 export const spaces = [
     {
         label: 'Sala Fitness',
@@ -38,7 +38,7 @@ export const spaces = [
         id: 800
     }
 ]
-export const sessions: Array<ScheduleEvent> = [
+export const sessions: Array<Session> = [
     {
         name: 'Ever',
         subtitle: "03:30h · 6:30'",
@@ -46,7 +46,9 @@ export const sessions: Array<ScheduleEvent> = [
         start: '2023-04-01T03:30:00',
         end: '2023-04-01T06:30:00',
         spaceId: 300,
-        color: '#039be5'
+        color: 'carnation',
+        roles: [1, 2],
+        user: 1
     },
     {
         name: 'Ever',
@@ -55,7 +57,9 @@ export const sessions: Array<ScheduleEvent> = [
         start: '2023-04-02T03:30:00',
         end: '2023-04-02T04:30:00',
         spaceId: 300,
-        color: '#039be5'
+        color: 'carnation',
+        roles: [1, 2, 3],
+        user: 1
     },
     {
         name: 'Reunion',
@@ -64,7 +68,9 @@ export const sessions: Array<ScheduleEvent> = [
         start: '2023-04-01T06:30:00',
         end: '2023-04-01T08:30:00',
         spaceId: 300,
-        color: '#039be5'
+        color: 'carnation',
+        roles: [1, 6],
+        user: 1
     },
     {
         name: 'correr',
@@ -73,7 +79,9 @@ export const sessions: Array<ScheduleEvent> = [
         start: '2023-04-05T01:30:00',
         end: '2023-04-05T03:30:00',
         spaceId: 300,
-        color: '#039be5'
+        color: 'carnation',
+        roles: [1, 3],
+        user: 1
     },
     {
         name: 'Cinta',
@@ -82,7 +90,9 @@ export const sessions: Array<ScheduleEvent> = [
         start: '2023-04-06T02:00:00',
         end: '2023-04-06T03:30:00',
         spaceId: 300,
-        color: '#039be5'
+        color: 'biloba-flower',
+        roles: [2],
+        user: 1
     },
     {
         name: 'Evento random',
@@ -91,7 +101,9 @@ export const sessions: Array<ScheduleEvent> = [
         start: '2023-04-07T01:00:00',
         end: '2023-04-07T02:00:00',
         spaceId: 300,
-        color: '#039be5'
+        color: 'biloba-flower',
+        roles: [5],
+        user: 1
     },
     {
         name: 'Otro evento',
@@ -100,6 +112,8 @@ export const sessions: Array<ScheduleEvent> = [
         start: '2023-04-03T23:00:00',
         end: '2023-04-03T00:00:00',
         spaceId: 300,
-        color: '#039be5'
+        color: 'biloba-flower',
+        roles: [2],
+        user: 1
     }
 ]

@@ -26,11 +26,20 @@
                         <template v-else-if="multiple">
                             <div v-for="(item, index) in modelValue" class="e-select__selection" :key="index"
                                 :style="selectionStyle">
-                                <EChip closable @click:close="handleItemClick(item)"> {{ selectedText(item) }}</EChip>
+                                <slot name="selection" :selection="selectionItem(item)" :attrs="selectionAttrs(item)">
+                                    <EChip closable @click:close="handleItemClick(selectionItem(item))">
+                                        {{ selectedText(item) }}
+                                    </EChip>
+                                </slot>
                             </div>
                         </template>
                         <div v-else class="e-select__selection" :style="selectionStyle">
-                            {{ selectedText() }}
+                            <slot name="selection" :selection="selectionItem()" :attrs="selectionAttrs()">
+                                <EChip v-if="chip" :closable="chipClosable" @click:close="changeValue(null)">
+                                    {{ selectedText() }}
+                                </EChip>
+                                <span v-else>{{ selectedText() }}</span>
+                            </slot>
                         </div>
                     </div>
                     <input :id="id" readonly type="text" aria-readonly="false" autocomplete="off" @blur="handleBlur"
@@ -93,8 +102,8 @@ export interface Props {
     arrowDown?: string; multiple?: boolean, returnObject?: boolean; retainColor?: boolean;
     disabled?: boolean; dense?: boolean; readonly?: boolean; clearable?: boolean; itemCol?: string | number;
     labelInline?: boolean; detail?: string; outlined?: boolean; label?: string | number;
-    modelValue?: itemType; placeholder?: string; suffix?: string; autocomplete?: string;
-    prefix?: string; inputAlign?: string; color?: string; limit?: string | number;
+    modelValue?: itemType; placeholder?: string; suffix?: string; autocomplete?: string; chip?: boolean
+    prefix?: string; inputAlign?: string; color?: string; limit?: string | number; chipClosable?: boolean
     detailErrors?: Array<string>; detailsOnMessageOnly?: boolean; type?: string; appendIcon?: string;
     labelMinWidth?: string; prependIcon?: string; rules?: Array<(param: any) => string | boolean>;
     cols?: string | number; xs?: string | number; sm?: string | number; md?: string | number;
@@ -111,7 +120,7 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: itemType): void
 }>()
 
-const props = withDefaults(defineProps<Props>(), { itemText: 'text', itemValue: 'value', inputAlign: 'start' })
+const props = withDefaults(defineProps<Props>(), { itemText: 'text', itemValue: 'value', inputAlign: 'start', itemCol: 1 })
 const opened = ref<boolean>(false)
 const { fieldClass, dirty, id, focused, showClearable, showDetails, textColor, color,
     details, labelStyle, handleHover, handleBlur, handleClickPrependIcon,
@@ -143,11 +152,38 @@ const selectClass = computed(() => {
     return result
 })
 
+const selectionAttrs = (item?: itemType) => {
+    const attrs: Record<string, any> = { closable: props.chipClosable || props.multiple }
+
+    if (item) {
+        attrs['onClick:close'] = () => handleItemClick(selectionItem(item))
+    } else {
+        attrs['onClick:close'] = () => changeValue(null)
+    }
+    return attrs
+}
 
 const handleExcListener = ({ key }: KeyboardEvent): void => {
     if (key === "Escape") {
         closeMenu()
     }
+}
+const selectionItem = (value?: itemType): any => {
+    const isArrayOfObjects = isObject(props.items[0]);
+    let item: itemType | undefined;
+    const localValue = value || props.modelValue
+    if (props.returnObject) {
+        const compareItem: string | number = (localValue as Record<string, any>)?.[props.itemValue]
+        item = (props.items as Array<Record<string, any>>).find((el) => el[props.itemValue] === compareItem)
+    }
+    else if (isArrayOfObjects) {
+        item = (props.items as Array<Record<string, any>>).find((el) => el[props.itemValue] == localValue)
+
+    }
+    else {
+        item = (props.items as Array<string | number>).find((el) => el === localValue)
+    }
+    return item || {}
 }
 
 const handleSelectFocus = (event: FocusEvent): void => {
@@ -184,24 +220,28 @@ const changeValue = (value: any, isEvent = false) => {
     const valueResult = isEvent ? value.target.value : value
     emit('update:modelValue', valueResult)
 }
+
 const handleItemClick = (item: itemType): void => {
     if (props.multiple) {
         const result: Array<itemType> = [...(props.modelValue as Array<itemType>)]
 
         let index = -1;
+        let value: itemType = item;
         if (isObject(item)) {
             if (props.returnObject) {
                 index = result.findIndex((e) => JSON.stringify(e) === JSON.stringify(item));
             } else {
                 index = result.findIndex(
-                    (e) => (e as Record<string, string>)?.[props.itemValue] === (item as Record<string, string>)[props.itemValue]
+                    (e) => e === (item as Record<string, string>)[props.itemValue]
                 );
+                value = (item as Record<string, string>)?.[props.itemValue]
             }
         } else {
             index = result.findIndex((e) => e === item);
+            value = item
         }
 
-        index < 0 ? result.push(item) : result.splice(index, 1)
+        index < 0 ? result.push(value) : result.splice(index, 1)
         changeValue(result);
 
     } else if (props.returnObject || !isObject(item)) {
@@ -221,7 +261,7 @@ const active = (item: itemType): boolean => {
                 index = model.findIndex((e) => JSON.stringify(e) === JSON.stringify(item));
             } else {
                 index = model.findIndex(
-                    (e) => (e as Record<string, string>)?.[props.itemValue] === (item as Record<string, string>)[props.itemValue]
+                    (e) => e === (item as Record<string, string>)[props.itemValue]
                 );
             }
         } else {
@@ -271,8 +311,9 @@ const selectionStyle = computed((): Record<string, string> => {
 })
 
 const listStyle = computed((): Record<string, string> => {
-    const percent = (1 / parseInt(`${props.itemCol}`, 10) * 100)
-    return { '--list-item-percent': `${percent}%` }
+    const col = `${props.itemCol}`
+    const percent = (1 / parseInt(col, 10) * 100)
+    return { '--list-item-percent': `${percent}%`, '--list-item-col': col }
 })
 
 const clear = (): void => {

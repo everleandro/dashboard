@@ -1,14 +1,13 @@
 <template>
     <component :is="tagResult" v-ripple :active-class="activeClass" tabindex="0" role="option" aria-selected="true"
         :class="listItemCLass" @click="handleItemClick">
-        <div v-if="hasPrependSlot" class="e-list-item__icon">
-            <slot name="prepend-icon"></slot>
-        </div>
-        <div v-else-if="prependIcon" class="e-list-item__icon">
-            <EIcon :name="prependIcon"></EIcon>
+        <div v-if="hasPrepend" class="e-list-item__prepend">
+            <slot name="prepend">
+                <EIcon v-if="prependIcon" :name="prependIcon"></EIcon>
+                <EAvatar v-if="prependAvatar" size="34" :src="prependAvatar"></EAvatar>
+            </slot>
         </div>
         <div class="e-list-item__content">
-            {{ tag }}
             <slot></slot>
         </div>
     </component>
@@ -20,6 +19,7 @@ export interface Props {
     disabled?: boolean
     ripple?: boolean
     prependIcon?: string
+    prependAvatar?: string
     isActive?: boolean
     activeClass?: string
     tag?: string
@@ -56,8 +56,8 @@ const listItemCLass = computed((): Array<string> => {
     return classes;
 })
 
-const hasPrependSlot = computed((): boolean => {
-    return !!slots.prependIcon;
+const hasPrepend = computed((): boolean => {
+    return !!slots.prepend || !!props.prependAvatar || !!props.prependIcon;
 })
 
 const tagResult = computed((): string => {

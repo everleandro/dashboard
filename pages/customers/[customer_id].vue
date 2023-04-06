@@ -29,7 +29,7 @@
                     outlined no-gutters label-min-width="125">
                     <ETextField v-model="identificativeData.name" :rules="[_required]" placeholder="Nombre" label="Nombre"
                         clearable sm="12" lg="11" />
-                   
+
                     <ERadioGroup v-model="identificativeData.gender" mandatory row label="Sexo" sm="12" lg="7">
                         <ERadio model-value="1" label="M"></ERadio>
                         <ERadio model-value="2" label="F"></ERadio>
