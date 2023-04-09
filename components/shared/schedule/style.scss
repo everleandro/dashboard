@@ -235,4 +235,47 @@
         top: 70px;
         z-index: 3;
     }
+
+    @include _xs {
+        .e-schedule {
+            &__header[role=cell] [data-day-of-week=true] {
+                font-size: 11px;
+                text-transform: capitalize;
+            }
+
+            &__empty-slot {
+                &.e-btn {
+                    min-width: unset;
+                    padding: 0 4px;
+                    font-size: 12px;
+                }
+            }
+
+            &-btn--day {
+                width: 25px;
+                height: 25px;
+                font-size: 12px;
+            }
+
+            &__event-container {
+                .event {
+                    &-name {
+                        overflow: hidden;
+                        font-size: 11px;
+                        line-height: 11px;
+                    }
+
+                    &-subtitle,
+                    &-footer {
+                        display: none;
+                    }
+                }
+            }
+
+        }
+
+        .hour-label:after {
+            content: '';
+        }
+    }
 }
