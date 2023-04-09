@@ -6,7 +6,7 @@
             </div>
         </EBar>
 
-        <EMenu ref="eventMenuRef" data-event-menu :activator="session.activator" check-offset>
+        <EMenu ref="eventMenuRef" data-event-menu :activator="session.activator" check-offset origin="bottom right">
             <ScheduleSessionForm v-model:session="session.form" v-model:date="filters.date" @click:close="closeMenu()"
                 @submit="submitSession" />
         </EMenu>
@@ -35,8 +35,8 @@
                     close-on-change />
             </EMenu>
             <ESpacer />
-            <ESelect v-model="filters.scheduleMode" class="schedule-mode-select" :items="modes"
-                :readonly="loading || mdBreakpoint" outlined retain-color />
+            <ESelect v-model="filters.scheduleMode" class="schedule-mode-select" :items="modes" :readonly="loading"
+                outlined retain-color />
         </EForm>
         <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50" :events="sessionsList"
             :loading="loading" v-model:mode="filters.scheduleMode" :start="60 * 60" :step="60 * 60" :spaces="spaces"
@@ -137,16 +137,6 @@ const closeMenu = () => eventMenuRef.value?.closeMenu()
 
     @include _from_sm {
         width: 500px;
-    }
-}
-
-.schedule-page {
-    .schedule-mode-select {
-        display: none;
-
-        @include _from_lg {
-            display: flex;
-        }
     }
 }
 </style>

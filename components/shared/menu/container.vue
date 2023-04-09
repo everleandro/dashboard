@@ -159,14 +159,13 @@ const updatemenuContentStyle = async (): Promise<void> => {
         if (offsetY < 0) {
             y += offsetY;
         }
-
-        if (!origin_right && (x + getWidth() + margin > window.pageXOffset + window.innerWidth)) {
-            x -= (getWidth() - width);
+        const leftOffset = (x + getWidth() + margin) - (window.pageXOffset + window.innerWidth)
+        if (!origin_right && leftOffset > 0) {
+            x -= leftOffset;
         }
-
-        if (origin_right && (x - (getWidth() + margin) < 0)) {
-            result.transform = 'unset';
-            x -= width;
+        const rightOffset = getWidth() + margin - x
+        if (origin_right && (rightOffset > 0)) {
+            x += rightOffset
         }
     }
 
