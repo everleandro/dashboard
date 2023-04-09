@@ -21,12 +21,12 @@ const props = withDefaults(defineProps<Props>(), { size: '65' })
 
 const avatarClass = computed(() => {
     const classes = ['e-avatar__container']
-    props.color && classes.push(props.color)
+    props.color && classes.push(`${props.color}--text`)
     return classes
 })
 
 const style = computed(() => {
-    return { height: `${props.size}px`, width: `${props.size}px` }
+    return { height: `${props.size}px`, width: `${props.size}px`, '--size': `${props.size}px` }
 })
 
 </script>
@@ -46,9 +46,18 @@ const style = computed(() => {
         transition-property: width, height;
         vertical-align: middle;
         border-radius: 50%;
+        @include button-before();
+
+        &::before {
+            opacity: .1;
+        }
 
         img {
             width: 100%;
+        }
+
+        i.e-icon {
+            font-size: calc(var(--size) - var(--size) / 3);
         }
     }
 }

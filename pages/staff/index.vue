@@ -8,14 +8,7 @@
 
             <ESpacer></ESpacer>
 
-            <div class="grid-list-actions">
-                <EButton :prepend-icon="$icon.list" stacked text :color="state.pageMode == mode.list ? 'primary' : 'gray'"
-                    @click="state.pageMode = mode.list">Lista
-                </EButton>
-                <EButton :prepend-icon="$icon.grid" stacked text :color="state.pageMode == mode.grid ? 'primary' : 'gray'"
-                    @click="state.pageMode = mode.grid">Grid
-                </EButton>
-            </div>
+            <GridListSwitch v-model="state.modeList" :switch-type="switchType.listGrid" />
 
         </EBar>
         <EForm @submit="search">
@@ -23,73 +16,63 @@
                 :readonly="filters.loading" cols="24" sm="12" md="8" lg="6" />
             <ESelect v-model="filters.order" label="Orden:" :items="availableOrder" :readonly="filters.loading" cols="24"
                 sm="12" md="8" lg="6" />
-            <ESelect v-model="filters.role" label="Rol:" :items="availableRole" :readonly="filters.loading" clearable
-                cols="24" sm="12" md="8" lg="6" />
+            <ESelect v-model="filters.role" label="Rol:" :items="roleList" :readonly="filters.loading" cols="24" sm="12"
+                lg="6">
+                <template #selection="{ selection, attrs }">
+                    <EChip :prepend-icon="selection?.icon" v-bind="attrs" text>
+                        {{ selection.text }}
+                    </EChip>
+                </template>
+                <template #item="{ attrs, item }">
+                    <e-list-item v-bind="attrs" :prepend-icon="item.icon">
+                        {{ item.text }}
+                    </e-list-item>
+                </template>
+            </ESelect>
             <EFormColumn class="d-flex justify-flex-end">
                 <EButton to="/staff/new" color="primary">Añadir Empleado</EButton>
             </EFormColumn>
         </EForm>
 
-        <ERow class="mt-12">
-            <ECol v-for="item in 20" :key="item" cols="24" lg="12">
-                <ECard>
-                    <EAvatar src="https://avatars0.githubusercontent.com/u/9064066?v=4&s=460"></EAvatar>
-                    <ECardContainer>
-                        <h3 class="title">Ever Santiesteban Jimenez</h3>
-                        <p>
-                            <EIcon :name="$icon.phone" class="mr-2" /> 41359976
-                        </p>
-                    </ECardContainer>
-
-                    <EMenu width="200" origin="right bottom" transition="scale">
-                        <template #activator="attrs">
-                            <EButton v-bind="attrs" :icon="$icon.dotsVertical" />
-                        </template>
-                        <e-list color="primary" dense>
-                            <e-list-item :prepend-icon="$icon.accountEdit" @click:item="goToCustomerDetail(1)">
-                                editar
-                            </e-list-item>
-                            <e-list-item :prepend-icon="$icon.accountCancel">
-                                Desactivar
-                            </e-list-item>
-                        </e-list>
-                    </EMenu>
-                    <template #footer>
-                        <EDivider />
-                        <div class="pa-1">
-                            <EChip class="ma-1">Administrador</EChip>
-                            <EChip class="ma-1">limpieza</EChip>
-                            <EChip class="ma-1">entrenador</EChip>
-                            <EChip class="ma-1">nananan</EChip>
-                            <EChip class="ma-1">role 3</EChip>
-                            <EChip class="ma-1">role random</EChip>
-                        </div>
-                    </template>
-                </ECard>
-            </ECol>
-        </ERow>
+        <div class="tab__container">
+            <transition :name="listTrasition">
+                <ERow class="mt-12" :key="`${state.modeList}`">
+                    <ECol v-for="(employee, index) in emloyees" :key="index" v-bind="colListAttributes">
+                        <UserCard :model-value="employee" :card-type="userCardType.employee" :grid-mode="!state.modeList" />
+                    </ECol>
+                </ERow>
+            </transition>
+        </div>
     </div>
 </template>
 <script lang="ts" setup>
+import { Employee, roleList } from "@/models/employee";
+import { type as userCardType } from "@/components/app/user/card.vue";
+import { type as switchType } from "@/components/app/grid-list-switch.vue"
 const router = useRouter()
-const route = useRoute()
 
 enum order { name, lastName }
 
-enum mode { list, grid }
-
 const state = reactive({
-    pageMode: mode.list
+    modeList: true
 })
+
+const emloyees: Array<Partial<Employee>> = [
+    { name: 'Ever Santiesteban', id: 1, avatar: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460', phone: '52013954', roles: roleList.slice(0, 4) },
+    { name: 'Ever Santiesteban', id: 2, phone: '52013954', roles: roleList.slice(3, 5) },
+    { name: 'Ever Santiesteban', id: 3, phone: '52013954', roles: roleList.slice(5, 8) },
+    { name: 'Ever Santiesteban', id: 4, phone: '52013954', roles: roleList.slice(-1) },
+    { name: 'Ever Santiesteban', id: 5, phone: '52013954', roles: roleList.slice(10, 11) },
+    { name: 'Ever Santiesteban', id: 6, phone: '52013954', roles: roleList.slice(8, 9) },
+    { name: 'Ever Santiesteban', id: 7, phone: '52013954', roles: roleList.slice(8, 9) },
+    { name: 'Ever Santiesteban', id: 8, phone: '52013954', roles: roleList.slice(3, 9) },
+    { name: 'Ever Santiesteban', id: 9, phone: '52013954', roles: roleList.slice(3, 5) },
+    { name: 'Ever Santiesteban', id: 10, phone: '52013954', roles: roleList.slice(2, 9) },
+]
 
 const availableOrder = [
     { text: 'Nombre', value: order.name },
     { text: 'Apellido', value: order.lastName }
-]
-
-const availableRole = [
-    { text: 'Role 1', value: order.name },
-    { text: 'role 2', value: order.lastName }
 ]
 
 const filters = reactive({
@@ -104,13 +87,12 @@ const search = (evt: SubmitEvent): void => {
     filters.loading = true;
     setTimeout(() => {
         filters.loading = false;
-
     }, 2000)
 }
-const goToCustomerDetail = (id: string | number) => {
-    router.push({
-        path: `/staff/${id}`
-    })
-}
+
+const colListAttributes = computed(() => {
+    return state.modeList ?  { cols: 24, lg: 12 }:{ cols: 24, sm: 12, md: 8, xl: 6 }
+})
+const listTrasition = computed(() => state.modeList ? 'tab-reverse-transition' : 'tab-transition')
 </script>
 <style lang="scss"></style>

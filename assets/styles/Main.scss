@@ -89,6 +89,11 @@
     transition: all 0.6s ease-in-out;
 }
 
-i {
-    opacity: 0;
+.tab__container {
+
+    &:has(.tab-reverse-transition-leave-active),
+    &:has(.tab-transition-leave-active) {
+        overflow: hidden;
+        position: relative;
+    }
 }

@@ -24,5 +24,6 @@ export enum Mode {
     day,
     week,
     month,
-    year
+    year,
+    schedule,
 }

@@ -11,11 +11,11 @@ export const drawerLinks = [
         text: 'staff',
         to: '/staff'
     },
-    // {
-    //     icon: iconFactory.events,
-    //     text: 'eventos',
-    //     to: '/events'
-    // },
+    {
+        icon: iconFactory.events,
+        text: 'eventos',
+        to: '/events'
+    },
     // {
     //     icon: iconFactory.sessions,
     //     text: 'sesiones',

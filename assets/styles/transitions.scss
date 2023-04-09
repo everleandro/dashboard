@@ -98,3 +98,8 @@ $transition-duration: 0.3s;
 .picker-transition-reverse-enter-to {
     transform: translateY(0);
 }
+
+div[class*='tab-reverse-transition'],
+div[class*='tab-transition'] {
+    transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
+}

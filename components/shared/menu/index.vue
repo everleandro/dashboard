@@ -25,6 +25,7 @@ export interface Props {
     checkOffset?: boolean
     transition?: string
     origin?: string
+    openOnHover?: boolean
     maxWidth?: string | number
     offsetX?: string | number
     width?: string | number

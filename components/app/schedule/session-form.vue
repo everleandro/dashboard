@@ -11,8 +11,8 @@
 
         <EForm ref="formComponent" v-model="state.formValid" class="ma-0" :color="state.form.color" @submit="submit">
             <ETextField v-model="state.form.name" :rules="[_required]" :readonly="state.loading" placeholder="Titulo"
-                cols="16" />
-            <EColorPicker v-model="state.form.color" :rules="[_required]" label="Color" cols="8" retain-color />
+                cols="15" sm="16" />
+            <EColorPicker v-model="state.form.color" :rules="[_required]" label="Color" cols="9" sm="8" retain-color />
             <ESelect v-model="state.form.user" :rules="[_required]" label="Usuario" chip placeholder="Selecciona 1 usuario"
                 item-col="2" :items="availableUsers" cols="24">
                 <template #selection="{ selection }">
