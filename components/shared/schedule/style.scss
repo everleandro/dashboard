@@ -21,6 +21,14 @@
         border-radius: 50%;
     }
 
+    &-btn--space {
+        padding: 0 4px;
+        height: 100%;
+        text-transform: capitalize;
+        width: 100%;
+        white-space: normal;
+    }
+
     &__event {
         position: absolute;
         width: 100%;
@@ -139,10 +147,9 @@
 
     div[role='col'] {
         flex: 1;
-        transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
         background-color: $schedule-bg;
 
-        &:first-child {
+        &:first-of-type {
             max-width: $hour-column-width;
             z-index: 1;
 
@@ -216,5 +223,16 @@
             position: relative;
             top: 0;
         }
+    }
+
+    &--loading {
+        pointer-events: none;
+        position: relative;
+    }
+
+    .e-progress-linear {
+        position: absolute;
+        top: 70px;
+        z-index: 3;
     }
 }

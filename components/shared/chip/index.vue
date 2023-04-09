@@ -1,5 +1,5 @@
 <template>
-    <span :class="chipClass" draggable="false">
+    <div :class="chipClass" draggable="false">
         <div v-if="hasPrepend" class="e-chip__prepend">
             <slot name="prepend">
                 <EIcon v-if="prependIcon" :name="prependIcon" />
@@ -20,8 +20,11 @@
                 <EIcon name="close" />
             </button>
         </div>
-    </span>
+    </div>
 </template>
+<script lang="ts">
+export default { name: "Chip" }
+</script>
 <script lang="ts" setup>
 export interface Props {
     closable?: boolean

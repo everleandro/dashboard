@@ -24,11 +24,12 @@
                             </span>
                         </div>
                         <template v-else-if="multiple">
-                            <div v-for="(item, index) in modelValue" class="e-select__selection" :key="index"
+                            <div v-for="(itemValue, index) in modelValue" class="e-select__selection" :key="index"
                                 :style="selectionStyle">
-                                <slot name="selection" :selection="selectionItem(item)" :attrs="selectionAttrs(item)">
-                                    <EChip closable @click:close="handleItemClick(selectionItem(item))">
-                                        {{ selectedText(item) }}
+                                <slot name="selection" :selection="selectionItem(itemValue)"
+                                    :attrs="selectionAttrs(itemValue)">
+                                    <EChip closable @click:close="handleItemClick(selectionItem(itemValue))">
+                                        {{ selectedText(itemValue) }}
                                     </EChip>
                                 </slot>
                             </div>
@@ -278,31 +279,27 @@ const active = (item: itemType): boolean => {
     }
 }
 
-const selectedText = (_item?: itemType): string => {
-
+const selectedText = (itemValue?: itemType): string => {
+    const value = itemValue || props.modelValue
     if (showPlaceholder.value) {
         return '';
     }
-
     const isArrayOfObjects = isObject(props.items[0]);
 
     if (props.returnObject) {
-        const item = (_item || props.modelValue || {}) as Record<string, string>
+        const item = (value || {}) as Record<string, string>
         return `${item[props.itemText]}`
     }
 
     if (isArrayOfObjects) {
-        if (_item) {
-            return `${(_item as Record<string, any>)[props.itemText]}`
-        }
         const item = props.items.find(
-            (e) => (e as Record<string, string>)?.[props.itemValue] === props.modelValue
+            (e) => (e as Record<string, string>)?.[props.itemValue] === value
         );
 
         return item?.[props.itemText] || '';
     }
 
-    return _item ? `${_item}` : `${props.modelValue}`
+    return `${value}`
 
 }
 

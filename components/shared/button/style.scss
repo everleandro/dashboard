@@ -42,7 +42,7 @@ $stacked-height: map-merge(('x-small': 32px,
 
 $btn-height: map-merge(('x-small': 35px,
             'small': 40px,
-            'default': 45px,
+            'default': 48px,
             'large': 50px,
             'x-large': 55px),
         ()) !default;
@@ -96,20 +96,7 @@ $icon-font-sizes: map-merge(('x-small': 18px,
     vertical-align: middle;
     white-space: nowrap;
 
-    &:before {
-        content: '';
-        background-color: currentColor;
-        border-radius: inherit;
-        bottom: 0;
-        opacity: 0;
-        left: 0;
-        top: 0;
-        right: 0;
-        color: inherit;
-        pointer-events: none;
-        position: absolute;
-        transition: opacity 0.2s cubic-bezier(0.4, 0, 0.6, 1);
-    }
+    @include button-before();
 
     &:focus,
     &:active {

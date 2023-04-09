@@ -380,17 +380,22 @@
         }
     }
 
-    ::-webkit-input-placeholder {
-        /* Edge */
-        color: var(--input-placeholder)
-    }
-
-    :-ms-input-placeholder {
-        /* Internet Explorer 10-11 */
-        color: var(--input-placeholder)
-    }
-
+    ::-webkit-input-placeholder,
+    :-ms-input-placeholder,
     ::placeholder {
         color: var(--input-placeholder)
     }
+
+    &--is-hovered,
+    &--retain-color,
+    &--is-focused {
+
+        ::-webkit-input-placeholder,
+        :-ms-input-placeholder,
+        ::placeholder {
+            color: currentColor
+        }
+    }
+
+
 }
