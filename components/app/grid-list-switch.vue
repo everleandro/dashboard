@@ -31,6 +31,7 @@ export interface Props {
     switchType?: type,
     textOne?: string,
     width?: string,
+    minWidth?: string,
     textTwo?: string,
     fillHeight?: boolean,
     block?: boolean,
@@ -64,6 +65,7 @@ const switchClass = computed(() => {
 const switchStyle = computed((): Record<string, string> => {
     const result: Record<string, string> = {};
     if (props.width) result.width = `${props.width}px`;
+    if (props.minWidth) result.minWidth = `${props.minWidth}px`;
     return result
 })
 

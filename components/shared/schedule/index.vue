@@ -19,9 +19,9 @@
                 <transition-group :name="local.globalContentAnimation">
                     <div v-for="(data, colIndex) in headerLabels" :key="colKey(data)" role="col">
                         <div role="cell" class="e-schedule__header">
-                            <span v-if="computedMode == Mode.schedule">
+                            <span v-if="computedMode === Mode.schedule">
                                 <EButton class="e-schedule-btn--space" :color="color" text depressed
-                                    @click="handleHeaderLabelClick(data.spaceId)">
+                                    @click="handleHeaderLabelClick(data.date, data.entityId)">
                                     {{ data.label }}
                                 </EButton>
                             </span>
@@ -76,18 +76,18 @@ import UtilDate from '@/models/date';
 
 export interface Props {
     lng?: suportedLng; color?: string; stickyTopHeader?: string; loading?: boolean;
-    rowHeight?: string; step?: number; start?: number; events?: ScheduleEvent[];
+    rowHeight?: string; step?: number; start?: number; events?: ScheduleEvent[]; scheduleAfterWeek?: boolean;
     end?: number; spaces?: Space[]; selectedSpace?: Space; modelValue: Date; mode?: Mode;
 }
 const props = withDefaults(defineProps<Props>(),
     {
         lng: 'es', color: 'primary', rowHeight: '97',
         step: 60 * 60, start: 0, events: () => [], stickyTopHeader: '0',
-        end: 60 * 60 * 24, spaces: () => [], mode: Mode.day
+        end: 60 * 60 * 24, spaces: () => []
     })
 
 const local = reactive({
-    mode: Mode.week,
+    mode: Mode.day,
     forceUnanimated: false,
     selectedSpace: <Space | undefined>undefined,
     events: new Array<Array<ScheduleEvent>>(),
@@ -102,14 +102,17 @@ const scheduleClass = computed(() => {
     return classes
 
 })
+
 const colKey = (data: any) => {
-    return computedMode.value === Mode.schedule ? data.spaceId : data.dayOfWeek + '-' + data.dayOfMonth
+    return computedMode.value === Mode.schedule ? data.entityId : data.dayOfWeek + '-' + data.dayOfMonth
 }
-const modeDay = computed(() => props.mode == Mode.day)
+
+const modeDay = computed(() => computedMode.value === Mode.day)
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: Date): void,
     (e: 'update:mode', value: Mode): void,
+    (e: 'click:header-label', value: { date: Date, entityId?: number | string }): void,
     (e: 'click:empty-slot', value: { data: SlotEvent, nativeEvent: Event }): void,
     (e: 'click:event', value: { data: ScheduleEvent, nativeEvent: Event }): void,
     (e: 'update:selected-space', value: Space | undefined): void,
@@ -120,7 +123,7 @@ const changeValue = (value: Date): void => {
 }
 
 const computedMode = computed((): Mode => {
-    return props.mode != null ? props.mode : local.mode;
+    return props.mode != undefined ? props.mode : local.mode;
 })
 
 const changeMode = (value: Mode) => {
@@ -148,9 +151,11 @@ watch(() => props.modelValue, (value, oldValue) => {
         local.globalContentAnimation = reverse ? 'tab-transition' : 'tab-reverse-transition'
     setLocalEvents()
 })
-watch(() => props.mode, () => {
-    local.globalContentAnimation = ""
-    setLocalEvents()
+watch(() => props.mode, (newValue: Mode | undefined, oldValue: Mode | undefined) => {
+    if (oldValue !== newValue) {
+        local.globalContentAnimation = ""
+        setLocalEvents()
+    }
 })
 watch(() => props.events, () => setLocalEvents(), { deep: true })
 
@@ -173,8 +178,8 @@ const setLocalEvents = (): void => {
         );
     } else if (computedMode.value === Mode.week) {
         events = events.filter(
-            ({ spaceId }: ScheduleEvent) =>
-                spaceId === computedSelectedSpace.value?.id
+            ({ entityId }: ScheduleEvent) =>
+                entityId === computedSelectedSpace.value?.id
         );
     } else if (computedMode.value === Mode.schedule) {
         events = events.filter(
@@ -186,7 +191,7 @@ const setLocalEvents = (): void => {
         const day = props.modelValue.getDay();
         let y = -1;
         if (computedMode.value === Mode.day) {
-            y = props.spaces.findIndex(({ id }) => id == event.spaceId);
+            y = props.spaces.findIndex(({ id }) => id == event.entityId);
         } else {
             y = new UtilDate(event.start).date.getDay();
             y = y < day ? 7 - day + y : y - day;
@@ -234,7 +239,7 @@ const getEmptySlotData = ({ x, y }: Point): SlotEvent => {
         ? props.spaces[y]
         : (computedSelectedSpace.value as Space);
     return {
-        spaceId: space?.id,
+        entityId: space?.id,
         start,
         end,
         color: 'primary',
@@ -275,15 +280,20 @@ const eventClass = (event: ScheduleEvent): string => {
 }
 
 
-const handleHeaderLabelClick = (date: Date | number | string): void => {
-
+const handleHeaderLabelClick = (date: Date, entityId?: number | string): void => {
     local.forceUnanimated = true
     if (computedMode.value === Mode.week) {
         nextTick(() => {
             date && changeValue(date as Date)
-            changeMode(Mode.day);
+            const mode = props.scheduleAfterWeek ? Mode.schedule : Mode.day
+            changeMode(mode);
         })
+    } else if (computedMode.value === Mode.schedule) {
+        changeMode(Mode.week);
+        const space = props.spaces.find(({ id }) => id == entityId);
+        changeSelectedSpace(space)
     }
+    emit('click:header-label', { entityId, date })
 }
 
 onMounted(() => {
@@ -322,7 +332,7 @@ const headerLabels = computed((): Array<Record<string, any>> => {
     } else if (computedMode.value === Mode.week) {
         dayList = t().sliceLangList(t().currentLng.weekdaysShort, day);
     } else if (computedMode.value === Mode.schedule) {
-        return props.spaces.map(({ label, id }) => ({ label, spaceId: id }));
+        return props.spaces.map(({ label, id }) => ({ label, entityId: id, date: new Date(props.modelValue) }));
     }
 
     return dayList.map((d, i) => {

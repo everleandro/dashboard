@@ -18,6 +18,13 @@
         }
     }
 
+    input {
+        line-height: 20px;
+        padding: 8px 0 8px 8px;
+        min-width: 0;
+        font-size: 16px;
+    }
+
     &__line {
         --v-field-border-width: 1px;
         --v-field-border-opacity: 0.38;

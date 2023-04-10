@@ -45,7 +45,7 @@ export const sessions: Array<Session> = [
         footer: 'Pista 4',
         start: '2023-04-10T03:30:00',
         end: '2023-04-10T06:30:00',
-        spaceId: 300,
+        entityId: 300,
         color: 'carnation',
         roles: [1, 2],
         user: 1
@@ -56,7 +56,7 @@ export const sessions: Array<Session> = [
         footer: 'Pista 5',
         start: '2023-04-11T03:30:00',
         end: '2023-04-11T04:30:00',
-        spaceId: 300,
+        entityId: 300,
         color: 'carnation',
         roles: [1, 2, 3],
         user: 1
@@ -67,7 +67,7 @@ export const sessions: Array<Session> = [
         footer: 'Pista 5',
         start: '2023-04-10T06:30:00',
         end: '2023-04-10T08:30:00',
-        spaceId: 300,
+        entityId: 300,
         color: 'salmon',
         roles: [1, 6],
         user: 1
@@ -78,7 +78,7 @@ export const sessions: Array<Session> = [
         footer: 'Pista 6',
         start: '2023-04-13T01:30:00',
         end: '2023-04-13T03:30:00',
-        spaceId: 300,
+        entityId: 300,
         color: 'carnation',
         roles: [1, 3],
         user: 1
@@ -89,7 +89,7 @@ export const sessions: Array<Session> = [
         footer: 'Pista 7',
         start: '2023-04-14T02:00:00',
         end: '2023-04-14T03:30:00',
-        spaceId: 300,
+        entityId: 300,
         color: 'biloba-flower',
         roles: [2],
         user: 1
@@ -100,7 +100,7 @@ export const sessions: Array<Session> = [
         footer: 'Pista 7',
         start: '2023-04-12T01:00:00',
         end: '2023-04-12T02:00:00',
-        spaceId: 300,
+        entityId: 300,
         color: 'biloba-flower',
         roles: [5],
         user: 1
@@ -111,7 +111,7 @@ export const sessions: Array<Session> = [
         footer: 'Pista 7',
         start: '2023-04-15T23:00:00',
         end: '2023-04-15T00:00:00',
-        spaceId: 300,
+        entityId: 300,
         color: 'biloba-flower',
         roles: [2],
         user: 1

@@ -18,7 +18,7 @@
                         {{ prefix }}
                     </div>
                     <div :class="['e-select__selections', textColor]">
-                        <div v-if="showPlaceholder" class="e-select__selection" :style="selectionStyle">
+                        <div v-if="empty && !autocomplete" class="e-select__selection" :style="selectionStyle">
                             <span class="e-select__selection-placeholder">
                                 {{ placeholder }}
                             </span>
@@ -34,7 +34,7 @@
                                 </slot>
                             </div>
                         </template>
-                        <div v-else class="e-select__selection" :style="selectionStyle">
+                        <div v-else-if="!empty" class="e-select__selection" :style="selectionStyle">
                             <slot name="selection" :selection="selectionItem()" :attrs="selectionAttrs()">
                                 <EChip v-if="chip" :closable="chipClosable" @click:close="changeValue(null)">
                                     {{ selectedText() }}
@@ -42,14 +42,16 @@
                                 <span v-else>{{ selectedText() }}</span>
                             </slot>
                         </div>
+                        <input ref="input" :value="search" :id="id" :readonly="inputReadonly" class="input--text"
+                            type="text" :aria-readonly="inputReadonly" :placeholder="placeholder" autocomplete="off"
+                            @blur="handleBlur" @focus="handleSelectFocus" @input="changeSearchValue($event, true)" />
                     </div>
-                    <input :id="id" readonly type="text" aria-readonly="false" autocomplete="off" @blur="handleBlur"
-                        @focus="handleSelectFocus" />
+
                     <div v-if="suffix" :class="[textColor, 'e-field__suffix']" @click="setInputFocus">
                         {{ suffix }}
                     </div>
                     <transition name="scale">
-                        <div v-show="showClearable" class="e-field__append-inner">
+                        <div v-if="!empty && clearable" class="e-field__append-inner">
                             <div class="e-field__icon e-field__icon--clear e-icon--size-default">
                                 <EButton :icon="$icon.clear" small @click.stop.prevent="clear" />
                             </div>
@@ -68,6 +70,9 @@
                     </div>
                 </div>
                 <div v-if="!outlined" class="e-field__line"></div>
+
+                <EProgressLinear v-if="loading" :color="color" :indeterminate="loading" height="3" />
+
                 <div class="e-menu">
                     <transition name="fade">
                         <div v-show="opened" class="e-menu__content">
@@ -100,10 +105,10 @@ export default { name: "Select" }
 
 export type itemType = string | number | null | Record<string, any> | Array<itemType>;
 export interface Props {
-    arrowDown?: string; multiple?: boolean, returnObject?: boolean; retainColor?: boolean;
+    arrowDown?: string; multiple?: boolean, returnObject?: boolean; retainColor?: boolean; loading?: boolean
     disabled?: boolean; dense?: boolean; readonly?: boolean; clearable?: boolean; itemCol?: string | number;
-    labelInline?: boolean; detail?: string; outlined?: boolean; label?: string | number;
-    modelValue?: itemType; placeholder?: string; suffix?: string; autocomplete?: string; chip?: boolean
+    labelInline?: boolean; detail?: string; outlined?: boolean; label?: string | number; search?: string | number
+    modelValue?: itemType; placeholder?: string; suffix?: string; autocomplete?: boolean; chip?: boolean
     prefix?: string; inputAlign?: string; color?: string; limit?: string | number; chipClosable?: boolean
     detailErrors?: Array<string>; detailsOnMessageOnly?: boolean; type?: string; appendIcon?: string;
     labelMinWidth?: string; prependIcon?: string; rules?: Array<(param: any) => string | boolean>;
@@ -119,11 +124,14 @@ const emit = defineEmits<{
     (e: 'click:clear'): void, (e: 'focus', value: FocusEvent): void,
     (e: 'click:prepend'): void, (e: 'click:append'): void, (e: 'blur', value: Event): void,
     (e: 'update:modelValue', value: itemType): void
+    (e: 'update:search', value: string | number): void
 }>()
+
+const input = ref()
 
 const props = withDefaults(defineProps<Props>(), { itemText: 'text', itemValue: 'value', inputAlign: 'start', itemCol: 1 })
 const opened = ref<boolean>(false)
-const { fieldClass, dirty, id, focused, showClearable, showDetails, textColor, color,
+const { fieldClass, dirty, id, focused, showDetails, textColor, color,
     details, labelStyle, handleHover, handleBlur, handleClickPrependIcon,
     handleClickAppendIcon, handleFocus, setInputFocus } = useField()
 const { gridClass } = useGrid('e-field')
@@ -139,18 +147,22 @@ watch(() => opened.value, (val: boolean) => {
 
 })
 
-watch(() => props.modelValue, (val: itemType) => {
-    if (!props.multiple) {
-        closeMenu()
-    }
-})
+watch(() => props.loading, (val: boolean) => closeMenu())
 
 const selectClass = computed(() => {
     const result = [...fieldClass.value, 'e-select', ...gridClass.value]
     opened.value && result.push('e-select--is-open')
     props.itemCol && result.push('e-select--columns-variant')
     props.multiple && result.push('e-select--multiple')
+    props.autocomplete && result.push('e-select--autocomplete')
+    props.loading && result.push('e-select--loading')
     return result
+})
+
+const inputReadonly = computed((): boolean => {
+    if (!props.autocomplete) return true
+    if (!props.multiple) return !empty.value
+    return false
 })
 
 const selectionAttrs = (item?: itemType) => {
@@ -179,7 +191,6 @@ const selectionItem = (value?: itemType): any => {
     }
     else if (isArrayOfObjects) {
         item = (props.items as Array<Record<string, any>>).find((el) => el[props.itemValue] == localValue)
-
     }
     else {
         item = (props.items as Array<string | number>).find((el) => el === localValue)
@@ -193,21 +204,26 @@ const handleSelectFocus = (event: FocusEvent): void => {
 }
 
 const openMenu = (): void => {
-    opened.value = true;
+    input.value?.focus()
 }
-const showPlaceholder = computed((): boolean => {
+
+const empty = computed((): boolean => {
     if (props.multiple) {
         return (props.modelValue as Array<itemType>)?.length === 0
     }
-    return props.modelValue === undefined || props.modelValue === null
+    return props.modelValue === undefined || props.modelValue === null || props.modelValue === ""
 })
+
 const slotItemAttrs = (item: itemType, index: number): Record<string, any> => {
     const attrs: Record<string, any> = {}
     attrs.class = { 'e-list-item--active': active(item) }
     attrs.onClick = () => handleItemClick(item)
     attrs.key = index
-
     return attrs;
+}
+const changeSearchValue = (value: any, isEvent = false): void => {
+    const valueResult = isEvent ? value.target.value : value
+    emit('update:search', valueResult)
 }
 
 const closeMenu = (): void => {
@@ -223,6 +239,7 @@ const changeValue = (value: any, isEvent = false) => {
 }
 
 const handleItemClick = (item: itemType): void => {
+    if (props.autocomplete) changeSearchValue('')
     if (props.multiple) {
         const result: Array<itemType> = [...(props.modelValue as Array<itemType>)]
 
@@ -247,8 +264,10 @@ const handleItemClick = (item: itemType): void => {
 
     } else if (props.returnObject || !isObject(item)) {
         changeValue(item);
+        closeMenu()
     } else {
         changeValue((item as Record<string, any>)[props.itemValue]);
+        closeMenu()
     }
 }
 
@@ -281,7 +300,7 @@ const active = (item: itemType): boolean => {
 
 const selectedText = (itemValue?: itemType): string => {
     const value = itemValue || props.modelValue
-    if (showPlaceholder.value) {
+    if (empty.value) {
         return '';
     }
     const isArrayOfObjects = isObject(props.items[0]);
@@ -314,7 +333,8 @@ const listStyle = computed((): Record<string, string> => {
 })
 
 const clear = (): void => {
-    changeValue('')
+    changeValue(undefined)
+    openMenu()
 }
 
 const handleOutsideMenu = (): void => {

@@ -16,30 +16,37 @@
                 </ESelect>
             </div>
         </EBar>
+        <EMenu ref="eventMenuRef" data-event-menu :activator="event.activator" check-offset>
+            <EventForm v-model:event="event.form" v-model:date="filters.date" @click:close="closeMenu()"
+                @submit="submitEvent" />
+        </EMenu>
 
         <ERow class="mb-8">
-            <ECol cols="24" sm="12" md="8" lg="5">
-                <ESelect v-model="filters.scheduleMode" :items="modes" retain-color outlined />
+            <ECol sm="12" lg="min-content" class="d-none d-lg-block">
+                <GridListSwitch v-model="filters.scheduleMode" text-one="Dia" fill-height text-two="Semana" min-width="200"
+                    :true-value="Mode.schedule" :false-value="Mode.week" />
             </ECol>
             <transition name="fade">
-                <ECol v-if="!state.sessionView" cols="24" sm="12" md="8" lg="5">
+                <ECol v-if="state.sessionView && (filters.scheduleMode === Mode.week)" cols="24" sm="12" md="auto" lg="5">
                     <ESelect v-model="filters.space" label="Espacio :" :items="spaces" :readonly="loading" item-text="label"
                         return-object item-value="id" />
                 </ECol>
             </transition>
-            <ECol cols="24" sm="12" md="8" lg="6">
+            <ECol cols="24" sm="12" md="auto" lg="6">
                 <ETextField v-model="filters.inputSearch" placeholder="Buscar Usuario o actividad"
                     :append-icon="$icon.search" clearable cols="24" sm="12" md="8" lg="6" />
             </ECol>
 
-            <ESpacer />
-            <ECol class="d-flex justify-flex-end">
-                <GridListSwitch v-model="state.sessionView" text-one="Sesiones" fill-height text-two="Grupos" width="228" />
+            <ESpacer class="d-none d-lg-block" />
+            <ECol cols="24" sm="12" md="min-content">
+                <GridListSwitch v-model="state.sessionView" text-one="Sesiones" fill-height text-two="Grupos"
+                    min-width="228" />
             </ECol>
         </ERow>
         <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50" :events="sessionsList"
             :loading="loading" v-model:mode="filters.scheduleMode" :start="60 * 60" :step="60 * 60" :spaces="spaces"
-            sticky-top-header="120" @click:empty-slot="handleScheduleClickClick" @click:event="handleScheduleClickClick" />
+            schedule-after-week sticky-top-header="120" @click:empty-slot="handleScheduleClick"
+            @click:event="handleScheduleClick" />
     </div>
 </template>
 <script lang="ts" setup>
@@ -49,11 +56,12 @@ import Session from '@/models/session';
 import { SlotEvent, Mode } from '@/components/shared/schedule/types';
 import { Menu } from '@/components/shared/menu/types';
 
-let mdBreakpoint = ref(false);
+
 let eventMenuRef = ref<Menu>();
 const { $icon } = useNuxtApp()
+const { viewport } = useBreakpoint()
 
-const session = reactive({
+const event = reactive({
     activator: <HTMLElement | undefined>undefined,
     form: new Session()
 })
@@ -97,37 +105,29 @@ watch(() => filters, () => {
     }, 2000)
 }, { deep: true })
 
-watch(() => mdBreakpoint.value, () => {
-    filters.scheduleMode = Mode.day
-});
+watch(() => viewport, ({ lg }) => {
+    if (!lg) filters.scheduleMode = Mode.week
+}, { deep: true });
 
-onMounted(() => {
-    observeBreakpoint();
-    window?.addEventListener('resize', observeBreakpoint);
-    nextTick(() => {
-        if (!mdBreakpoint.value) {
-            filters.scheduleMode = Mode.week
-        }
-    })
-})
-
-onUnmounted(() => window?.removeEventListener('resize', observeBreakpoint))
-
-const observeBreakpoint = (): void => {
-    const windowWidth = window?.innerWidth;
-    const mdValue = getComputedStyle(document.body).getPropertyValue('--md');
-    mdBreakpoint.value = windowWidth <= parseInt(mdValue, 10);
-}
-
-const handleScheduleClickClick = (obj: { data: SlotEvent, nativeEvent: Event }): void => {
-    session.form = new Session(obj.data);
-    session.activator = obj.nativeEvent.target as HTMLElement
-    if (!session.activator?.getAttribute('aria-hasmenu')) {
+const handleScheduleClick = (obj: { data: SlotEvent, nativeEvent: Event }): void => {
+    event.form = new Session(obj.data);
+    event.activator = obj.nativeEvent.target as HTMLElement
+    if (!event.activator?.getAttribute('aria-hasmenu')) {
         nextTick(() => {
             eventMenuRef.value?.openMenu()
         })
     }
 }
+
+const submitEvent = (objectSession: Session) => {
+    // if (session.form.id) {
+    //     const index = sessionsList.value.findIndex(({ id }) => id === session.form.id)
+    //     sessionsList.value.splice(index, 1)
+    // } else {
+    //     sessionsList.value.push(objectSession)
+    // }
+}
+const closeMenu = () => eventMenuRef.value?.closeMenu()
 
 
 </script>
@@ -135,25 +135,32 @@ const handleScheduleClickClick = (obj: { data: SlotEvent, nativeEvent: Event }):
 .events-page {
     .e-bar {
         z-index: 1;
-
     }
 
-    &__view-selector {
-        min-width: 130px;
+    .e-schedule__header {
+        pointer-events: none;
+
+        @include _from_lg {
+            pointer-events: all;
+        }
     }
 
     .schedule-options {
         min-width: 228px;
-    }
 
-    .grid-list-switch {
         @include _xs {
-            width: 100% !important;
+            min-width: 190px;
         }
+    }
+}
 
-        @include _sm {
-            width: 100% !important;
-        }
+.e-menu-container[data-event-menu] {
+    transition: 300ms all;
+    width: calc(100% - 24px);
+    z-index: 10;
+
+    @include _from_sm {
+        width: 400px;
     }
 }
 </style>

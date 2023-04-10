@@ -2,7 +2,7 @@
 @use "sass:list";
 
 $alignments: flex-start, center, flex-end, space-around, space-between;
-$displays: block, flex, table;
+$displays: block, flex, table, none;
 $text-aligment: right, left, center;
 $space-amount: 24;
 $space-step: 4px;
@@ -36,10 +36,42 @@ $value in $spaces-states {
     }
 }
 
-@each $value in $displays {
-    .d-#{$value} {
-        display: $value;
+$breakpoint_keys: "-", "-sm-", "-md-", "-lg-", "-xl-";
+
+@each $b_key in $breakpoint_keys {
+    @each $display_value in $displays {
+
+        .d#{$b_key}#{$display_value} {
+            @if ($b_key =="-") {
+                display: $display_value;
+            }
+
+            @else if ($b_key =="-sm-") {
+                @include _from_sm {
+                    display: $display_value;
+                }
+            }
+
+            @else if ($b_key =="-md-") {
+                @include _from_md {
+                    display: $display_value;
+                }
+            }
+
+            @else if ($b_key =="-lg-") {
+                @include _from_lg {
+                    display: $display_value;
+                }
+            }
+
+            @else if ($b_key =="-xl-") {
+                @include _from_xl {
+                    display: $display_value;
+                }
+            }
+        }
     }
+
 }
 
 @each $value in $text-aligment {

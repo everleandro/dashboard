@@ -125,4 +125,32 @@
         }
     }
 
+    &--autocomplete {
+        &.e-field input[aria-readonly='false'] {
+            position: relative;
+            pointer-events: all;
+            max-width: unset;
+            height: 40px;
+            flex: 1 1 auto;
+        }
+    }
+
+    .e-progress-linear {
+        z-index: 9;
+        --e-progress-linear-height: 3px;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+    }
+
+    &--loading {
+        pointer-events: none;
+
+        .e-field__line {
+            opacity: .1;
+        }
+    }
+
+
 }
