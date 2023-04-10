@@ -28,7 +28,7 @@
         </EDrawer>
 
         <EMain>
-            <EContainer>
+            <EContainer class="mt-8">
                 <slot />
             </EContainer>
         </EMain>

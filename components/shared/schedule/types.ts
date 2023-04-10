@@ -5,7 +5,7 @@ export interface Space {
 
 export interface SlotEvent {
     name: string;
-    spaceId: number | string;
+    entityId: number | string;
     start: Date | string;
     end: Date | string;
     color: string;

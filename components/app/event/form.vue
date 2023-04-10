@@ -3,18 +3,18 @@
         <div class="d-flex justify-flex-end px-3">
             <div>
                 <h3 :class="['dialog-title', `${state.form.color}--text`]" v-html="modalTitle"></h3>
-                <p>Rellena los campos necesarios para crear una nueva jornada:</p>
+                <p>Rellena los campos necesarios para crear un nuevo evento:</p>
             </div>
             <ESpacer />
             <EButton :icon="$icon.clear" @click="closeMenu" />
         </div>
 
         <EForm ref="formComponent" v-model="state.formValid" class="ma-0" :color="state.form.color" @submit="submit">
-            <ETextField v-model="state.form.name" :rules="[_required]" :readonly="state.loading" placeholder="Titulo"
-                cols="14" sm="16" />
-            <EColorPicker v-model="state.form.color" :rules="[_required]" label="Color" cols="10" sm="8" retain-color />
-            <ESelect v-model="state.form.user" :rules="[_required]" label="Usuario" chip placeholder="Selecciona 1 usuario"
-                item-col="2" :items="availableUsers" cols="24">
+            <ESelect v-model="state.form.entityId" :rules="[_required]" clearable autocomplete label="Actividad"
+                :items="availableActivity" cols="24">
+            </ESelect>
+            <ESelect v-model="state.form.user" :rules="[_required]" label="Monitor" chip item-col="2"
+                :items="availableUsers" cols="24">
                 <template #selection="{ selection }">
                     <EChip :prepend-avatar="selection?.avatar" :avatar-size="32" text>
                         {{ selection?.text }}
@@ -26,31 +26,18 @@
                     </e-list-item>
                 </template>
             </ESelect>
-            <ESelect v-model="state.form.roles" label="Rol" :disabled="!state.form.user" :rules="[_required]" multiple
-                :items="availableRole" cols="24" :detail="roleDetail" item-col="2">
-                <template #selection="{ selection, attrs }">
-                    <EChip :prepend-icon="selection?.icon" v-bind="attrs">
-                        {{ selection.text }}
-                    </EChip>
-                </template>
-                <template #item="{ attrs, item }">
-                    <e-list-item v-bind="attrs" :prepend-icon="item.icon">
-                        {{ item.text }}
-                    </e-list-item>
-                </template>
-            </ESelect>
 
             <EMenu origin="bottom right" data-session-form-date-picker transition="scale" check-offset offset-x="12">
                 <template #activator="attrs">
-                    <ETextField :modelValue="formattedDate" v-bind="attrs" :append-icon="$icon.calendar" cols="24" sm="10"
-                        input-readonly />
+                    <ETextField :modelValue="formattedDate" input-align="end" label="Cambios de fecha" v-bind="attrs"
+                        :append-icon="$icon.calendar" cols="24" input-readonly />
                 </template>
                 <EDatePicker :model-value="state.form.start" :rules="[_required]" :icon-next="$icon.pickerIconeNext"
                     :color="state.form.color" :icon-prev="$icon.pickerIconPrev" close-on-change
                     @update:model-value="datePickerChange($event)" />
             </EMenu>
-            <ETimePicker v-model="state.form.start" :rules="[_required]" />
-            <ETimePicker v-model="state.form.end" :rules="[_required]" />
+            <ETimePicker v-model="state.form.start" label="inicio" :rules="[_required]" />
+            <ETimePicker v-model="state.form.end" label="fin" :rules="[_required]" />
             <EFormColumn cols="24" class="pa-0 mt-4">
                 <EButton :color="state.form.color" block depressed type="submit" :disabled="!state.formValid"
                     :loading="state.loading">
@@ -62,14 +49,14 @@
 </template>
 
 <script lang="ts" setup>
-import Session from '@/models/session';
+import Event from '@/models/event';
 import UtilDate from '@/models/date';
 import { Form } from '~~/components/shared/form/types';
 import { EDIalog } from '~~/components/shared/dialog/index.vue';
 import { ContainerMenuInterface } from '~~/components/shared/menu/types';
 
 export interface Props {
-    session?: Session,
+    event?: Event,
     date: Date | string,
 }
 const { $icon } = useNuxtApp()
@@ -79,30 +66,13 @@ const formComponent = ref<Form>()
 const state = reactive({
     formValid: true,
     loading: false,
-    form: new Session()
+    form: new Event()
 })
 
 const props = defineProps<Props>()
 
 const dialog = inject<EDIalog | undefined>("EDialog", undefined);
 const menuContainer = inject<ContainerMenuInterface | undefined>("EMenuContainer", undefined);
-
-
-const availableRole = [
-    { text: 'instructor', value: 1, icon: $icon.roles.instructor },
-    { text: 'monitor de sala', value: 2, icon: $icon.roles.roomInstructor },
-    { text: 'entrenador personal', value: 3, icon: $icon.roles.personalTrainer },
-    { text: 'servicio al cliente', value: 4, icon: $icon.roles.customerService },
-    { text: 'Coordinador', value: 5, icon: $icon.roles.coordination },
-    { text: 'Administracion', value: 6, icon: $icon.roles.administration },
-    { text: 'Direccion', value: 7, icon: $icon.roles.directorate },
-    { text: 'Limpieza', value: 8, icon: $icon.roles.cleaning },
-    { text: 'Mantenimiento', value: 9, icon: $icon.roles.maintenance },
-    { text: 'Operaciones', value: 10, icon: $icon.roles.operations },
-    { text: 'Recepcion', value: 11, icon: $icon.roles.reception },
-    { text: 'Recursos Humanos', value: 12, icon: $icon.roles.humanResources },
-    { text: 'Supervisor', value: 13, icon: $icon.roles.supervisor },
-]
 
 const availableUsers = [
     { text: 'User 1', value: 1, icon: 'customer', avatar: "https://cdn.vuetifyjs.com/images/john.png" },
@@ -111,9 +81,24 @@ const availableUsers = [
     { text: 'User 4', value: 4, icon: 'customer', avatar: "https://cdn.vuetifyjs.com/images/john.png" },
 ]
 
-const formattedDate = computed(() => new UtilDate(state.form.start).format('month-DD/month-MM, week-dddd '))
+const availableActivity = [
+    { text: '108 horas bajo el sol', value: 1 },
+    { text: 'Afrodance', value: 5 },
+    { text: 'Bachata', value: 6 },
+    { text: 'Americano Padel', value: 7 },
+    { text: 'Bailamos por sevillanas', value: 8 },
+    { text: 'Body Art', value: 9 },
+    { text: 'Body n', value: 10 },
+    { text: 'Body combar', value: 11 },
+    { text: 'Boxeo', value: 12 },
+    { text: 'Calistena', value: 13 },
+    { text: 'Dance', value: 14 },
+    { text: 'Dana Oriental', value: 15 },
+]
+
+const formattedDate = computed(() => new UtilDate(state.form.start).format('month-DD/month-MM/year-YYYY'))
 const roleDetail = computed(() => state.form.user ? '' : 'Seleccione primero un usuario')
-watch(() => props.session, (value: Session | undefined) => {
+watch(() => props.event, (value: Event | undefined) => {
     reset()
     if (value) {
         state.form = value
@@ -122,14 +107,13 @@ watch(() => props.session, (value: Session | undefined) => {
 
 const emit = defineEmits<{
     (e: 'click:close', value: boolean): void,
-    (e: 'submit', value: Session): void,
+    (e: 'submit', value: Event): void,
     (e: 'update:date', value: string | Date): void,
 }>()
 
 
 const modalTitle = computed((): string => {
-    const day = new UtilDate(state.form.start).format('week-dddd')
-    return `Crear jornada &#x2022; ${day}`
+    return `Crear jornada &#x2022; Horario Habitual`
 })
 
 const datePickerChange = (value: Date | string) => {
@@ -143,7 +127,7 @@ const closeMenu = () => {
 }
 
 const reset = (): void => {
-    state.form = new Session()
+    state.form = new Event()
     nextTick(() => {
         formComponent.value?.reset()
     })

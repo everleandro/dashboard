@@ -1,6 +1,6 @@
 
 import { ScheduleEvent } from "~~/components/shared/schedule/types";
-export default class Session implements ScheduleEvent {
+export default class Event implements ScheduleEvent {
     name: string
     entityId: number | string
     start: Date | string
@@ -13,8 +13,8 @@ export default class Session implements ScheduleEvent {
     subtitle?: string | number | null;
 
     constructor(props?: {
-        start?: Date | string, end?: Date | string, roles?: Array<string | number>, color?: string, name?: string,
-        entityId: string | number, id?: number | string, user?: string | number
+        start?: Date | string, end?: Date | string, roles?: Array<string | number>,
+        color?: string, name?: string, entityId: string | number, id?: number | string, user?: string | number
     }) {
         this.start = new Date(props?.start || new Date());
         this.end = new Date(props?.end || new Date());
@@ -25,5 +25,4 @@ export default class Session implements ScheduleEvent {
         if (props?.roles) (this.roles = props?.roles)
         this.user = props?.user || null
     }
-
 }

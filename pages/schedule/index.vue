@@ -6,11 +6,15 @@
             </div>
         </EBar>
 
-        <EMenu ref="eventMenuRef" data-event-menu :activator="session.activator" check-offset>
+        <EMenu ref="eventMenuRef" data-session-menu :activator="session.activator" check-offset>
             <ScheduleSessionForm v-model:session="session.form" v-model:date="filters.date" @click:close="closeMenu()"
                 @submit="submitSession" />
         </EMenu>
         <EForm class="mb-8">
+            <EFormColumn lg="min-content">
+                <GridListSwitch v-model="filters.scheduleMode" block text-one="Dia" fill-height text-two="Semana"
+                    min-width="200" :true-value="Mode.day" :false-value="Mode.week" />
+            </EFormColumn>
             <ESelect v-model="filters.space" label="Espacio :" :items="spaces" :readonly="loading" item-text="label"
                 return-object item-value="id" cols="24" sm="12" lg="6" />
             <ESelect v-model="filters.role" label="Rol:" :items="roleList" :readonly="loading" cols="24" sm="12" lg="6">
@@ -35,8 +39,8 @@
                     close-on-change />
             </EMenu>
             <ESpacer />
-            <ESelect v-model="filters.scheduleMode" class="schedule-mode-select" :items="modes"
-                :readonly="loading || mdBreakpoint" outlined retain-color />
+            <!-- <ESelect v-model="filters.scheduleMode" class="schedule-mode-select" :items="modes" :readonly="loading"
+                outlined retain-color /> -->
         </EForm>
         <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50" :events="sessionsList"
             :loading="loading" v-model:mode="filters.scheduleMode" :start="60 * 60" :step="60 * 60" :spaces="spaces"
@@ -130,23 +134,13 @@ const closeMenu = () => eventMenuRef.value?.closeMenu()
 
 </script>
 <style lang="scss">
-.e-menu-container[data-event-menu] {
+.e-menu-container[data-session-menu] {
     transition: 300ms all;
     width: calc(100% - 24px);
     z-index: 10;
 
     @include _from_sm {
         width: 500px;
-    }
-}
-
-.schedule-page {
-    .schedule-mode-select {
-        display: none;
-
-        @include _from_lg {
-            display: flex;
-        }
     }
 }
 </style>
