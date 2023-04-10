@@ -17,8 +17,7 @@
             </div>
         </EBar>
         <EMenu ref="eventMenuRef" data-event-menu :activator="event.activator" check-offset>
-            <EventForm v-model:event="event.form" v-model:date="filters.date" @click:close="closeMenu()"
-                @submit="submitEvent" />
+            <EventForm v-model="event.form" @click:close="closeMenu()" @submit="submitEvent" />
         </EMenu>
 
         <ERow class="mb-8">
@@ -43,19 +42,18 @@
                     min-width="228" />
             </ECol>
         </ERow>
-        <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50" :events="sessionsList"
+        <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50" :events="eventsList"
             :loading="loading" v-model:mode="filters.scheduleMode" :start="60 * 60" :step="60 * 60" :spaces="spaces"
             schedule-after-week sticky-top-header="120" @click:empty-slot="handleScheduleClick"
             @click:event="handleScheduleClick" />
     </div>
 </template>
 <script lang="ts" setup>
-import { sessions, spaces } from './constants'
+import { events, spaces } from './constants'
 import UtilDate from '@/models/date';
-import Session from '@/models/session';
+import Event from '@/models/event';
 import { SlotEvent, Mode } from '@/components/shared/schedule/types';
 import { Menu } from '@/components/shared/menu/types';
-
 
 let eventMenuRef = ref<Menu>();
 const { $icon } = useNuxtApp()
@@ -63,10 +61,10 @@ const { viewport } = useBreakpoint()
 
 const event = reactive({
     activator: <HTMLElement | undefined>undefined,
-    form: new Session()
+    form: new Event()
 })
 
-const sessionsList = ref<Array<Session>>([...sessions])
+const eventsList = ref<Array<Event>>([...events])
 const loading = ref(false)
 
 const modes = [
@@ -109,8 +107,8 @@ watch(() => viewport, ({ lg }) => {
     if (!lg) filters.scheduleMode = Mode.week
 }, { deep: true });
 
-const handleScheduleClick = (obj: { data: SlotEvent, nativeEvent: Event }): void => {
-    event.form = new Session(obj.data);
+const handleScheduleClick = (obj: { data: SlotEvent, nativeEvent: MouseEvent }): void => {
+    event.form = new Event(obj.data);
     event.activator = obj.nativeEvent.target as HTMLElement
     if (!event.activator?.getAttribute('aria-hasmenu')) {
         nextTick(() => {
@@ -119,13 +117,13 @@ const handleScheduleClick = (obj: { data: SlotEvent, nativeEvent: Event }): void
     }
 }
 
-const submitEvent = (objectSession: Session) => {
-    // if (session.form.id) {
-    //     const index = sessionsList.value.findIndex(({ id }) => id === session.form.id)
-    //     sessionsList.value.splice(index, 1)
-    // } else {
-    //     sessionsList.value.push(objectSession)
-    // }
+const submitEvent = (objectEvent: Event) => {
+    if (event.form.id) {
+        const index = eventsList.value.findIndex(({ id }) => id === event.form.id)
+        eventsList.value.splice(index, 1)
+    } else {
+        eventsList.value.push(objectEvent)
+    }
 }
 const closeMenu = () => eventMenuRef.value?.closeMenu()
 
