@@ -1,5 +1,5 @@
 
-import Session from '@/models/session';
+import Event from '@/models/event';
 export const spaces = [
     {
         label: 'Sala Fitness',
@@ -38,82 +38,104 @@ export const spaces = [
         id: 800
     }
 ]
-export const sessions: Array<Session> = [
+export const events: Array<Event> = [
     {
         name: 'Ever',
         subtitle: "03:30h · 6:30'",
         footer: 'Pista 4',
-        start: '2023-04-01T03:30:00',
-        end: '2023-04-01T06:30:00',
+        start: '2023-04-11T03:30:00',
+        end: '2023-04-11T06:30:00',
         entityId: 300,
         color: 'carnation',
         roles: [1, 2],
-        user: 1
+        user: 1,
+        dateChange: new Date(),
+        target: 12,
+        rotating: false
+
     },
     {
         name: 'Ever',
         subtitle: "03:30h · 04:30'",
         footer: 'Pista 5',
-        start: '2023-04-02T03:30:00',
-        end: '2023-04-02T04:30:00',
+        start: '2023-04-13T03:30:00',
+        end: '2023-04-13T04:30:00',
         entityId: 300,
         color: 'carnation',
         roles: [1, 2, 3],
-        user: 1
+        user: 1,
+        dateChange: new Date(),
+        target: 12,
+        rotating: false
     },
     {
         name: 'Reunion',
-        subtitle: "06:30h · 08:30'",
+        subtitle: "07:30h · 10:00'",
         footer: 'Pista 5',
-        start: '2023-04-01T06:30:00',
-        end: '2023-04-01T08:30:00',
+        start: '2023-04-11T07:30:00',
+        end: '2023-04-11T10:00:00',
         entityId: 300,
         color: 'carnation',
         roles: [1, 6],
-        user: 1
+        user: 1,
+        dateChange: new Date(),
+        target: 12,
+        rotating: false
     },
     {
         name: 'correr',
         subtitle: "01:30h · 03:30'",
         footer: 'Pista 6',
-        start: '2023-04-05T01:30:00',
-        end: '2023-04-05T03:30:00',
+        start: '2023-04-14T01:30:00',
+        end: '2023-04-14T03:30:00',
         entityId: 300,
         color: 'carnation',
         roles: [1, 3],
-        user: 1
+        user: 1,
+        dateChange: new Date(),
+        target: 12,
+        rotating: false
     },
     {
         name: 'Cinta',
         subtitle: "02:00h · 03:30'",
         footer: 'Pista 7',
-        start: '2023-04-06T02:00:00',
-        end: '2023-04-06T03:30:00',
+        start: '2023-04-15T02:00:00',
+        end: '2023-04-15T03:30:00',
         entityId: 300,
         color: 'biloba-flower',
         roles: [2],
-        user: 1
+        user: 1,
+        dateChange: new Date(),
+        target: 12,
+        rotating: false
     },
     {
         name: 'Evento random',
         subtitle: "01:00h · 02:00'",
         footer: 'Pista 7',
-        start: '2023-04-07T01:00:00',
-        end: '2023-04-07T02:00:00',
+        start: '2023-04-14T01:00:00',
+        end: '2023-04-14T02:00:00',
         entityId: 300,
         color: 'biloba-flower',
         roles: [5],
-        user: 1
+        user: 1,
+        dateChange: new Date(),
+        target: 2,
+        rotating: false
     },
     {
         name: 'Otro evento',
         subtitle: "23:00h · 00:00'",
         footer: 'Pista 7',
-        start: '2023-04-03T23:00:00',
-        end: '2023-04-03T00:00:00',
+        start: '2023-04-16T23:00:00',
+        end: '2023-04-16T00:00:00',
         entityId: 300,
         color: 'biloba-flower',
         roles: [2],
-        user: 1
+        user: 1,
+        dateChange: new Date(),
+        target: 1,
+        rotating: false
     }
 ]

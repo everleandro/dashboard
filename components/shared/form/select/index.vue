@@ -69,7 +69,7 @@
                         <EIcon :name="appendIcon" />
                     </div>
                 </div>
-                <div v-if="!outlined" class="e-field__line"></div>
+                <div v-if="!outlined" :style="lineStyle" class="e-field__line"></div>
 
                 <EProgressLinear v-if="loading" :color="color" :indeterminate="loading" height="3" />
 
@@ -108,7 +108,7 @@ export interface Props {
     arrowDown?: string; multiple?: boolean, returnObject?: boolean; retainColor?: boolean; loading?: boolean
     disabled?: boolean; dense?: boolean; readonly?: boolean; clearable?: boolean; itemCol?: string | number;
     labelInline?: boolean; detail?: string; outlined?: boolean; label?: string | number; search?: string | number
-    modelValue?: itemType; placeholder?: string; suffix?: string; autocomplete?: boolean; chip?: boolean
+    modelValue?: itemType; placeholder?: string; suffix?: string; autocomplete?: boolean; chip?: boolean; lineWidth?: string | number
     prefix?: string; inputAlign?: string; color?: string; limit?: string | number; chipClosable?: boolean
     detailErrors?: Array<string>; detailsOnMessageOnly?: boolean; type?: string; appendIcon?: string;
     labelMinWidth?: string; prependIcon?: string; rules?: Array<(param: any) => string | boolean>;
@@ -136,7 +136,6 @@ const { fieldClass, dirty, id, focused, showDetails, textColor, color,
     handleClickAppendIcon, handleFocus, setInputFocus } = useField()
 const { gridClass } = useGrid('e-field')
 const { isObject } = useUtils()
-
 watch(() => opened.value, (val: boolean) => {
     if (val) {
         document.addEventListener("keydown", handleExcListener);
@@ -147,7 +146,17 @@ watch(() => opened.value, (val: boolean) => {
 
 })
 
-watch(() => props.loading, (val: boolean) => closeMenu())
+watch(() => props.loading, (val: boolean) => {
+    if (val) closeMenu()
+    else {
+        opened.value = true;
+        openMenu()
+    }
+})
+
+const lineStyle = computed(() => {
+    return props.lineWidth ? { '--v-field-border-width': `${props.lineWidth}px` } : {}
+})
 
 const selectClass = computed(() => {
     const result = [...fieldClass.value, 'e-select', ...gridClass.value]

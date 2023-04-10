@@ -1,7 +1,7 @@
 <template>
     <div :class="checkboxClass" @mouseenter="handleHover(true)" @mouseleave="handleHover(false)">
         <div class="e-field__control">
-            <div class="e-field__overlay"></div>
+            <div v-if="!hideOverlay" class="e-field__overlay"></div>
             <div class="e-field__slot">
                 <div :class="['e-field--selection-controls__field']" :data-focused="controlFocused">
                     <span aria-hidden="true" class="e-icon" :class="checkboxColor"><svg xmlns="http://www.w3.org/2000/svg"
@@ -35,7 +35,7 @@ export interface Props {
     disabled?: boolean; dense?: boolean; readonly?: boolean; trueValue?: string | number | boolean;
     labelInline?: boolean; detail?: string; outlined?: boolean; label?: string | number;
     falseValue?: string | number | boolean; modelValue: boolean | string | number; color?: string;
-    detailErrors?: Array<string>; detailsOnMessageOnly?: boolean; retainColor?: boolean;
+    detailErrors?: Array<string>; detailsOnMessageOnly?: boolean; retainColor?: boolean; hideOverlay?: boolean;
     rules?: Array<(param: any) => string | boolean>; cols?: string | number; xs?: string | number;
     sm?: string | number; md?: string | number; lg?: string | number; xl?: string | number;
 }
