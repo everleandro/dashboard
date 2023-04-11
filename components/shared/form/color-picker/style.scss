@@ -10,6 +10,13 @@
         .color-container {
             width: 26px;
             margin: auto;
+
+            @include _xs {
+                width: 16px;
+                min-width: 16px;
+                height: 16px;
+                margin: auto;
+            }
         }
     }
 

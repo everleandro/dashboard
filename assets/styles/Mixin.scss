@@ -145,38 +145,6 @@
     @return $result;
 }
 
-@mixin display-by-breakpoint($breakpoint_key, $display) {
-    &#{$breakpoint_key}#{$i} {
-        @if ($breakpoint_key =="-") {
-            display: $display;
-        }
-
-        @else if ($breakpoint_key =="-sm-") {
-            @include _from_sm {
-                display: $display;
-            }
-        }
-
-        @else if ($breakpoint_key =="-md-") {
-            @include _from_md {
-                display: $display;
-            }
-        }
-
-        @else if ($breakpoint_key =="-lg-") {
-            @include _from_lg {
-                display: $display;
-            }
-        }
-
-        @else if ($breakpoint_key =="-xl-") {
-            @include _from_xl {
-                display: $display;
-            }
-        }
-    }
-}
-
 @mixin grid-generator-by-breakpoint($breakpoint_key, $extra_px: 0px) {
     @for $i from 1 through $grid-cols {
         $_col_percent: col-percent($i, $extra_px);

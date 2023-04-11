@@ -1,6 +1,6 @@
 .e-dialog {
     border-radius: $border-radius-root;
-    margin: 24px;
+    margin: 8px;
     overflow-y: auto;
     pointer-events: auto;
     transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -45,5 +45,11 @@
         width: 100%;
         outline: none;
         max-height: 100vh;
+
+        &--absolute {
+            position: absolute;
+        }
     }
+
+
 }

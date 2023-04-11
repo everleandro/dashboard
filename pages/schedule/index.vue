@@ -6,18 +6,35 @@
             </div>
         </EBar>
 
-        <EMenu ref="eventMenuRef" data-session-menu :activator="session.activator" check-offset>
+        <EMenu activator="#filer-date-picker" class="d-none d-md-block" origin="bottom right" transition="scale"
+            offset-x="12">
+            <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
+                close-on-change />
+        </EMenu>
+        <EMenu ref="sessionMenuRef" data-session-menu="true" class="d-none d-md-block" :activator="session.activator"
+            check-offset>
             <ScheduleSessionForm v-model:session="session.form" v-model:date="filters.date" @click:close="closeMenu()"
                 @submit="submitSession" />
         </EMenu>
+
+        <EDialog v-model="state.datePickerDialog" max-width="290" class="d-block d-md-none" transition="scale">
+            <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
+                close-on-change />
+        </EDialog>
+
+        <EDialog ref="sessionDialogRef" v-model="state.sessionFormDialog" class="d-block d-md-none" max-width="500">
+            <ScheduleSessionForm v-model:session="session.form" v-model:date="filters.date" @click:close="closeDialog()"
+                @submit="submitSession" />
+        </EDialog>
+
         <EForm class="mb-8">
             <EFormColumn lg="min-content">
                 <GridListSwitch v-model="filters.scheduleMode" block text-one="Dia" fill-height text-two="Semana"
                     min-width="200" :true-value="Mode.day" :false-value="Mode.week" />
             </EFormColumn>
-            <ESelect v-model="filters.space" label="Espacio :" :items="spaces" :readonly="loading" item-text="label"
-                return-object item-value="id" cols="24" sm="12" lg="6" />
-            <ESelect v-model="filters.role" label="Rol:" :items="roleList" :readonly="loading" cols="24" sm="12" lg="6">
+            <ESelect v-model="filters.space" :items="spaces" :readonly="state.loading" item-text="label" return-object
+                item-value="id" cols="24" sm="12" lg="6" />
+            <ESelect v-model="filters.role" :items="roleList" :readonly="state.loading" cols="24" sm="12" lg="6">
                 <template #selection="{ selection, attrs }">
                     <EChip :prepend-icon="selection?.icon" v-bind="attrs" text>
                         {{ selection.text }}
@@ -29,22 +46,15 @@
                     </e-list-item>
                 </template>
             </ESelect>
-
-            <EMenu origin="bottom right" transition="scale" offset-x="12">
-                <template #activator="attrs">
-                    <ETextField :modelValue="formattedDate" v-bind="attrs" :append-icon="$icon.calendar" :readonly="loading"
-                        cols="24" sm="12" lg="6" input-readonly />
-                </template>
-                <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
-                    close-on-change />
-            </EMenu>
             <ESpacer />
-            <!-- <ESelect v-model="filters.scheduleMode" class="schedule-mode-select" :items="modes" :readonly="loading"
-                outlined retain-color /> -->
+            <ETextField id="filer-date-picker" :modelValue="formattedDate" :append-icon="$icon.calendar"
+                :readonly="state.loading" cols="24" sm="12" lg="min-content" input-readonly @click="openFilterPickerMenu" />
         </EForm>
-        <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50" :events="sessionsList"
-            :loading="loading" v-model:mode="filters.scheduleMode" :start="60 * 60" :step="60 * 60" :spaces="spaces"
-            sticky-top-header="120" @click:empty-slot="handleScheduleClickClick" @click:event="handleScheduleClickClick" />
+
+        <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50"
+            :events="state.sessionsList" :loading="state.loading" v-model:mode="filters.scheduleMode" :start="60 * 60"
+            :step="60 * 60" :spaces="spaces" sticky-top-header="120" @click:empty-slot="handleScheduleClickClick"
+            @click:event="handleScheduleClickClick" />
     </div>
 </template>
 <script lang="ts" setup>
@@ -53,18 +63,26 @@ import UtilDate from '@/models/date';
 import Session from '@/models/session';
 import { SlotEvent, Mode } from '@/components/shared/schedule/types';
 import { Menu } from '@/components/shared/menu/types';
+import { EDIalog } from '@/components/shared/dialog/index.vue';
 import { roleList } from "@/models/employee";
 
-let mdBreakpoint = ref(false);
-let eventMenuRef = ref<Menu>();
+let sessionMenuRef = ref<Menu>();
+let sessionDialogRef = ref<EDIalog>();
+
+const { viewport } = useBreakpoint()
 const { $icon } = useNuxtApp()
+
 const session = reactive({
     activator: <HTMLElement | undefined>undefined,
     form: new Session()
 })
 
-const sessionsList = ref<Array<Session>>([...sessions])
-const loading = ref(false)
+const state = reactive({
+    sessionsList: <Array<Session>>[...sessions],
+    loading: false,
+    datePickerDialog: false,
+    sessionFormDialog: false
+})
 
 const modes = [
     { text: 'Semana', value: Mode.week },
@@ -73,7 +91,7 @@ const modes = [
 
 const filters = reactive({
     role: 1,
-    scheduleMode: Mode.day,
+    scheduleMode: Mode.week,
     space: spaces[0],
     date: new Date(),
 
@@ -82,58 +100,60 @@ const filters = reactive({
 const formattedDate = computed(() => new UtilDate(filters.date).format('month-DD/month-MM, week-dddd '))
 
 watch(() => filters, () => {
-    loading.value = true;
+    state.loading = true;
     setTimeout(() => {
-        loading.value = false;
+        state.loading = false;
     }, 2000)
 }, { deep: true })
 
-watch(() => mdBreakpoint.value, () => {
-    filters.scheduleMode = Mode.day
-});
+watch(() => viewport, ({ lg }) => {
+    if (!lg) filters.scheduleMode = Mode.day
+}, { deep: true });
 
-onMounted(() => {
-    observeBreakpoint();
-    window?.addEventListener('resize', observeBreakpoint);
-    nextTick(() => {
-        if (!mdBreakpoint.value) {
-            filters.scheduleMode = Mode.week
-        }
-    })
-})
-
-onUnmounted(() => window?.removeEventListener('resize', observeBreakpoint))
-
-const observeBreakpoint = (): void => {
-    const windowWidth = window?.innerWidth;
-    const mdValue = getComputedStyle(document.body).getPropertyValue('--md');
-    mdBreakpoint.value = windowWidth <= parseInt(mdValue, 10);
+const openFilterPickerMenu = (evt: Event): void => {
+    if (viewport.xs || viewport.sm) {
+        state.datePickerDialog = true;
+        evt.stopImmediatePropagation()
+    }
 }
 
 const submitSession = (objectSession: Session) => {
     if (session.form.id) {
-        const index = sessionsList.value.findIndex(({ id }) => id === session.form.id)
-        sessionsList.value.splice(index, 1)
+        const index = state.sessionsList.findIndex(({ id }) => id === session.form.id)
+        state.sessionsList.splice(index, 1)
     } else {
-        sessionsList.value.push(objectSession)
+        state.sessionsList.push(objectSession)
     }
 }
 
-const handleScheduleClickClick = (obj: { data: SlotEvent, nativeEvent: Event }): void => {
+const handleScheduleClickClick = (obj: { data: SlotEvent, nativeEvent: MouseEvent }): void => {
     session.form = new Session(obj.data);
-    session.activator = obj.nativeEvent.target as HTMLElement
-    if (!session.activator?.getAttribute('aria-hasmenu')) {
-        nextTick(() => {
-            eventMenuRef.value?.openMenu()
-        })
+    if (viewport.xs || viewport.sm) {
+        state.sessionFormDialog = true;
+    } else {
+        session.activator = obj.nativeEvent.target as HTMLElement
+        if (!session.activator?.getAttribute('aria-hasmenu')) {
+            nextTick(() => {
+                sessionMenuRef.value?.openMenu()
+            })
+        }
     }
 }
 
-const closeMenu = () => eventMenuRef.value?.closeMenu()
+const closeMenu = () => sessionMenuRef.value?.closeMenu()
+const closeDialog = () => sessionDialogRef.value?.close()
 
 
 </script>
 <style lang="scss">
+.schedule-page {
+    #filer-date-picker {
+        .e-field__control {
+            min-width: 180px;
+        }
+    }
+}
+
 .e-menu-container[data-session-menu] {
     transition: 300ms all;
     width: calc(100% - 24px);

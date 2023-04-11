@@ -1,8 +1,7 @@
 
 <template>
     <transition name="fade">
-        <div v-show="store.active" role="dialog" aria-modal="true" class="e-dialog__content" tabindex="0"
-            @click.self="close()">
+        <div v-show="store.active" role="dialog" aria-modal="true" :class="contentClass" tabindex="0" @click.self="close()">
             <transition name="scale">
                 <div v-show="store.active" :class="dialogClass" :style="style">
                     <slot></slot>
@@ -11,11 +10,15 @@
         </div>
     </transition>
 </template>
+<script lang="ts">
+export default { name: 'EDialog' }
+</script>
 <script lang="ts" setup>
 
 export interface Props {
     fullscreen?: boolean
     modelValue?: boolean
+    absolute?: boolean
     persistent?: boolean
     maxWidth?: string | number
 }
@@ -26,6 +29,7 @@ export interface EDIalog {
 const availableRootClasses = {
     fullscreen: "e-dialog--fullscreen",
     animated: "e-dialog--animated",
+    absolute: "e-dialog__content--absolute",
     active: "e-dialog--active",
     persistent: "e-dialog--persistant",
 };
@@ -54,7 +58,15 @@ const dialogClass = computed(() => {
     const classes = ['e-dialog']
     props.fullscreen && classes.push(availableRootClasses.fullscreen)
     store.active && classes.push(availableRootClasses.active)
+    props.absolute && classes.push(availableRootClasses.absolute)
     store.animated && classes.push(availableRootClasses.animated)
+    return classes
+})
+
+
+const contentClass = computed(() => {
+    const classes = ['e-dialog__content']
+    props.absolute && classes.push(availableRootClasses.absolute)
     return classes
 })
 
@@ -93,5 +105,6 @@ const close = (force = false): void => {
 provide("EDialog", {
     close
 });
+defineExpose({ close })
 </script>
 <style lang="scss" src="./style.scss"></style>

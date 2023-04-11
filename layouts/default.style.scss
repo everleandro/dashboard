@@ -81,13 +81,3 @@ div.e-menu-container[data-notification-menu] {
     position: fixed;
 
 }
-
-.grid-list-actions {
-    .e-btn {
-        text-transform: capitalize;
-
-        &+.e-btn {
-            margin: 0;
-        }
-    }
-}

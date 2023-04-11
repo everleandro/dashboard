@@ -1,5 +1,12 @@
 <template>
     <div class="white">
+
+        <EDialog v-model="state.dialogDatePicker" max-width="290" absolute>
+            <EDatePicker :model-value="state.form.dateChange" :rules="[_required]" :icon-next="$icon.pickerIconeNext"
+                :color="state.form.color" :icon-prev="$icon.pickerIconPrev"
+                @update:model-value="updateDateChange($event)" />
+        </EDialog>
+
         <div class="d-flex justify-flex-end px-3">
             <div>
                 <h3 :class="['dialog-title', `${state.form.color}--text`]" v-html="modalTitle"></h3>
@@ -8,11 +15,10 @@
             <ESpacer />
             <EButton :icon="$icon.clear" @click="closeMenu" />
         </div>
-
         <EForm ref="formComponent" v-model="state.formValid" class="ma-0" :color="state.form.color" @submit="submit">
-            <ESelect v-model="state.selectedActivity" v-model:search="state.searchActivity" :rules="[_required]" clearable
-                autocomplete :items="availableActivity" return-object :loading="state.loadingActivity" retain-color
-                cols="24" line-width="5">
+            <ESelect v-model="state.form.activityId" v-model:search="state.searchActivity" :rules="[_required]" clearable
+                autocomplete :items="availableActivity" :loading="state.loadingActivity" retain-color cols="24"
+                line-width="5">
             </ESelect>
 
             <ESelect v-model="state.form.user" :rules="[_required]" label="Monitor" chip :items="availableUsers" cols="24">
@@ -28,20 +34,15 @@
                 </template>
             </ESelect>
 
-
             <ETimePicker v-model="state.form.start" :rules="[_required]" />
             <ETimePicker v-model="state.form.end" :rules="[_required]" />
 
-            <ECheckbox v-model="state.form.rotating" label="sesiones rotativas" hide-overlay cols="16" sm="18" />
-            <ETextField v-model="state.form.target" label="Obj." type="number" cols="8" sm="6" />
-            <EMenu origin="bottom right" data-session-form-date-picker transition="scale" check-offset offset-x="12">
-                <template #activator="attrs">
-                    <ETextField :modelValue="formattedDate" input-align="end" label="Cambios de fecha" v-bind="attrs"
-                        :append-icon="$icon.calendar" cols="24" input-readonly />
-                </template>
-                <EDatePicker v-model="state.form.dateChange" :rules="[_required]" :icon-next="$icon.pickerIconeNext"
-                    :color="state.form.color" :icon-prev="$icon.pickerIconPrev" close-on-change />
-            </EMenu>
+            <ECheckbox v-model="state.form.rotating" label="sesiones rotativas" cols="16" />
+            <ETextField v-model="state.form.target" label="Obj." type="number" cols="8" />
+            <ETextField :modelValue="formattedDate" id="event-form-date-picker" input-align="end"
+                label="Aplicar Cambios desde" :append-icon="$icon.calendar" cols="24" input-readonly
+                @click="state.dialogDatePicker = true" />
+
             <EFormColumn cols="24" class="pa-0 mt-4">
                 <EButton :color="state.form.color" block depressed type="submit" :disabled="!state.formValid"
                     :loading="state.loading">
@@ -68,7 +69,7 @@ const formComponent = ref<Form>()
 
 const state = reactive({
     formValid: true,
-    selectedActivity: {} as Record<string, string>,
+    dialogDatePicker: false,
     loading: false,
     searchActivity: "",
     searchActivityTimer: 0,
@@ -77,10 +78,6 @@ const state = reactive({
 })
 
 const props = defineProps<Props>()
-watch(() => state.selectedActivity, (activity) => {
-    state.form.activityId = activity?.value
-    state.form.color = activity?.color
-})
 
 const dialog = inject<EDIalog | undefined>("EDialog", undefined);
 const menuContainer = inject<ContainerMenuInterface | undefined>("EMenuContainer", undefined);
@@ -91,24 +88,31 @@ const availableUsers = [
     { text: 'User 3', value: 3, icon: 'customer', avatar: "https://cdn.vuetifyjs.com/images/john.png" },
     { text: 'User 4', value: 4, icon: 'customer', avatar: "https://cdn.vuetifyjs.com/images/john.png" },
 ]
+
 const activities = [
     { text: '108 horas bajo el sol', value: 1, color: 'primary' },
-    { text: 'Afrodance', value: 5, color: 'carnation' },
-    { text: 'Bachata', value: 6, color: 'biloba-flower' },
-    { text: 'Americano Padel', value: 7, color: 'carnation' },
-    { text: 'Bailamos por sevillanas', value: 8, color: 'salmon' },
-    { text: 'Body Art', value: 9, color: 'carnation' },
+    { text: 'Afrodance', value: 2, color: 'carnation' },
+    { text: 'Bachata', value: 3, color: 'biloba-flower' },
+    { text: 'Americano Padel', value: 4, color: 'carnation' },
+    { text: 'Bailamos por sevillanas', value: 5, color: 'salmon' },
+    { text: 'Body Art', value: 6, color: 'carnation' },
+    { text: 'Dana Oriental', value: 7, color: 'danube' },
+    { text: 'Dance', value: 8, color: 'danube' },
+    { text: 'Calistena', value: 9, color: 'cape-palliser' },
     { text: 'Body n', value: 10, color: 'primary' },
     { text: 'Body combar', value: 11, color: 'salmon' },
     { text: 'Boxeo', value: 12, color: 'primary' },
-    { text: 'Calistena', value: 13, color: 'cape-palliser' },
-    { text: 'Dance', value: 14, color: 'danube' },
-    { text: 'Dana Oriental', value: 15, color: 'danube' },
 ]
 
 const availableActivity = ref([...activities])
 
 const formattedDate = computed(() => new UtilDate(state.form.dateChange).format('month-DD/month-MM/year-YYYY'))
+
+watch(() => state.form.activityId, (activity: undefined | number | string) => {
+    if (activity) {
+        state.form.color = activities.find((({ value }) => `${value}` === `${activity}`))?.color || 'primary'
+    }
+})
 
 watch(() => state.searchActivity, (value: string) => {
     if (value) {
@@ -137,7 +141,10 @@ const emit = defineEmits<{
     (e: 'submit', value: Event): void,
     (e: 'update:date', value: string | Date): void,
 }>()
-
+const updateDateChange = (value: Date | string) => {
+    state.form.dateChange = value;
+    state.dialogDatePicker = false;
+}
 
 const modalTitle = computed((): string => {
     return `Crear jornada &#x2022; Horario Habitual`
