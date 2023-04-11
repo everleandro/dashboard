@@ -17,45 +17,52 @@
             </div>
         </EBar>
         <EMenu ref="eventMenuRef" data-event-menu :activator="event.activator" check-offset>
-            <EventForm v-model="event.form" @click:close="closeMenu()" @submit="submitEvent" />
+            <EventForm :event="event.form" @click:close="closeMenu()" @submit="submitEvent" />
         </EMenu>
+        <EDialog ref="eventDialogRef" v-model="state.eventFormDialog" class="d-block d-md-none" max-width="450">
+            <EventForm :event="event.form" v-model:date="filters.date" @click:close="closeDialog()" @submit="submitEvent" />
+        </EDialog>
 
         <ERow class="mb-8">
             <ECol sm="12" lg="min-content" class="d-none d-lg-block">
                 <GridListSwitch v-model="filters.scheduleMode" text-one="Dia" fill-height text-two="Semana" min-width="200"
                     :true-value="Mode.schedule" :false-value="Mode.week" />
             </ECol>
-            <transition name="fade">
-                <ECol v-if="state.sessionView && (filters.scheduleMode === Mode.week)" cols="24" sm="12" md="auto" lg="5">
-                    <ESelect v-model="filters.space" label="Espacio :" :items="spaces" :readonly="loading" item-text="label"
-                        return-object item-value="id" />
-                </ECol>
-            </transition>
-            <ECol cols="24" sm="12" md="auto" lg="6">
+            <ECol v-if="showSpaceSelector" cols="24" sm="12" md="12" lg="6">
+                <ESelect v-model="filters.space" :items="spaces" :readonly="loading" item-text="label" return-object
+                    item-value="id" />
+            </ECol>
+            <ECol cols="24" :sm="showSpaceSelector ? 12 : 24" lg="7">
                 <ETextField v-model="filters.inputSearch" placeholder="Buscar Usuario o actividad"
-                    :append-icon="$icon.search" clearable cols="24" sm="12" md="8" lg="6" />
+                    :append-icon="$icon.search" clearable />
             </ECol>
 
             <ESpacer class="d-none d-lg-block" />
-            <ECol cols="24" sm="12" md="min-content">
+            <ECol cols="24" sm="12" class="d-block d-lg-none">
+                <GridListSwitch v-model="filters.scheduleMode" text-one="Dia" fill-height text-two="Semana" min-width="200"
+                    :true-value="Mode.schedule" :false-value="Mode.week" />
+            </ECol>
+            <ECol cols="24" sm="12" lg="min-content">
                 <GridListSwitch v-model="state.sessionView" text-one="Sesiones" fill-height text-two="Grupos"
                     min-width="228" />
             </ECol>
         </ERow>
         <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50" :events="eventsList"
             :loading="loading" v-model:mode="filters.scheduleMode" :start="60 * 60" :step="60 * 60" :spaces="spaces"
-            schedule-after-week sticky-top-header="120" @click:empty-slot="handleScheduleClick"
-            @click:event="handleScheduleClick" />
+            :schedule-column="scheduleColumns" schedule-after-week sticky-top-header="120"
+            @click:empty-slot="handleScheduleClick" @click:event="handleScheduleClick" />
     </div>
 </template>
 <script lang="ts" setup>
 import { events, spaces } from './constants'
 import UtilDate from '@/models/date';
 import Event from '@/models/event';
-import { SlotEvent, Mode } from '@/components/shared/schedule/types';
+import { SlotEvent, Mode, ScheduleEvent } from '@/components/shared/schedule/types';
 import { Menu } from '@/components/shared/menu/types';
+import { EDIalog } from '@/components/shared/dialog/index.vue';
 
 let eventMenuRef = ref<Menu>();
+let eventDialogRef = ref<EDIalog>();
 const { $icon } = useNuxtApp()
 const { viewport } = useBreakpoint()
 
@@ -82,6 +89,7 @@ const scheduleOptions = [
 const state = reactive({
     scheduleOption: 1,
     sessionView: true,
+    eventFormDialog: false,
     sessionGroups: true,
 })
 
@@ -107,15 +115,30 @@ watch(() => viewport, ({ lg }) => {
     if (!lg) filters.scheduleMode = Mode.week
 }, { deep: true });
 
-const handleScheduleClick = (obj: { data: SlotEvent, nativeEvent: MouseEvent }): void => {
+const handleScheduleClick = (obj: { data: ScheduleEvent, nativeEvent: MouseEvent }): void => {
     event.form = new Event(obj.data);
-    event.activator = obj.nativeEvent.target as HTMLElement
-    if (!event.activator?.getAttribute('aria-hasmenu')) {
-        nextTick(() => {
-            eventMenuRef.value?.openMenu()
-        })
+    if (viewport.xs || viewport.sm) {
+        state.eventFormDialog = true;
+    } else {
+
+        event.activator = obj.nativeEvent.target as HTMLElement
+        if (!event.activator?.getAttribute('aria-hasmenu')) {
+            nextTick(() => {
+                eventMenuRef.value?.openMenu()
+            })
+        }
     }
 }
+
+const showSpaceSelector = computed(() => state.sessionView && (filters.scheduleMode === Mode.week))
+
+const scheduleColumns = computed(() => {
+    if (viewport.xs) return 2
+    if (viewport.sm) return 4
+    if (viewport.md) return 6
+    if (viewport.lg) return 10
+    if (viewport.xl) return ''
+})
 
 const submitEvent = (objectEvent: Event) => {
     if (event.form.id) {
@@ -126,6 +149,7 @@ const submitEvent = (objectEvent: Event) => {
     }
 }
 const closeMenu = () => eventMenuRef.value?.closeMenu()
+const closeDialog = () => eventDialogRef.value?.close()
 
 
 </script>
@@ -133,14 +157,6 @@ const closeMenu = () => eventMenuRef.value?.closeMenu()
 .events-page {
     .e-bar {
         z-index: 1;
-    }
-
-    .e-schedule__header {
-        pointer-events: none;
-
-        @include _from_lg {
-            pointer-events: all;
-        }
     }
 
     .schedule-options {
@@ -158,7 +174,7 @@ const closeMenu = () => eventMenuRef.value?.closeMenu()
     z-index: 10;
 
     @include _from_sm {
-        width: 400px;
+        width: 450px;
     }
 }
 </style>

@@ -31,6 +31,9 @@
         // }
     }
 
+    .e-field__slot {
+        justify-content: center;
+    }
 
     &__fields {
         contain: layout;
@@ -52,6 +55,11 @@
 
         input[data-minutes] {
             grid-area: minutes;
+        }
+
+        input[data-hours],
+        input[data-minutes] {
+            padding: 8px 0;
         }
 
         input[data-hours] {

@@ -9,12 +9,17 @@
             <EButton :icon="$icon.clear" @click="closeMenu" />
         </div>
 
+        <EDialog v-model="state.dialogDatePicker" absolute max-width="290">
+            <EDatePicker :model-value="state.form.start" :icon-next="$icon.pickerIconeNext" :color="state.form.color"
+                :icon-prev="$icon.pickerIconPrev" @update:model-value="datePickerChange($event)" />
+        </EDialog>
+
         <EForm ref="formComponent" v-model="state.formValid" class="ma-0" :color="state.form.color" @submit="submit">
             <ETextField v-model="state.form.name" :rules="[_required]" :readonly="state.loading" placeholder="Titulo"
                 cols="14" sm="16" />
             <EColorPicker v-model="state.form.color" :rules="[_required]" label="Color" cols="10" sm="8" retain-color />
             <ESelect v-model="state.form.user" :rules="[_required]" label="Usuario" chip placeholder="Selecciona 1 usuario"
-                item-col="2" :items="availableUsers" cols="24">
+                :item-col="viewport.xs ? 1 : 2" :items="availableUsers" cols="24">
                 <template #selection="{ selection }">
                     <EChip :prepend-avatar="selection?.avatar" :avatar-size="32" text>
                         {{ selection?.text }}
@@ -27,7 +32,7 @@
                 </template>
             </ESelect>
             <ESelect v-model="state.form.roles" label="Rol" :disabled="!state.form.user" :rules="[_required]" multiple
-                :items="availableRole" cols="24" :detail="roleDetail" item-col="2">
+                :items="availableRole" cols="24" :detail="roleDetail" :item-col="viewport.xs ? 1 : 2">
                 <template #selection="{ selection, attrs }">
                     <EChip :prepend-icon="selection?.icon" v-bind="attrs">
                         {{ selection.text }}
@@ -39,18 +44,12 @@
                     </e-list-item>
                 </template>
             </ESelect>
-
-            <EMenu origin="bottom right" data-session-form-date-picker transition="scale" check-offset offset-x="12">
-                <template #activator="attrs">
-                    <ETextField :modelValue="formattedDate" v-bind="attrs" :append-icon="$icon.calendar" cols="24" sm="10"
-                        input-readonly />
-                </template>
-                <EDatePicker :model-value="state.form.start" :rules="[_required]" :icon-next="$icon.pickerIconeNext"
-                    :color="state.form.color" :icon-prev="$icon.pickerIconPrev" close-on-change
-                    @update:model-value="datePickerChange($event)" />
-            </EMenu>
             <ETimePicker v-model="state.form.start" :rules="[_required]" />
             <ETimePicker v-model="state.form.end" :rules="[_required]" />
+
+            <ETextField :modelValue="formattedDate" :rules="[_required]" :append-icon="$icon.calendar" cols="24" sm="10"
+                input-readonly @click="state.dialogDatePicker = true" />
+
             <EFormColumn cols="24" class="pa-0 mt-4">
                 <EButton :color="state.form.color" block depressed type="submit" :disabled="!state.formValid"
                     :loading="state.loading">
@@ -65,7 +64,7 @@
 import Session from '@/models/session';
 import UtilDate from '@/models/date';
 import { Form } from '~~/components/shared/form/types';
-import { EDIalog } from '~~/components/shared/dialog/index.vue';
+import { EDIalog as DialogIterface } from '~~/components/shared/dialog/index.vue';
 import { ContainerMenuInterface } from '~~/components/shared/menu/types';
 
 export interface Props {
@@ -73,18 +72,20 @@ export interface Props {
     date: Date | string,
 }
 const { $icon } = useNuxtApp()
+const { viewport } = useBreakpoint()
 const { _required } = useRules()
 const formComponent = ref<Form>()
 
 const state = reactive({
     formValid: true,
     loading: false,
+    dialogDatePicker: false,
     form: new Session()
 })
 
 const props = defineProps<Props>()
 
-const dialog = inject<EDIalog | undefined>("EDialog", undefined);
+const dialog = inject<DialogIterface | undefined>("EDialog", undefined);
 const menuContainer = inject<ContainerMenuInterface | undefined>("EMenuContainer", undefined);
 
 
@@ -136,6 +137,7 @@ const datePickerChange = (value: Date | string) => {
     const newDay = new Date(value).getDate()
     if (new Date(props.date).getDate() !== newDay)
         emit('update:date', value)
+    state.dialogDatePicker = false;
     state.form.start = new UtilDate(state.form.start).set(newDay, 'days').date
 }
 const closeMenu = () => {
