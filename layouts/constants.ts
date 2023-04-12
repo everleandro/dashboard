@@ -16,11 +16,11 @@ export const drawerLinks = [
         text: 'eventos',
         to: '/events'
     },
-    // {
-    //     icon: iconFactory.sessions,
-    //     text: 'sesiones',
-    //     to: '/sessions'
-    // },
+    {
+        icon: iconFactory.sessions,
+        text: 'sesiones',
+        to: '/sessions'
+    },
     {
         icon: iconFactory.schedule,
         text: 'Horarios',
@@ -76,11 +76,11 @@ export const drawerLinks = [
         text: 'Clientes',
         to: '/customers'
     },
-    // {
-    //     icon: iconFactory.providers,
-    //     text: 'Proveedores',
-    //     to: '/provider'
-    // },
+    {
+        icon: iconFactory.providers,
+        text: 'Proveedores',
+        to: '/providers'
+    },
     // {
     //     icon: iconFactory.incidents,
     //     text: 'Incidencias',

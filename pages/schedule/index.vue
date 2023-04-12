@@ -6,7 +6,7 @@
             </div>
         </EBar>
 
-        <EMenu activator="#filer-date-picker" class="d-none d-md-block" origin="bottom right" transition="scale"
+        <EMenu activator="#filer-date-picker" data-filter-date-picker-menu origin="bottom right" transition="scale"
             offset-x="12">
             <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
                 close-on-change />
@@ -149,18 +149,24 @@ const closeDialog = () => sessionDialogRef.value?.close()
 .schedule-page {
     #filer-date-picker {
         .e-field__control {
-            min-width: 180px;
+            min-width: 190px;
         }
     }
 }
 
-.e-menu-container[data-session-menu] {
-    transition: 300ms all;
-    width: calc(100% - 24px);
-    z-index: 10;
+.e-menu-container {
+    &[data-filter-date-picker-menu] {
+        margin-top: -10px;
+    }
 
-    @include _from_sm {
-        width: 500px;
+    &[data-session-menu] {
+        transition: 300ms all;
+        width: calc(100% - 24px);
+        z-index: 10;
+
+        @include _from_sm {
+            width: 500px;
+        }
     }
 }
 </style>
