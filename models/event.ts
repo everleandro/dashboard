@@ -9,7 +9,7 @@ export default class Event implements ScheduleEvent {
     color: string = 'primary'
     id?: number | string | null
     roles?: Array<string | number> = []
-    user?: string | number | null
+    user?: string | number | null | Array<number | string>
     footer?: string | number | null;
     subtitle?: string | number | null;
     activityId?: number | string
@@ -18,7 +18,7 @@ export default class Event implements ScheduleEvent {
 
     constructor(props?: {
         start?: Date | string, end?: Date | string, dateChange?: Date, roles?: Array<string | number>, activityId?: number | string,
-        color?: string, name?: string, entityId: string | number, id?: number | string, user?: string | number, rotating?: boolean,
+        color?: string, name?: string, entityId?: string | number, id?: number | string, user?: string | number | Array<number | string>, rotating?: boolean,
         target?: string | number
     }) {
         this.start = new Date(props?.start || new Date());
