@@ -1,5 +1,5 @@
 
-import Event from '@/models/event';
+import Session from '~~/models/Session';
 export const spaces = [
     {
         label: 'Sala Fitness',
@@ -38,24 +38,23 @@ export const spaces = [
         id: 800
     }
 ]
-export const events: Array<Event> = [
-    {
+export const sessions: Array<Session> = [
+    new Session({
         name: 'Ever',
         subtitle: "03:30h · 6:30' - 11",
         footer: 'Pista 4',
         start: '2023-04-11T03:30:00',
         end: '2023-04-11T06:30:00',
         entityId: 300,
+        id: 1,
         color: 'primary',
         user: [1],
         activityId: 1,
-        dateChange: new Date(),
-        target: 12,
-        rotating: false
-
-    },
-    {
+        target: 12
+    }),
+    new Session({
         name: 'Ever',
+        id: 2,
         subtitle: "03:30h · 04:30' - 13",
         footer: 'Pista 5',
         start: '2023-04-13T03:30:00',
@@ -64,12 +63,11 @@ export const events: Array<Event> = [
         color: 'carnation',
         user: [1],
         activityId: 2,
-        dateChange: new Date(),
         target: 12,
-        rotating: false
-    },
-    {
+    }),
+    new Session({
         name: 'Reunion',
+        id: 3,
         subtitle: "07:30h · 10:00' - 11",
         footer: 'Pista 5',
         start: '2023-04-11T07:30:00',
@@ -77,41 +75,38 @@ export const events: Array<Event> = [
         entityId: 300,
         color: 'biloba-flower',
         user: [1],
-        dateChange: new Date(),
         target: 12,
         activityId: 3,
-        rotating: false
-    },
-    {
+    }),
+    new Session({
         name: 'correr',
         subtitle: "01:30h · 03:30' - 14",
         footer: 'Pista 6',
+        id: 4,
         start: '2023-04-14T01:30:00',
         end: '2023-04-14T03:30:00',
         entityId: 300,
         color: 'carnation',
         activityId: 4,
         user: [1],
-        dateChange: new Date(),
         target: 12,
-        rotating: false
-    },
-    {
+    }),
+    new Session({
         name: 'Cinta',
         subtitle: "02:00h · 03:30' - 15",
         footer: 'Pista 7',
+        id: 5,
         start: '2023-04-15T02:00:00',
         end: '2023-04-15T03:30:00',
         entityId: 300,
         color: 'salmon',
         user: [1],
         activityId: 5,
-        dateChange: new Date(),
         target: 12,
-        rotating: false
-    },
-    {
+    }),
+    new Session({
         name: 'Evento random',
+        id: 6,
         subtitle: "01:00h · 02:00' - 14",
         footer: 'Pista 7',
         start: '2023-04-14T01:00:00',
@@ -120,12 +115,11 @@ export const events: Array<Event> = [
         color: 'primary',
         activityId: 1,
         user: [1],
-        dateChange: new Date(),
         target: 2,
-        rotating: true
-    },
-    {
+    }),
+    new Session({
         name: 'Otro evento',
+        id: 7,
         subtitle: "23:00h · 00:00' - 16",
         footer: 'Pista 7',
         start: '2023-04-16T23:00:00',
@@ -134,8 +128,6 @@ export const events: Array<Event> = [
         activityId: 2,
         color: 'biloba-flower',
         user: [1],
-        dateChange: new Date(),
         target: 1,
-        rotating: false
-    }
+    })
 ]

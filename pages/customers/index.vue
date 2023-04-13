@@ -35,7 +35,7 @@
 </template>
 <script lang="ts" setup>
 import { type as switchType } from "@/components/app/grid-list-switch.vue"
-import { Customer } from "@/models/customer"
+import Customer from "@/models/customer"
 import { type as userCardType } from "@/components/app/user/card.vue";
 
 const state = reactive({

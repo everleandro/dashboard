@@ -41,7 +41,6 @@ textarea {
 }
 
 body {
-
   font-family: $root-font-family;
   color: var(--root-color);
 }
@@ -49,4 +48,8 @@ body {
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: var(--root-font-size, unset);
 }

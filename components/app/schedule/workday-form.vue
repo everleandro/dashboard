@@ -61,14 +61,14 @@
 </template>
 
 <script lang="ts" setup>
-import Session from '@/models/session';
+import Workday from '@/models/Workday';
 import UtilDate from '@/models/date';
 import { Form } from '~~/components/shared/form/types';
 import { EDIalog as DialogIterface } from '~~/components/shared/dialog/index.vue';
 import { ContainerMenuInterface } from '~~/components/shared/menu/types';
 
 export interface Props {
-    session?: Session,
+    workday?: Workday,
     date: Date | string,
 }
 const { $icon } = useNuxtApp()
@@ -80,7 +80,7 @@ const state = reactive({
     formValid: true,
     loading: false,
     dialogDatePicker: false,
-    form: new Session()
+    form: new Workday()
 })
 
 const props = defineProps<Props>()
@@ -114,7 +114,7 @@ const availableUsers = [
 
 const formattedDate = computed(() => new UtilDate(state.form.start).format('month-DD/month-MM, week-dddd '))
 const roleDetail = computed(() => state.form.user ? '' : 'Seleccione primero un usuario')
-watch(() => props.session, (value: Session | undefined) => {
+watch(() => props.workday, (value: Workday | undefined) => {
     reset()
     if (value) {
         state.form = value
@@ -123,7 +123,7 @@ watch(() => props.session, (value: Session | undefined) => {
 
 const emit = defineEmits<{
     (e: 'click:close', value: boolean): void,
-    (e: 'submit', value: Session): void,
+    (e: 'submit', value: Workday): void,
     (e: 'update:date', value: string | Date): void,
 }>()
 
@@ -145,7 +145,7 @@ const closeMenu = () => {
 }
 
 const reset = (): void => {
-    state.form = new Session()
+    state.form = new Workday()
     nextTick(() => {
         formComponent.value?.reset()
     })
@@ -154,8 +154,9 @@ const submit = async () => {
     const valid = await formComponent.value?.validate()
     if (valid) {
         state.loading = true;
+        const id = state.form.id === 'new' ? Math.random() : state.form.id
         setTimeout(async () => {
-            emit('submit', { ...state.form })
+            emit('submit', { ...state.form, id })
             state.loading = false;
             dialog?.close(true);
             menuContainer?.closeMenu();

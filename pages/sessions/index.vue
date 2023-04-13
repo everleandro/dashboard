@@ -6,13 +6,13 @@
             </div>
 
         </EBar>
-        <EMenu ref="eventMenuRef" data-event-menu :activator="event.activator" check-offset>
-            <SessionForm :event="event.form" @click:close="closeMenu()" @submit="submitEvent" />
+        <EMenu ref="eventMenuRef" data-event-menu :activator="session.activator" check-offset>
+            <SessionForm :session="session.form" @click:close="closeMenu()" @submit="submitSession" />
         </EMenu>
 
         <EDialog ref="eventDialogRef" v-model="state.eventFormDialog" class="d-block d-md-none" max-width="450">
-            <SessionForm :event="event.form" v-model:date="filters.date" @click:close="closeDialog()"
-                @submit="submitEvent" />
+            <SessionForm :session="session.form" v-model:date="filters.date" @click:close="closeDialog()"
+                @submit="submitSession" />
         </EDialog>
 
         <EMenu activator="#filer-date-picker" class="d-none d-md-block" data-filter-date-picker-menu origin="bottom right"
@@ -56,10 +56,10 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { events, spaces } from './constants'
+import { sessions, spaces } from './constants'
 import UtilDate from '@/models/date';
-import Event from '@/models/event';
-import { SlotEvent, Mode, ScheduleEvent } from '@/components/shared/schedule/types';
+import Session from '~~/models/Session';
+import { Mode, ScheduleEvent } from '@/components/shared/schedule/types';
 import { Menu } from '@/components/shared/menu/types';
 import { EDIalog } from '@/components/shared/dialog/index.vue';
 
@@ -68,12 +68,12 @@ let eventDialogRef = ref<EDIalog>();
 const { $icon } = useNuxtApp()
 const { viewport } = useBreakpoint()
 
-const event = reactive({
+const session = reactive({
     activator: <HTMLElement | undefined>undefined,
-    form: new Event({ user: new Array<number>() })
+    form: new Session()
 })
 
-const eventsList = ref<Array<Event>>([...events])
+const eventsList = ref<Array<Session>>([...sessions])
 const loading = ref(false)
 
 const modes = [
@@ -126,13 +126,13 @@ watch(() => viewport, ({ lg }) => {
 }, { deep: true });
 
 const handleScheduleClick = (obj: { data: ScheduleEvent, nativeEvent: MouseEvent }): void => {
-    event.form = new Event({ user: [], ...obj.data });
+    session.form = new Session(obj.data);
     if (viewport.xs || viewport.sm) {
         state.eventFormDialog = true;
     } else {
 
-        event.activator = obj.nativeEvent.target as HTMLElement
-        if (!event.activator?.getAttribute('aria-hasmenu')) {
+        session.activator = obj.nativeEvent.target as HTMLElement
+        if (!session.activator?.getAttribute('aria-hasmenu')) {
             nextTick(() => {
                 eventMenuRef.value?.openMenu()
             })
@@ -140,21 +140,20 @@ const handleScheduleClick = (obj: { data: ScheduleEvent, nativeEvent: MouseEvent
     }
 }
 
-
 const scheduleColumns = computed(() => {
-    if (viewport.xs) return 2
-    if (viewport.sm) return 4
-    if (viewport.md) return 6
+    if (viewport.xs) return 3
+    if (viewport.sm) return 5
+    if (viewport.md) return 7
     if (viewport.lg) return 10
     if (viewport.xl) return ''
 })
 
-const submitEvent = (objectEvent: Event) => {
-    if (event.form.id) {
-        const index = eventsList.value.findIndex(({ id }) => id === event.form.id)
-        eventsList.value.splice(index, 1)
+const submitSession = (objectSession: Session) => {
+    if (session.form.id) {
+        const index = eventsList.value.findIndex(({ id }) => id === session.form.id)
+        eventsList.value.splice(index, 1, new Session(objectSession))
     } else {
-        eventsList.value.push(objectEvent)
+        eventsList.value.push(objectSession)
     }
 }
 const closeMenu = () => eventMenuRef.value?.closeMenu()

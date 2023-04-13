@@ -1,5 +1,5 @@
 
-import Event from '@/models/event';
+import ScheduleEvent from '~~/models/Event';
 export const spaces = [
     {
         label: 'Sala Fitness',
@@ -38,24 +38,20 @@ export const spaces = [
         id: 800
     }
 ]
-export const events: Array<Event> = [
-    {
+export const events: Array<ScheduleEvent> = [
+    new ScheduleEvent({
         name: 'Ever',
         subtitle: "03:30h · 6:30' - 11",
         footer: 'Pista 4',
         start: '2023-04-11T03:30:00',
         end: '2023-04-11T06:30:00',
         entityId: 300,
-        color: 'primary',
         roles: [1, 2],
         user: 1,
         activityId: 1,
-        dateChange: new Date(),
         target: 12,
-        rotating: false
-
-    },
-    {
+    }),
+    new ScheduleEvent({
         name: 'Ever',
         subtitle: "03:30h · 04:30' - 13",
         footer: 'Pista 5',
@@ -66,11 +62,9 @@ export const events: Array<Event> = [
         roles: [1, 2, 3],
         user: 1,
         activityId: 2,
-        dateChange: new Date(),
         target: 12,
-        rotating: false
-    },
-    {
+    }),
+    new ScheduleEvent({
         name: 'Reunion',
         subtitle: "07:30h · 10:00' - 11",
         footer: 'Pista 5',
@@ -80,12 +74,11 @@ export const events: Array<Event> = [
         color: 'biloba-flower',
         roles: [1, 6],
         user: 1,
-        dateChange: new Date(),
         target: 12,
         activityId: 3,
-        rotating: false
-    },
-    {
+        rotating: true
+    }),
+    new ScheduleEvent({
         name: 'correr',
         subtitle: "01:30h · 03:30' - 14",
         footer: 'Pista 6',
@@ -94,16 +87,13 @@ export const events: Array<Event> = [
         entityId: 300,
         color: 'carnation',
         roles: [1, 3],
-
         activityId: 4,
         user: 1,
-        dateChange: new Date(),
         target: 12,
-        rotating: false
-    },
-    {
+    }),
+    new ScheduleEvent({
         name: 'Cinta',
-        subtitle: "02:00h · 03:30' - 15",
+        subtitle: "02:00h · 03:30'",
         footer: 'Pista 7',
         start: '2023-04-15T02:00:00',
         end: '2023-04-15T03:30:00',
@@ -111,28 +101,23 @@ export const events: Array<Event> = [
         color: 'salmon',
         roles: [2],
         user: 1,
-
         activityId: 5,
-        dateChange: new Date(),
         target: 12,
-        rotating: false
-    },
-    {
+    }),
+    new ScheduleEvent({
         name: 'Evento random',
         subtitle: "01:00h · 02:00' - 14",
         footer: 'Pista 7',
         start: '2023-04-14T01:00:00',
         end: '2023-04-14T02:00:00',
         entityId: 300,
-        color: 'primary',
         roles: [5],
         activityId: 1,
         user: 1,
-        dateChange: new Date(),
         target: 2,
         rotating: true
-    },
-    {
+    }),
+    new ScheduleEvent({
         name: 'Otro evento',
         subtitle: "23:00h · 00:00' - 16",
         footer: 'Pista 7',
@@ -145,6 +130,5 @@ export const events: Array<Event> = [
         user: 1,
         dateChange: new Date(),
         target: 1,
-        rotating: false
-    }
+    })
 ]

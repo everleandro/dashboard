@@ -11,10 +11,10 @@
             <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
                 close-on-change />
         </EMenu>
-        <EMenu ref="sessionMenuRef" data-session-menu="true" class="d-none d-md-block" :activator="session.activator"
+        <EMenu ref="workdayMenuRef" data-work-day-menu="true" class="d-none d-md-block" :activator="workday.activator"
             check-offset>
-            <ScheduleSessionForm v-model:session="session.form" v-model:date="filters.date" @click:close="closeMenu()"
-                @submit="submitSession" />
+            <ScheduleWorkdayForm v-model:workday="workday.form" v-model:date="filters.date" @click:close="closeMenu()"
+                @submit="submitWorkday" />
         </EMenu>
 
         <EDialog v-model="state.datePickerDialog" max-width="290" class="d-block d-md-none" transition="scale">
@@ -22,9 +22,9 @@
                 close-on-change />
         </EDialog>
 
-        <EDialog ref="sessionDialogRef" v-model="state.sessionFormDialog" class="d-block d-md-none" max-width="500">
-            <ScheduleSessionForm v-model:session="session.form" v-model:date="filters.date" @click:close="closeDialog()"
-                @submit="submitSession" />
+        <EDialog ref="workdayDialogRef" v-model="state.workdayFormDialog" class="d-block d-md-none" max-width="500">
+            <ScheduleWorkdayForm v-model:workday="workday.form" v-model:date="filters.date" @click:close="closeDialog()"
+                @submit="submitWorkday" />
         </EDialog>
 
         <EForm class="mb-8">
@@ -51,37 +51,36 @@
                 :readonly="state.loading" cols="24" sm="12" lg="min-content" input-readonly @click="openFilterPickerMenu" />
         </EForm>
 
-        <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50"
-            :events="state.sessionsList" :loading="state.loading" v-model:mode="filters.scheduleMode" :start="60 * 60"
-            :step="60 * 60" :spaces="spaces" sticky-top-header="120" @click:empty-slot="handleScheduleClickClick"
-            @click:event="handleScheduleClickClick" />
+        <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50" :events="state.workdayList"
+            :loading="state.loading" v-model:mode="filters.scheduleMode" :start="60 * 60" :step="60 * 60" :spaces="spaces"
+            sticky-top-header="120" @click:empty-slot="handleScheduleClickClick" @click:event="handleScheduleClickClick" />
     </div>
 </template>
 <script lang="ts" setup>
-import { sessions, spaces } from './constants'
+import { workdays, spaces } from './constants'
 import UtilDate from '@/models/date';
-import Session from '@/models/session';
+import Workday from '@/models/Workday';
 import { SlotEvent, Mode } from '@/components/shared/schedule/types';
 import { Menu } from '@/components/shared/menu/types';
 import { EDIalog } from '@/components/shared/dialog/index.vue';
 import { roleList } from "@/models/employee";
 
-let sessionMenuRef = ref<Menu>();
-let sessionDialogRef = ref<EDIalog>();
+let workdayMenuRef = ref<Menu>();
+let workdayDialogRef = ref<EDIalog>();
 
 const { viewport } = useBreakpoint()
 const { $icon } = useNuxtApp()
 
-const session = reactive({
+const workday = reactive({
     activator: <HTMLElement | undefined>undefined,
-    form: new Session()
+    form: new Workday()
 })
 
 const state = reactive({
-    sessionsList: <Array<Session>>[...sessions],
+    workdayList: <Array<Workday>>[...workdays],
     loading: false,
     datePickerDialog: false,
-    sessionFormDialog: false
+    workdayFormDialog: false
 })
 
 const modes = [
@@ -117,31 +116,31 @@ const openFilterPickerMenu = (evt: Event): void => {
     }
 }
 
-const submitSession = (objectSession: Session) => {
-    if (session.form.id) {
-        const index = state.sessionsList.findIndex(({ id }) => id === session.form.id)
-        state.sessionsList.splice(index, 1)
+const submitWorkday = (objectWorkday: Workday) => {
+    if (workday.form.id !== 'new') {
+        const index = state.workdayList.findIndex(({ id }) => id === workday.form.id)
+        state.workdayList.splice(index, 1, new Workday(objectWorkday))
     } else {
-        state.sessionsList.push(objectSession)
+        state.workdayList.push(new Workday(objectWorkday))
     }
 }
 
 const handleScheduleClickClick = (obj: { data: SlotEvent, nativeEvent: MouseEvent }): void => {
-    session.form = new Session(obj.data);
+    workday.form = new Workday(obj.data);
     if (viewport.xs || viewport.sm) {
-        state.sessionFormDialog = true;
+        state.workdayFormDialog = true;
     } else {
-        session.activator = obj.nativeEvent.target as HTMLElement
-        if (!session.activator?.getAttribute('aria-hasmenu')) {
+        workday.activator = obj.nativeEvent.target as HTMLElement
+        if (!workday.activator?.getAttribute('aria-hasmenu')) {
             nextTick(() => {
-                sessionMenuRef.value?.openMenu()
+                workdayMenuRef.value?.openMenu()
             })
         }
     }
 }
 
-const closeMenu = () => sessionMenuRef.value?.closeMenu()
-const closeDialog = () => sessionDialogRef.value?.close()
+const closeMenu = () => workdayMenuRef.value?.closeMenu()
+const closeDialog = () => workdayDialogRef.value?.close()
 
 
 </script>
@@ -159,7 +158,7 @@ const closeDialog = () => sessionDialogRef.value?.close()
         margin-top: -10px;
     }
 
-    &[data-session-menu] {
+    &[data-work-day-menu] {
         transition: 300ms all;
         width: calc(100% - 24px);
         z-index: 10;

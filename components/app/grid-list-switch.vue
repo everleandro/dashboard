@@ -90,7 +90,7 @@ const changeValue = (value: boolean | number | string) => {
 </script>
 <style lang="scss">
 .grid-list-switch {
-    min-height: 48px;
+    min-height: 100%;
 
     &--block {
         flex-grow: 1;
@@ -103,10 +103,10 @@ const changeValue = (value: boolean | number | string) => {
     }
 
     &--fill-height {
-        height: 100%;
+        min-height: 100%;
 
         .e-btn {
-            height: 100%;
+            min-height: 100%;
         }
     }
 

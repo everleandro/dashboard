@@ -52,7 +52,7 @@ export interface Props {
     iconClear?: string; retainColor?: boolean;
     disabled?: boolean; dense?: boolean; readonly?: boolean; counter?: boolean; clearable?: boolean;
     labelInline?: boolean; detail?: string; outlined?: boolean; label?: string | number;
-    modelValue: string | number; placeholder?: string; suffix?: string; autocomplete?: string;
+    modelValue?: string | number | null; placeholder?: string; suffix?: string; autocomplete?: string;
     prefix?: string; inputAlign?: string; color?: string; limit?: string | number;
     detailErrors?: Array<string>; detailsOnMessageOnly?: boolean; type?: string; appendIcon?: string;
     labelMinWidth?: string; prependIcon?: string; rules?: Array<(param: any) => string | true>;
