@@ -2,8 +2,8 @@
     <div class="customer_page">
         <EBar depressed>
             <div>
-                <h1>Clientes</h1>
-                <p>22566 clientes</p>
+                <h1>Proveedores</h1>
+                <p>10 proveedores</p>
             </div>
 
             <ESpacer></ESpacer>
@@ -35,7 +35,7 @@
 </template>
 <script lang="ts" setup>
 import { type as switchType } from "@/components/app/grid-list-switch.vue"
-import { Customer } from "@/models/customer"
+import Customer from "@/models/customer"
 import { type as userCardType } from "@/components/app/user/card.vue";
 
 const state = reactive({

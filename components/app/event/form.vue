@@ -54,14 +54,14 @@
 </template>
 
 <script lang="ts" setup>
-import Event from '@/models/event';
+import ScheduleEvent from '~~/models/Event';
 import UtilDate from '@/models/date';
 import { Form } from '~~/components/shared/form/types';
 import { EDIalog } from '~~/components/shared/dialog/index.vue';
 import { ContainerMenuInterface } from '~~/components/shared/menu/types';
 
 export interface Props {
-    event?: Event
+    event?: ScheduleEvent
 }
 const { $icon } = useNuxtApp()
 const { _required } = useRules()
@@ -74,7 +74,7 @@ const state = reactive({
     searchActivity: "",
     searchActivityTimer: 0,
     loadingActivity: false,
-    form: new Event()
+    form: new ScheduleEvent()
 })
 
 const props = defineProps<Props>()
@@ -129,7 +129,7 @@ watch(() => state.searchActivity, (value: string) => {
     }
 })
 
-watch(() => props.event, (value: Event | undefined) => {
+watch(() => props.event, (value: ScheduleEvent | undefined) => {
     reset()
     if (value) {
         state.form = value
@@ -138,7 +138,7 @@ watch(() => props.event, (value: Event | undefined) => {
 
 const emit = defineEmits<{
     (e: 'click:close', value: boolean): void,
-    (e: 'submit', value: Event): void,
+    (e: 'submit', value: ScheduleEvent): void,
     (e: 'update:date', value: string | Date): void,
 }>()
 const updateDateChange = (value: Date | string) => {
@@ -155,7 +155,7 @@ const closeMenu = () => {
 }
 
 const reset = (): void => {
-    state.form = new Event()
+    state.form = new ScheduleEvent()
     nextTick(() => {
         formComponent.value?.reset()
     })
@@ -164,8 +164,9 @@ const submit = async () => {
     const valid = await formComponent.value?.validate()
     if (valid) {
         state.loading = true;
+        const id = state.form.id === 'new' ? Math.random() : state.form.id
         setTimeout(async () => {
-            emit('submit', { ...state.form })
+            emit('submit', { ...state.form, id })
             state.loading = false;
             dialog?.close(true);
             menuContainer?.closeMenu();

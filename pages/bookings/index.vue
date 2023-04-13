@@ -1,26 +1,28 @@
 <template>
-    <div class="events-page">
+    <div class="booking-page">
         <EBar depressed>
             <div>
-                <h1>Eventos</h1>
+                <h1>Sesiones</h1>
             </div>
-            <e-spacer></e-spacer>
-            <div class="schedule-options">
-                <ESelect v-model="state.scheduleOption" :items="scheduleOptions" :readonly="loading" cols="24" sm="12"
-                    retain-color outlined lg="6">
-                    <template #item="{ attrs, item }">
-                        <e-list-item v-bind="attrs" :prepend-icon="item.icon">
-                            {{ item.text }}
-                        </e-list-item>
-                    </template>
-                </ESelect>
-            </div>
+
         </EBar>
-        <EMenu ref="eventMenuRef" data-event-menu :activator="event.activator" check-offset>
-            <EventForm :event="event.form" @click:close="closeMenu()" @submit="submitEvent" />
+        <EMenu ref="bookingMenuRef" data-booking-menu :activator="booking.activator" check-offset>
+            <BookingsForm :booking="booking.form" @click:close="closeMenu()" @submit="submitBooking" />
         </EMenu>
-        <EDialog ref="eventDialogRef" v-model="state.eventFormDialog" class="d-block d-md-none" max-width="450">
-            <EventForm :event="event.form" v-model:date="filters.date" @click:close="closeDialog()" @submit="submitEvent" />
+
+        <EDialog ref="bookingDialogRef" v-model="state.bookingFormDialog" class="d-block d-md-none" max-width="450">
+            <BookingsForm :booking="booking.form" @click:close="closeDialog()" @submit="submitBooking" />
+        </EDialog>
+
+        <EMenu activator="#filer-date-picker" class="d-none d-md-block" data-filter-date-picker-menu origin="bottom right"
+            transition="scale">
+            <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
+                close-on-change />
+        </EMenu>
+
+        <EDialog v-model="state.datePickerDialog" max-width="290" class="d-block d-md-none" transition="scale">
+            <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
+                close-on-change />
         </EDialog>
 
         <ERow class="mb-8">
@@ -28,11 +30,11 @@
                 <GridListSwitch v-model="filters.scheduleMode" text-one="Dia" fill-height text-two="Semana" min-width="200"
                     :true-value="Mode.schedule" :false-value="Mode.week" />
             </ECol>
-            <ECol v-if="showSpaceSelector" cols="24" sm="12" md="12" lg="6">
+            <ECol v-if="filters.scheduleMode === Mode.week" cols="24" sm="12" md="12" lg="6">
                 <ESelect v-model="filters.space" :items="spaces" :readonly="loading" item-text="label" return-object
                     item-value="id" />
             </ECol>
-            <ECol cols="24" :sm="showSpaceSelector ? 12 : 24" lg="7">
+            <ECol cols="24" :sm="filters.scheduleMode === Mode.week ? 12 : 24" lg="7">
                 <ETextField v-model="filters.inputSearch" placeholder="Buscar Usuario o actividad"
                     :append-icon="$icon.search" clearable />
             </ECol>
@@ -43,35 +45,35 @@
                     :true-value="Mode.schedule" :false-value="Mode.week" />
             </ECol>
             <ECol cols="24" sm="12" lg="min-content">
-                <GridListSwitch v-model="state.sessionView" text-one="Sesiones" fill-height text-two="Grupos"
-                    min-width="228" />
+                <ETextField id="filer-date-picker" :modelValue="formattedDate" :append-icon="$icon.calendar"
+                    :readonly="state.loading" input-readonly @click="openFilterPickerMenu" />
             </ECol>
         </ERow>
-        <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50" :events="eventsList"
+        <ESchedule v-model="filters.date" v-model:selected-space="filters.space" row-height="50" :events="bookingList"
             :loading="loading" v-model:mode="filters.scheduleMode" :start="60 * 60" :step="60 * 60" :spaces="spaces"
             :schedule-column="scheduleColumns" schedule-after-week sticky-top-header="120"
             @click:empty-slot="handleScheduleClick" @click:event="handleScheduleClick" />
     </div>
 </template>
 <script lang="ts" setup>
-import { events, spaces } from './constants'
+import { bookings, spaces } from './constants'
 import UtilDate from '@/models/date';
-import Event from '~~/models/Event';
-import { SlotEvent, Mode, ScheduleEvent } from '@/components/shared/schedule/types';
+import Booking from '~~/models/Booking';
+import { Mode, ScheduleEvent } from '@/components/shared/schedule/types';
 import { Menu } from '@/components/shared/menu/types';
 import { EDIalog } from '@/components/shared/dialog/index.vue';
 
-let eventMenuRef = ref<Menu>();
-let eventDialogRef = ref<EDIalog>();
+let bookingMenuRef = ref<Menu>();
+let bookingDialogRef = ref<EDIalog>();
 const { $icon } = useNuxtApp()
 const { viewport } = useBreakpoint()
 
-const event = reactive({
+const booking = reactive({
     activator: <HTMLElement | undefined>undefined,
-    form: new Event()
+    form: new Booking()
 })
 
-const eventsList = ref<Array<Event>>([...events])
+const bookingList = ref<Array<Booking>>([...bookings])
 const loading = ref(false)
 
 const modes = [
@@ -88,21 +90,27 @@ const scheduleOptions = [
 
 const state = reactive({
     scheduleOption: 1,
-    sessionView: true,
-    eventFormDialog: false,
-    sessionGroups: true,
+    datePickerDialog: false,
+    loading: false,
+    bookingFormDialog: false,
 })
 
 const filters = reactive({
     role: 1,
     inputSearch: '',
-    sessionsOrGroups: 1,
     scheduleMode: Mode.schedule,
     space: spaces[0],
     date: new Date(),
 })
 
 const formattedDate = computed(() => new UtilDate(filters.date).format('month-DD/month-MM, week-dddd '))
+
+const openFilterPickerMenu = (evt: MouseEvent): void => {
+    if (viewport.xs || viewport.sm) {
+        state.datePickerDialog = true;
+        evt.stopImmediatePropagation()
+    }
+}
 
 watch(() => filters, () => {
     loading.value = true;
@@ -116,21 +124,19 @@ watch(() => viewport, ({ lg }) => {
 }, { deep: true });
 
 const handleScheduleClick = (obj: { data: ScheduleEvent, nativeEvent: MouseEvent }): void => {
-    event.form = new Event(obj.data);
+    booking.form = new Booking(obj.data);
     if (viewport.xs || viewport.sm) {
-        state.eventFormDialog = true;
+        state.bookingFormDialog = true;
     } else {
 
-        event.activator = obj.nativeEvent.target as HTMLElement
-        if (!event.activator?.getAttribute('aria-hasmenu')) {
+        booking.activator = obj.nativeEvent.target as HTMLElement
+        if (!booking.activator?.getAttribute('aria-hasmenu')) {
             nextTick(() => {
-                eventMenuRef.value?.openMenu()
+                bookingMenuRef.value?.openMenu()
             })
         }
     }
 }
-
-const showSpaceSelector = computed(() => state.sessionView && (filters.scheduleMode === Mode.week))
 
 const scheduleColumns = computed(() => {
     if (viewport.xs) return 3
@@ -140,41 +146,43 @@ const scheduleColumns = computed(() => {
     if (viewport.xl) return ''
 })
 
-const submitEvent = (objectEvent: Event) => {
-    if (objectEvent.id !== 'new') {
-        const index = eventsList.value.findIndex(({ id }) => id === objectEvent.id)
-        eventsList.value.splice(index, 1, new Event(objectEvent))
+const submitBooking = (objectBooking: Booking) => {
+    if (objectBooking.id !== 'new') {
+        const index = bookingList.value.findIndex(({ id }) => id === objectBooking.id)
+        bookingList.value.splice(index, 1, new Booking(objectBooking))
     } else {
-        eventsList.value.push(objectEvent)
+        bookingList.value.push(objectBooking)
     }
 }
-const closeMenu = () => eventMenuRef.value?.closeMenu()
-const closeDialog = () => eventDialogRef.value?.close()
+const closeMenu = () => bookingMenuRef.value?.closeMenu()
+const closeDialog = () => bookingDialogRef.value?.close()
 
 
 </script>
 <style lang="scss">
-.events-page {
-    .e-bar {
-        z-index: 1;
-    }
-
-    .schedule-options {
-        min-width: 228px;
-
-        @include _xs {
+.booking-page {
+    #filer-date-picker {
+        .e-field__control {
             min-width: 190px;
         }
     }
+
+
 }
 
-.e-menu-container[data-event-menu] {
-    transition: 300ms all;
-    width: calc(100% - 24px);
-    z-index: 10;
+.e-menu-container {
+    &[data-filter-date-picker-menu] {
+        margin-top: 2px;
+    }
 
-    @include _from_sm {
-        width: 450px;
+    &[data-booking-menu] {
+        transition: 300ms all;
+        width: calc(100% - 24px);
+        z-index: 10;
+
+        @include _from_sm {
+            width: 450px;
+        }
     }
 }
 </style>

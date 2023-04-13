@@ -1,7 +1,7 @@
 <template>
   <component :is="tag" v-click-outside="handleOutside" :class="drawerClass" data-layout="true" :style="style">
     <div v-if="right" class="e-drawer__border"></div>
-    <div class="e-drawer__content" :style="{ width: `${width}px` }">
+    <div class="e-drawer__content" :style="{ width: `${width}${sizeUnit}` }">
       <slot></slot>
     </div>
     <div v-if="!right" class="e-drawer__border"></div>
@@ -18,11 +18,12 @@ export interface Props {
   fixed?: boolean
   nav?: boolean
   right?: boolean
+  sizeUnit?: string
   width?: string | number
 }
 
 let mdBreakpoint = ref(false);
-const props = withDefaults(defineProps<Props>(), { width: 256 })
+const props = withDefaults(defineProps<Props>(), { width: 16, sizeUnit: 'rem' })
 
 let overlayNode: HTMLElement | null = null;
 
@@ -109,8 +110,7 @@ const refreshLayoutStyle = (): void => {
   const eMainNode = document.querySelector('.e-main[data-layout="true"]') as HTMLElement
   const eBarNode = document.querySelector('.e-bar.e-bar--app[data-layout="true"]') as HTMLElement
   const propertyValue =
-    absoluteComputed.value || !props.modelValue ? '0px' : `${props.width}px`;
-
+    (absoluteComputed.value || !props.modelValue) ? '0px' : `${props.width}${props.sizeUnit}`;
   if (eMainNode) {
     props.right ? (eMainNode.style.paddingRight = propertyValue) : (eMainNode.style.paddingLeft = propertyValue)
   }

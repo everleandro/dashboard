@@ -6,24 +6,25 @@ export default class Session implements ScheduleEvent {
     start: Date | string
     end: Date | string
     color: string = 'primary'
-    id?: number | string | null
-    roles?: Array<string | number> = []
-    user?: string | number | null
+    id: number | string | null
+    roles: Array<string | number> = []
+    activityId: number | string | null
+    user: Array<string | number | null>
     footer?: string | number | null;
     subtitle?: string | number | null;
+    target: number | string | null
 
-    constructor(props?: {
-        start?: Date | string, end?: Date | string, roles?: Array<string | number>, color?: string, name?: string,
-        entityId: string | number, id?: number | string, user?: string | number
-    }) {
+    constructor(props?: Partial<Session>) {
         this.start = new Date(props?.start || new Date());
         this.end = new Date(props?.end || new Date());
         this.name = props?.name || ''
         this.entityId = props?.entityId || ''
-        this.id = props?.id || null
-        if (props?.color) (this.color = props?.color)
-        if (props?.roles) (this.roles = props?.roles)
-        this.user = props?.user || null
+        this.id = props?.id || 'new'
+        this.color = props?.color || 'primary'
+        this.roles = props?.roles || []
+        this.user = props?.user || []
+        this.activityId = props?.activityId || null
+        this.target = props?.target || null
     }
 
 }

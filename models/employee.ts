@@ -1,6 +1,6 @@
 
 import { iconFactory as $icon } from "@/plugins/icons"
-import { User } from "./user"
+import User from "./User"
 export interface Role {
     text: string, value: string | number, icon: string
 }
@@ -21,6 +21,6 @@ export const roleList: Array<Role> = [
     { text: 'Supervisor', value: 13, icon: $icon.roles.supervisor },
 ]
 
-export interface Employee extends User {
+export default interface Employee extends User {
     roles: Array<Role>
 }

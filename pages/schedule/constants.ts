@@ -1,5 +1,5 @@
 
-import Session from '@/models/session';
+import Workday from '~~/models/Workday';
 export const spaces = [
     {
         label: 'Sala Fitness',
@@ -38,9 +38,10 @@ export const spaces = [
         id: 800
     }
 ]
-export const sessions: Array<Session> = [
-    {
+export const workdays: Array<Workday> = [
+    new Workday({
         name: 'Ever',
+        id: 1,
         subtitle: "03:30h · 6:30'",
         footer: 'Pista 4',
         start: '2023-04-10T03:30:00',
@@ -49,9 +50,10 @@ export const sessions: Array<Session> = [
         color: 'carnation',
         roles: [1, 2],
         user: 1
-    },
-    {
+    }),
+    new Workday({
         name: 'Ever',
+        id: 2,
         subtitle: "03:30h · 04:30'",
         footer: 'Pista 5',
         start: '2023-04-11T03:30:00',
@@ -60,9 +62,10 @@ export const sessions: Array<Session> = [
         color: 'carnation',
         roles: [1, 2, 3],
         user: 1
-    },
-    {
+    }),
+    new Workday({
         name: 'Reunion',
+        id: 3,
         subtitle: "06:30h · 08:30'",
         footer: 'Pista 5',
         start: '2023-04-10T06:30:00',
@@ -71,9 +74,10 @@ export const sessions: Array<Session> = [
         color: 'salmon',
         roles: [1, 6],
         user: 1
-    },
-    {
+    }),
+    new Workday({
         name: 'correr',
+        id: 4,
         subtitle: "01:30h · 03:30'",
         footer: 'Pista 6',
         start: '2023-04-13T01:30:00',
@@ -82,9 +86,11 @@ export const sessions: Array<Session> = [
         color: 'carnation',
         roles: [1, 3],
         user: 1
-    },
-    {
+    }),
+    new Workday({
         name: 'Cinta',
+
+        id: 5,
         subtitle: "02:00h · 03:30'",
         footer: 'Pista 7',
         start: '2023-04-14T02:00:00',
@@ -93,8 +99,8 @@ export const sessions: Array<Session> = [
         color: 'biloba-flower',
         roles: [2],
         user: 1
-    },
-    {
+    }),
+    new Workday({
         name: 'Evento random',
         subtitle: "01:00h · 02:00'",
         footer: 'Pista 7',
@@ -102,18 +108,20 @@ export const sessions: Array<Session> = [
         end: '2023-04-12T02:00:00',
         entityId: 300,
         color: 'biloba-flower',
+        id: 5,
         roles: [5],
         user: 1
-    },
-    {
+    }),
+    new Workday({
         name: 'Otro evento',
         subtitle: "23:00h · 00:00'",
         footer: 'Pista 7',
         start: '2023-04-15T23:00:00',
         end: '2023-04-15T00:00:00',
         entityId: 300,
+        id: 6,
         color: 'biloba-flower',
         roles: [2],
         user: 1
-    }
+    })
 ]

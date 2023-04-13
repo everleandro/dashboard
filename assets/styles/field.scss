@@ -2,7 +2,7 @@
     align-items: flex-start;
     display: flex;
     flex: 1 1 auto;
-    font-size: 16px;
+    font-size: 1rem;
     letter-spacing: normal;
     max-width: 100%;
     text-align: left;
@@ -20,9 +20,9 @@
 
     input {
         line-height: 20px;
-        padding: 8px 0 8px 8px;
+        padding: 0.5rem 0 0.5rem 0.5rem;
         min-width: 0;
-        font-size: 16px;
+        font-size: 1rem;
     }
 
     &__line {
@@ -133,19 +133,19 @@
         text-transform: capitalize;
         font-weight: 500;
         line-height: 18px;
-        margin-top: 16px;
+        margin-top: 0.875rem;
         margin-bottom: 0;
         align-self: flex-start;
     }
 
     &__prepend-inner {
         margin-right: auto;
-        padding-right: 4px;
+        padding-right: 0.5rem;
     }
 
     &__append-inner {
         margin-left: auto;
-        padding-left: 8px;
+        padding-left: 0.5rem;
     }
 
     &__prepend-inner,
@@ -244,7 +244,7 @@
             }
 
             input {
-                max-height: 32px;
+                max-height: 2rem;
                 width: 100%;
             }
 
@@ -314,8 +314,8 @@
         max-width: 100%;
         color: inherit;
         display: flex;
-        height: 48px;
-        padding: 0 12px;
+        height: 3rem;
+        padding: 0 0.75rem;
         min-height: inherit;
         max-width: 100%;
         position: relative;

@@ -1,4 +1,4 @@
-import { User } from "./user"
+import User from "./User"
 
-export interface Customer extends User {
+export default interface Customer extends User {
 }

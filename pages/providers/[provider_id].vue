@@ -73,6 +73,7 @@ const store = reactive({
     dialogBirthDate: false
 })
 
+
 const identificativeDataForm = ref()
 const identificativeData = reactive({
     name: '', gender: '', lastName: '',

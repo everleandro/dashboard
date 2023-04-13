@@ -35,8 +35,8 @@
 <script lang="ts">
 export enum type { admin, customer, employee }
 export enum mode { list, grid }
-import { Employee } from "@/models/employee"
-import { Customer } from "@/models/customer"
+import Employee from "@/models/employee"
+import Customer from "@/models/customer"
 </script>
 <script lang="ts" setup>
 export interface Props {

@@ -1,12 +1,5 @@
 <template>
     <div class="white">
-
-        <EDialog v-model="state.dialogDatePicker" max-width="290" absolute>
-            <EDatePicker :model-value="state.form.dateChange" :rules="[_required]" :icon-next="$icon.pickerIconeNext"
-                :color="state.form.color" :icon-prev="$icon.pickerIconPrev"
-                @update:model-value="updateDateChange($event)" />
-        </EDialog>
-
         <div class="d-flex justify-flex-end px-3">
             <div>
                 <h3 :class="['dialog-title', `${state.form.color}--text`]" v-html="modalTitle"></h3>
@@ -50,14 +43,14 @@
 </template>
 
 <script lang="ts" setup>
-import Event from '@/models/event';
+import Session from '~~/models/Session';
 import UtilDate from '@/models/date';
 import { Form } from '~~/components/shared/form/types';
 import { EDIalog } from '~~/components/shared/dialog/index.vue';
 import { ContainerMenuInterface } from '~~/components/shared/menu/types';
 
 export interface Props {
-    event?: Event
+    session?: Session
 }
 const { $icon } = useNuxtApp()
 const { _required } = useRules()
@@ -70,7 +63,7 @@ const state = reactive({
     searchActivity: "",
     searchActivityTimer: 0,
     loadingActivity: false,
-    form: new Event({ user: new Array<number>() })
+    form: new Session()
 })
 
 const props = defineProps<Props>()
@@ -102,9 +95,8 @@ const activities = [
 
 const availableActivity = ref([...activities])
 
-const formattedDate = computed(() => new UtilDate(state.form.dateChange).format('month-DD/month-MM/year-YYYY'))
 
-watch(() => state.form.activityId, (activity: undefined | number | string) => {
+watch(() => state.form.activityId, (activity: null | number | string) => {
     if (activity) {
         state.form.color = activities.find((({ value }) => `${value}` === `${activity}`))?.color || 'primary'
     }
@@ -125,7 +117,7 @@ watch(() => state.searchActivity, (value: string) => {
     }
 })
 
-watch(() => props.event, (value: Event | undefined) => {
+watch(() => props.session, (value: Session | undefined) => {
     reset()
     if (value) {
         state.form = value
@@ -134,14 +126,9 @@ watch(() => props.event, (value: Event | undefined) => {
 
 const emit = defineEmits<{
     (e: 'click:close', value: boolean): void,
-    (e: 'submit', value: Event): void,
+    (e: 'submit', value: Session): void,
     (e: 'update:date', value: string | Date): void,
 }>()
-
-const updateDateChange = (value: Date | string) => {
-    state.form.dateChange = value;
-    state.dialogDatePicker = false;
-}
 
 const modalTitle = computed((): string => {
     return `Crear jornada &#x2022; Horario Habitual`
@@ -152,7 +139,7 @@ const closeMenu = () => {
 }
 
 const reset = (): void => {
-    state.form = new Event({ user: new Array<number>() })
+    state.form = new Session()
     nextTick(() => {
         formComponent.value?.reset()
     })
@@ -161,8 +148,9 @@ const submit = async () => {
     const valid = await formComponent.value?.validate()
     if (valid) {
         state.loading = true;
+        const id = state.form.id === 'new' ? Math.random() : state.form.id
         setTimeout(async () => {
-            emit('submit', { ...state.form })
+            emit('submit', { ...state.form, id })
             state.loading = false;
             dialog?.close(true);
             menuContainer?.closeMenu();

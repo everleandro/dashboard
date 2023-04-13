@@ -21,7 +21,7 @@
             }
 
             &.e-btn--stacked {
-                width: 127px;
+                width: 7.9375rem;
                 border-bottom: 1px solid var(--tertiary);
 
                 &:not(:nth-child(even)) {
@@ -29,7 +29,7 @@
                 }
 
                 .e-icon {
-                    font-size: 49px;
+                    font-size: 3.0625rem;
                 }
             }
 
@@ -64,8 +64,8 @@
 
             &__loader {
                 div[role="progressbar"] {
-                    height: 40px !important;
-                    width: 40px !important;
+                    height: 2.5rem !important;
+                    width: 2.5rem !important;
                 }
             }
 
@@ -80,4 +80,23 @@ div.e-menu-container[data-notification-menu] {
     z-index: 10;
     position: fixed;
 
+}
+
+
+@include _xs {
+    html {
+        --root-font-size: 14.8px
+    }
+}
+
+@include _sm {
+    html {
+        --root-font-size: 15.2px
+    }
+}
+
+@include _md {
+    html {
+        --root-font-size: 15.6px
+    }
 }
