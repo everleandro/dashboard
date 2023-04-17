@@ -22,7 +22,7 @@
         <span class="e-btn__content">
             <slot name="default">
                 <template v-if="icon">
-                    <EIcon :name="icon" />
+                    <EIcon :name="icon" :path="path" />
                 </template>
             </slot>
         </span>
@@ -32,6 +32,8 @@
     </component>
 </template>
 <script lang="ts" setup>
+import { IconPath } from '@/components/shared/icon/index.vue'
+
 export type ButtonClassKeys = 'stacked' | 'disabled' | 'ripple' | 'loading' | 'fab' |
     'depressed' | 'text' | 'outlined' | 'block' | 'small' | 'xSmall' | 'large' | 'xLarge' | 'rounded' | 'icon'
 
@@ -55,6 +57,7 @@ export interface Props {
     rounded?: boolean
     stacked?: boolean
     icon?: string
+    path?: Array<IconPath>
     height?: string
     width?: boolean
 }

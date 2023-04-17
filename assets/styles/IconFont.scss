@@ -143,8 +143,20 @@
   content: "\e9f1";
 }
 
+.icon-schedule-timeslot:before {
+  content: "\e9db";
+}
+
+.icon-coffee:before {
+  content: "\e9dd";
+}
+
 .icon-calendar:before {
   content: "\e9be";
+}
+
+.icon-trash:before {
+  content: "\e9d1";
 }
 
 .icon-maintenance:before {
@@ -217,6 +229,10 @@
 
 .icon-notification:before {
   content: "\eae0";
+}
+
+.icon-document:before {
+  content: "\eaeb";
 }
 
 .icon-search:before {

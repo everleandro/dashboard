@@ -1,12 +1,12 @@
 <template>
     <div class="white">
-        <div class="d-flex justify-flex-end px-3">
+        <div class="d-flex px-3">
             <div>
                 <h3 :class="['dialog-title', `${state.form.color}--text`]" v-html="modalTitle"></h3>
                 <p>Rellena los campos necesarios para crear una nueva jornada:</p>
             </div>
             <ESpacer />
-            <EButton :icon="$icon.clear" @click="closeMenu" />
+            <!-- <EButton :icon="$icon.clear" @click="closeMenu" /> -->
         </div>
 
         <EDialog v-model="state.dialogDatePicker" absolute max-width="290">

@@ -6,24 +6,19 @@
             </div>
 
         </EBar>
-        <EMenu ref="eventMenuRef" data-event-menu :activator="session.activator" check-offset>
-            <SessionForm :session="session.form" @click:close="closeMenu()" @submit="submitSession" />
-        </EMenu>
 
-        <EDialog ref="eventDialogRef" v-model="state.eventFormDialog" class="d-block d-md-none" max-width="450">
-            <SessionForm :session="session.form" v-model:date="filters.date" @click:close="closeDialog()"
-                @submit="submitSession" />
-        </EDialog>
+        <ResponsiveMenu v-model="session.dialogModel" :menu-props="{ activator: session.activator }"
+            :dialog-props="{ maxWidth: 450 }" id="data-event-menu">
+            <SessionForm :session="session.form" @click:close="session.dialogModel = false" @submit="submitSession" />
+        </ResponsiveMenu>
 
-        <EMenu activator="#filer-date-picker" class="d-none d-md-block" data-filter-date-picker-menu origin="bottom right"
-            transition="scale">
+        <ResponsiveMenu v-model="state.datePickerDialog"
+            :menu-props="{ activator: '#filer-date-picker', transition: 'scale', origin: 'bottom right' }"
+            :dialog-props="{ maxWidth: '290' }" transition="scale">
             <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
                 close-on-change />
-        </EMenu>
-        <EDialog v-model="state.datePickerDialog" max-width="290" class="d-block d-md-none" transition="scale">
-            <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
-                close-on-change />
-        </EDialog>
+        </ResponsiveMenu>
+
 
         <ERow class="mb-8">
             <ECol sm="12" lg="min-content" class="d-none d-lg-block">
@@ -63,12 +58,11 @@ import { Mode, ScheduleEvent } from '@/components/shared/schedule/types';
 import { Menu } from '@/components/shared/menu/types';
 import { EDIalog } from '@/components/shared/dialog/index.vue';
 
-let eventMenuRef = ref<Menu>();
-let eventDialogRef = ref<EDIalog>();
 const { $icon } = useNuxtApp()
 const { viewport } = useBreakpoint()
 
 const session = reactive({
+    dialogModel: false,
     activator: <HTMLElement | undefined>undefined,
     form: new Session()
 })
@@ -127,17 +121,8 @@ watch(() => viewport, ({ lg }) => {
 
 const handleScheduleClick = (obj: { data: ScheduleEvent, nativeEvent: MouseEvent }): void => {
     session.form = new Session(obj.data);
-    if (viewport.xs || viewport.sm) {
-        state.eventFormDialog = true;
-    } else {
-
-        session.activator = obj.nativeEvent.target as HTMLElement
-        if (!session.activator?.getAttribute('aria-hasmenu')) {
-            nextTick(() => {
-                eventMenuRef.value?.openMenu()
-            })
-        }
-    }
+    session.activator = obj.nativeEvent.target as HTMLElement
+    nextTick(() => session.dialogModel = true)
 }
 
 const scheduleColumns = computed(() => {
@@ -151,13 +136,11 @@ const scheduleColumns = computed(() => {
 const submitSession = (objectSession: Session) => {
     if (session.form.id) {
         const index = eventsList.value.findIndex(({ id }) => id === session.form.id)
-        eventsList.value.splice(index, 1, new Session(objectSession))
+        eventsList.value.splice(index, 1, objectSession)
     } else {
         eventsList.value.push(objectSession)
     }
 }
-const closeMenu = () => eventMenuRef.value?.closeMenu()
-const closeDialog = () => eventDialogRef.value?.close()
 
 
 </script>
@@ -173,18 +156,10 @@ const closeDialog = () => eventDialogRef.value?.close()
 }
 
 .e-menu-container {
-    &[data-filter-date-picker-menu] {
-        margin-top: 2px;
-    }
-
-    &[data-event-menu] {
+    &#data-event-menu {
         transition: 300ms all;
-        width: calc(100% - 24px);
         z-index: 10;
-
-        @include _from_sm {
-            width: 450px;
-        }
+        width: 450px;
     }
 }
 </style>

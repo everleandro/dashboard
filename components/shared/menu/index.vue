@@ -7,13 +7,7 @@ export default {
     name: 'EMenu'
 }
 </script>
-<script setup lang="ts">
-import EMenuContainer from './container.vue'
-import { ContainerMenuInterface } from '@/components/shared/menu/types'
-import { createApp } from 'vue'
-import { clickOutside } from '@/plugins/click-outside'
-import { ripple } from '@/plugins/ripple'
-import { Target } from "./types"
+<script  lang="ts" setup>
 
 export interface Props {
     absolute?: boolean
@@ -28,19 +22,38 @@ export interface Props {
     openOnHover?: boolean
     maxWidth?: string | number
     offsetX?: string | number
+    offsetY?: string | number
     width?: string | number
 }
 
+import EMenuContainer from './container.vue'
+import { ContainerMenuInterface } from '@/components/shared/menu/types'
+import { createApp } from 'vue'
+import { clickOutside } from '@/plugins/click-outside'
+import { ripple } from '@/plugins/ripple'
+import { Target } from "./types"
+
+
 const id = `${Math.floor(Math.random() * 999999)}-e-menu`
-const props = withDefaults(defineProps<Props>(), { origin: 'bottom left', transition: 'fade', offsetX: 0 })
+const props = withDefaults(defineProps<Props>(), { origin: 'bottom left', transition: 'fade', offsetX: 0, offsetY: 0 })
 const slots = useSlots()
 const MenuReference = ref()
-const ContainerReference = ref()
+const ContainerReference = ref<ContainerMenuInterface>({
+    closeMenu: () => { },
+    destroyComponent: () => { },
+    setConfiguration: (configuration: Record<string, any>) => { },
+    opened: ref(false),
+    openMenu: () => { },
+})
 const ContainerUnmounted = ref(true)
 const node = ref<HTMLElement | null>(null)
 const attrs = useAttrs()
+const opened: Ref<boolean> = ref(false)
+const emit = defineEmits<{
+    (e: 'update:modelValue', evt: boolean): void
+}>()
 
-const container = () => (ContainerReference.value || { openMenu: () => { }, setConfiguration: () => { } }) as ContainerMenuInterface
+const container = (): ContainerMenuInterface => ContainerReference.value as unknown as ContainerMenuInterface
 const root: VNode = h(() => slots.activator?.({ onClick: openMenu, ref: MenuReference, 'aria-hasmenu': true }))
 
 onMounted(() => createMenu())
@@ -51,12 +64,16 @@ onUnmounted(() => {
     container()?.destroyComponent?.()
     node.value?.remove()
 })
+watch(() => ContainerReference.value.opened, (value: boolean) => {
+    emit('update:modelValue', value)
+})
 
 const createMenu = async (): Promise<void> => {
     if (ContainerUnmounted.value) {
         const containerComponent = createApp(defineComponent({
             extends: EMenuContainer,
             setup() {
+
                 return () => h(EMenuContainer, { ref: ContainerReference }, { default: () => slots?.default?.() })
             }
         }), {})
@@ -67,7 +84,6 @@ const createMenu = async (): Promise<void> => {
         containerComponent.directive('click-outside', clickOutside)
         containerComponent.directive('ripple', ripple)
         // target: MenuReference.value?.$el
-
         containerComponent.mount(node.value)
     }
 

@@ -6,26 +6,41 @@
             </div>
         </EBar>
 
-        <EMenu activator="#filer-date-picker" data-filter-date-picker-menu origin="bottom right" transition="scale"
-            offset-x="12">
+        <ResponsiveMenu v-model="state.datePickerDialog"
+            :menu-props="{ activator: '#filer-date-picker', offsetX: '12', offsetY: '-8', transition: 'scale', origin: 'bottom right' }"
+            :dialog-props="{ maxWidth: '290' }" transition="scale">
             <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
                 close-on-change />
-        </EMenu>
-        <EMenu ref="workdayMenuRef" data-work-day-menu="true" class="d-none d-md-block" :activator="workday.activator"
-            check-offset>
-            <ScheduleWorkdayForm v-model:workday="workday.form" v-model:date="filters.date" @click:close="closeMenu()"
-                @submit="submitWorkday" />
-        </EMenu>
+        </ResponsiveMenu>
 
-        <EDialog v-model="state.datePickerDialog" max-width="290" class="d-block d-md-none" transition="scale">
-            <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
-                close-on-change />
-        </EDialog>
-
-        <EDialog ref="workdayDialogRef" v-model="state.workdayFormDialog" class="d-block d-md-none" max-width="500">
-            <ScheduleWorkdayForm v-model:workday="workday.form" v-model:date="filters.date" @click:close="closeDialog()"
-                @submit="submitWorkday" />
-        </EDialog>
+        <ResponsiveMenu v-model="workday.dialogModel" :menu-props="workday.menuProps" :dialog-props="workday.dialogProps"
+            id="data-work-day-menu">
+            <template #tabs="{ attrs }">
+                <ETabGroup v-model="workday.tab" v-bind="attrs" color="primary">
+                    <ETab value="workday-form">
+                        <EIcon :name="$icon.document" />
+                    </ETab>
+                    <ETab value="free-time-form">
+                        <EIcon :name="$icon.scheduleTimeslot" />
+                    </ETab>
+                    <ETab value="close" @click.stopImmediatePropagation="closeMenu">
+                        <EIcon :name="$icon.clear" />
+                    </ETab>
+                </ETabGroup>
+            </template>
+            <EWindow v-model="workday.tab">
+                <EWindowItem value="workday-form">
+                    <ScheduleWorkdayForm v-model:workday="workday.form" v-model:date="filters.date"
+                        @submit="submitWorkday" />
+                </EWindowItem>
+                <EWindowItem value="free-time-form" class="white">
+                    <div class="pa-12"></div>
+                    <div class="pa-12"></div>
+                    <div class="pa-12"></div>
+                    <div class="pa-12"></div>
+                </EWindowItem>
+            </EWindow>
+        </ResponsiveMenu>
 
         <EForm class="mb-8">
             <EFormColumn lg="min-content">
@@ -61,11 +76,11 @@ import { workdays, spaces } from './constants'
 import UtilDate from '@/models/date';
 import Workday from '@/models/Workday';
 import { SlotEvent, Mode } from '@/components/shared/schedule/types';
-import { Menu } from '@/components/shared/menu/types';
 import { EDIalog } from '@/components/shared/dialog/index.vue';
 import { roleList } from "@/models/employee";
+import { Props as DialogProps } from "@/components/shared/dialog/index.vue"
+import { Props as MenuProps } from "@/components/shared/menu/index.vue"
 
-let workdayMenuRef = ref<Menu>();
 let workdayDialogRef = ref<EDIalog>();
 
 const { viewport } = useBreakpoint()
@@ -73,6 +88,10 @@ const { $icon } = useNuxtApp()
 
 const workday = reactive({
     activator: <HTMLElement | undefined>undefined,
+    menuProps: <MenuProps>{ checkOffset: true },
+    dialogProps: <DialogProps>{ maxWidth: 500 },
+    dialogModel: false,
+    tab: 'workday-form',
     form: new Workday()
 })
 
@@ -80,7 +99,6 @@ const state = reactive({
     workdayList: <Array<Workday>>[...workdays],
     loading: false,
     datePickerDialog: false,
-    workdayFormDialog: false
 })
 
 const modes = [
@@ -127,21 +145,14 @@ const submitWorkday = (objectWorkday: Workday) => {
 
 const handleScheduleClickClick = (obj: { data: SlotEvent, nativeEvent: MouseEvent }): void => {
     workday.form = new Workday(obj.data);
-    if (viewport.xs || viewport.sm) {
-        state.workdayFormDialog = true;
-    } else {
-        workday.activator = obj.nativeEvent.target as HTMLElement
-        if (!workday.activator?.getAttribute('aria-hasmenu')) {
-            nextTick(() => {
-                workdayMenuRef.value?.openMenu()
-            })
-        }
-    }
+    workday.menuProps.activator = obj.nativeEvent.target as HTMLElement
+    nextTick(() => workday.dialogModel = true)
 }
-
-const closeMenu = () => workdayMenuRef.value?.closeMenu()
-const closeDialog = () => workdayDialogRef.value?.close()
-
+const closeMenu = (evt: MouseEvent) => {
+    workday.dialogModel = false;
+    evt.stopImmediatePropagation()
+    workday.tab = 'workday-form'
+}
 
 </script>
 <style lang="scss">
@@ -154,11 +165,11 @@ const closeDialog = () => workdayDialogRef.value?.close()
 }
 
 .e-menu-container {
-    &[data-filter-date-picker-menu] {
+    &#data-filter-date-picker-menu {
         margin-top: -10px;
     }
 
-    &[data-work-day-menu] {
+    &#data-work-day-menu {
         transition: 300ms all;
         width: calc(100% - 24px);
         z-index: 10;
