@@ -23,6 +23,8 @@ const configuration: Record<string, any> = reactive({
     dataId: '',
     closeOnContentClick: false,
     attrs: {},
+    offsetY: 0,
+    offsetX: 0,
     holdFocus: false,
     fullWidth: false,
     checkOffset: false,
@@ -168,10 +170,12 @@ const updatemenuContentStyle = async (): Promise<void> => {
             x += rightOffset
         }
     }
+    if (origin_right) {
+        x -= parseInt(`${configuration.offsetX}`)
+    }
+    else { x += parseInt(`${configuration.offsetX}`) }
 
-    if (origin_right) { x -= configuration.offsetX }
-    else { x += configuration.offsetX }
-
+    y += parseInt(`${configuration.offsetY}`)
     result.top = `${y}px`;
     result.left = `${x}px`;
     configuration.maxWidth && (result.maxWidth = `${configuration.maxWidth}px`);
@@ -248,7 +252,7 @@ const getWidth = () => {
 }
 
 
-defineExpose({ openMenu, destroyComponent, setConfiguration, closeMenu })
+defineExpose({ openMenu, destroyComponent, setConfiguration, closeMenu, opened })
 provide("EMenuContainer", {
     closeMenu
 });

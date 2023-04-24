@@ -99,7 +99,9 @@ $transition-duration: 0.3s;
     transform: translateY(0);
 }
 
-div[class*='tab-reverse-transition'],
-div[class*='tab-transition'] {
+.tab-reverse-transition-enter-active,
+.tab-reverse-transition-leave-active,
+.tab-transition-enter-active,
+.tab-transition-leave-active {
     transition: 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);
 }

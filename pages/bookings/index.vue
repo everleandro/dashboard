@@ -6,24 +6,17 @@
             </div>
 
         </EBar>
-        <EMenu ref="bookingMenuRef" data-booking-menu :activator="booking.activator" check-offset>
-            <BookingsForm :booking="booking.form" @click:close="closeMenu()" @submit="submitBooking" />
-        </EMenu>
+        <ResponsiveMenu v-model="booking.dialogModel" :menu-props="{ activator: booking.activator }"
+            :dialog-props="{ maxWidth: 450 }" id="data-booking-menu">
+            <BookingsForm :booking="booking.form" @click:close="booking.dialogModel = false" @submit="submitBooking" />
+        </ResponsiveMenu>
 
-        <EDialog ref="bookingDialogRef" v-model="state.bookingFormDialog" class="d-block d-md-none" max-width="450">
-            <BookingsForm :booking="booking.form" @click:close="closeDialog()" @submit="submitBooking" />
-        </EDialog>
-
-        <EMenu activator="#filer-date-picker" class="d-none d-md-block" data-filter-date-picker-menu origin="bottom right"
-            transition="scale">
+        <ResponsiveMenu v-model="state.datePickerDialog" id="data-filter-date-picker-menu"
+            :menu-props="{ activator: '#filer-date-picker', transition: 'scale', origin: 'bottom right' }"
+            :dialog-props="{ maxWidth: '290' }" transition="scale">
             <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
                 close-on-change />
-        </EMenu>
-
-        <EDialog v-model="state.datePickerDialog" max-width="290" class="d-block d-md-none" transition="scale">
-            <EDatePicker v-model="filters.date" :icon-next="$icon.pickerIconeNext" :icon-prev="$icon.pickerIconPrev"
-                close-on-change />
-        </EDialog>
+        </ResponsiveMenu>
 
         <ERow class="mb-8">
             <ECol sm="12" lg="min-content" class="d-none d-lg-block">
@@ -63,12 +56,13 @@ import { Mode, ScheduleEvent } from '@/components/shared/schedule/types';
 import { Menu } from '@/components/shared/menu/types';
 import { EDIalog } from '@/components/shared/dialog/index.vue';
 
-let bookingMenuRef = ref<Menu>();
-let bookingDialogRef = ref<EDIalog>();
+
+
 const { $icon } = useNuxtApp()
 const { viewport } = useBreakpoint()
 
 const booking = reactive({
+    dialogModel: false,
     activator: <HTMLElement | undefined>undefined,
     form: new Booking()
 })
@@ -125,17 +119,8 @@ watch(() => viewport, ({ lg }) => {
 
 const handleScheduleClick = (obj: { data: ScheduleEvent, nativeEvent: MouseEvent }): void => {
     booking.form = new Booking(obj.data);
-    if (viewport.xs || viewport.sm) {
-        state.bookingFormDialog = true;
-    } else {
-
-        booking.activator = obj.nativeEvent.target as HTMLElement
-        if (!booking.activator?.getAttribute('aria-hasmenu')) {
-            nextTick(() => {
-                bookingMenuRef.value?.openMenu()
-            })
-        }
-    }
+    booking.activator = obj.nativeEvent.target as HTMLElement
+    nextTick(() => booking.dialogModel = true)
 }
 
 const scheduleColumns = computed(() => {
@@ -154,9 +139,6 @@ const submitBooking = (objectBooking: Booking) => {
         bookingList.value.push(objectBooking)
     }
 }
-const closeMenu = () => bookingMenuRef.value?.closeMenu()
-const closeDialog = () => bookingDialogRef.value?.close()
-
 
 </script>
 <style lang="scss">
@@ -171,18 +153,14 @@ const closeDialog = () => bookingDialogRef.value?.close()
 }
 
 .e-menu-container {
-    &[data-filter-date-picker-menu] {
+    &#data-filter-date-picker-menu {
         margin-top: 2px;
     }
 
-    &[data-booking-menu] {
+    &#data-booking-menu {
         transition: 300ms all;
-        width: calc(100% - 24px);
         z-index: 10;
-
-        @include _from_sm {
-            width: 450px;
-        }
+        width: 450px;
     }
 }
 </style>

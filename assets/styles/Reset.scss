@@ -53,3 +53,14 @@ body {
 html {
   font-size: var(--root-font-size, unset);
 }
+
+button,
+html [type=button],
+[type=reset],
+[type=submit] {
+  -webkit-appearance: button;
+}
+
+[disabled] {
+  cursor: default;
+}

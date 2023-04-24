@@ -16,12 +16,10 @@
                 </ESelect>
             </div>
         </EBar>
-        <EMenu ref="eventMenuRef" data-event-menu :activator="event.activator" check-offset>
-            <EventForm :event="event.form" @click:close="closeMenu()" @submit="submitEvent" />
-        </EMenu>
-        <EDialog ref="eventDialogRef" v-model="state.eventFormDialog" class="d-block d-md-none" max-width="450">
-            <EventForm :event="event.form" v-model:date="filters.date" @click:close="closeDialog()" @submit="submitEvent" />
-        </EDialog>
+        <ResponsiveMenu v-model="event.dialogModel" :menu-props="{ activator: event.activator }"
+            :dialog-props="{ maxWidth: 450 }" id="data-event-menu">
+            <EventForm :event="event.form" @click:close="event.dialogModel = false" @submit="submitEvent" />
+        </ResponsiveMenu>
 
         <ERow class="mb-8">
             <ECol sm="12" lg="min-content" class="d-none d-lg-block">
@@ -68,7 +66,8 @@ const { viewport } = useBreakpoint()
 
 const event = reactive({
     activator: <HTMLElement | undefined>undefined,
-    form: new Event()
+    form: new Event(),
+    dialogModel: false
 })
 
 const eventsList = ref<Array<Event>>([...events])
@@ -117,17 +116,8 @@ watch(() => viewport, ({ lg }) => {
 
 const handleScheduleClick = (obj: { data: ScheduleEvent, nativeEvent: MouseEvent }): void => {
     event.form = new Event(obj.data);
-    if (viewport.xs || viewport.sm) {
-        state.eventFormDialog = true;
-    } else {
-
-        event.activator = obj.nativeEvent.target as HTMLElement
-        if (!event.activator?.getAttribute('aria-hasmenu')) {
-            nextTick(() => {
-                eventMenuRef.value?.openMenu()
-            })
-        }
-    }
+    event.activator = obj.nativeEvent.target as HTMLElement
+    nextTick(() => event.dialogModel = true)
 }
 
 const showSpaceSelector = computed(() => state.sessionView && (filters.scheduleMode === Mode.week))
@@ -143,13 +133,11 @@ const scheduleColumns = computed(() => {
 const submitEvent = (objectEvent: Event) => {
     if (objectEvent.id !== 'new') {
         const index = eventsList.value.findIndex(({ id }) => id === objectEvent.id)
-        eventsList.value.splice(index, 1, new Event(objectEvent))
+        eventsList.value.splice(index, 1, objectEvent)
     } else {
         eventsList.value.push(objectEvent)
     }
 }
-const closeMenu = () => eventMenuRef.value?.closeMenu()
-const closeDialog = () => eventDialogRef.value?.close()
 
 
 </script>
@@ -168,9 +156,8 @@ const closeDialog = () => eventDialogRef.value?.close()
     }
 }
 
-.e-menu-container[data-event-menu] {
+.e-menu-container#data-event-menu {
     transition: 300ms all;
-    width: calc(100% - 24px);
     z-index: 10;
 
     @include _from_sm {
