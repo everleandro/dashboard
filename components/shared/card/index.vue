@@ -7,6 +7,7 @@
 <script lang="ts" setup>
 export interface Props {
     height?: string
+    color?: string
     depressed?: boolean
 }
 const props = defineProps<Props>()
@@ -14,6 +15,7 @@ const props = defineProps<Props>()
 const cardClass = computed(() => {
     const classes = ['e-card']
     props.depressed && classes.push('e-card--depressed')
+    props.color && classes.push(`${props.color}--text`)
     return classes
 })
 

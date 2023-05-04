@@ -1,14 +1,14 @@
 <template>
   <div :class="expansionClass">
-    <div class="e-expansion__header e-btn pa-0">
+    <div class="e-expansion__header e-btn">
       <div class="e-expansion__header-content" @click="changeValue(!opened)">
-        <div>
-          <h4>
-            <slot name="header">
+        <slot name="header">
+          <div>
+            <h4>
               {{ headerTitle }}
-            </slot>
-          </h4>
-        </div>
+            </h4>
+          </div>
+        </slot>
         <div class="e-expansion__header-icon">
           <EIcon :name="$icon.arrowDown"></EIcon>
         </div>

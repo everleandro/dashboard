@@ -22,7 +22,6 @@
                         <p> Nam ipsum risus, rutrum vitae, vestibulum eu, molestie vel, lacus. Aenean tellus metus,
                             bibendum sed, posuere ac, mattis non, nunc. Aliquam lobortis. Aliquam lobortis.
                             Suspendisse non nisl sit amet velit hendrerit rutrum. </p>
-
                     </div>
                 </EWindowItem>
                 <EWindowItem value="option-2">

@@ -1,6 +1,31 @@
 .nav {
     &__header {
-        height: 150px;
+        color: white;
+
+        .e-expansion {
+            &__body {
+                padding: 0;
+            }
+
+            &__header {
+                box-shadow: none;
+            }
+
+            &__header-content {
+                padding: 4px;
+                max-height: unset;
+                height: auto;
+                background-color: var(--primary);
+            }
+
+            .e-card {
+                flex: 1;
+                background: transparent;
+            }
+
+        }
+
+
     }
 
     &-button-info {
@@ -15,63 +40,86 @@
         overflow-x: hidden;
         overflow-y: auto;
 
-        .e-btn {
-            +.e-btn {
-                margin: 0;
-            }
+        .e-list {
+            background-color: transparent;
 
-            &.e-btn--stacked {
-                width: 7.9375rem;
-                color: var(--tertiary);
-                border-bottom: 1px solid var(--tertiary);
+            padding: 0;
 
-                &:not(:nth-child(even)) {
-                    border-right: 1px solid var(--tertiary);
-                }
+            &-item {
+                text-transform: uppercase;
+                font-size: 12px;
+                font-weight: bold;
 
-                .e-icon {
-                    font-size: 3.0625rem;
+                &:not(:last-child) {
+                    border-bottom: 1px solid var(--tertiary);
+
                 }
             }
+        }
 
-            &::after {
-                content: '';
-                position: absolute;
-                height: 2px;
-                width: 0;
-                transition: 0.3s width;
-                background-color: var(--primary);
-                bottom: 0;
-            }
+        .secondary-links {
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .main-links {
+            .e-btn {
+                +.e-btn {
+                    margin: 0;
+                }
+
+                &.e-btn--stacked {
+                    width: 7.9375rem;
+                    color: var(--tertiary);
+                    border-bottom: 1px solid var(--tertiary);
+
+                    &:not(:nth-child(even)) {
+                        border-right: 1px solid var(--tertiary);
+                    }
+
+                    .e-icon {
+                        font-size: 3.0625rem;
+                    }
+                }
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    height: 2px;
+                    width: 0;
+                    transition: 0.3s width;
+                    background-color: var(--primary);
+                    bottom: 0;
+                }
 
 
-            &.router-link-active,
-            &:hover {
-                background-color: var(--black);
+                &.router-link-active,
+                &:hover {
+                    background-color: var(--black);
 
-                .e-icon {
+                    .e-icon {
+                        color: var(--primary);
+                    }
+
+                    .nav-button-info {
+                        color: white;
+                    }
+
+                    &:after {
+                        content: '';
+                        width: 100%;
+                    }
+                }
+
+                &__loader {
+                    div[role="progressbar"] {
+                        height: 2.5rem !important;
+                        width: 2.5rem !important;
+                    }
+                }
+
+                &--loading {
                     color: var(--primary);
                 }
-
-                .nav-button-info {
-                    color: white;
-                }
-
-                &:after {
-                    content: '';
-                    width: 100%;
-                }
-            }
-
-            &__loader {
-                div[role="progressbar"] {
-                    height: 2.5rem !important;
-                    width: 2.5rem !important;
-                }
-            }
-
-            &--loading {
-                color: var(--primary);
             }
         }
     }

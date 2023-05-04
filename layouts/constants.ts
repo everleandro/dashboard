@@ -1,6 +1,18 @@
 
 import { iconFactory } from "~~/plugins/icons"
-export const drawerLinks = [
+export const secondaryLinks = [
+    {
+        icon: iconFactory.roles.instructor,
+        text: 'Actividades',
+        to: '/'
+    },
+    {
+        icon: iconFactory.roles.instructor,
+        text: 'Servicios',
+        to: '/'
+    },
+];
+export const mainLinks = [
     {
         icon: iconFactory.dashboard,
         text: 'dashboard',
