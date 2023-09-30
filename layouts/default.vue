@@ -1,6 +1,6 @@
 <template>
     <e-app>
-        <e-bar app fixed color="secondary">
+        <e-bar app fixed clipped color="secondary">
             <e-button :icon="$icon.menu" color="white" large @click="closeDrawer()" />
             <e-spacer />
             <e-button :icon="$icon.maintenance" color="white" large />
@@ -20,9 +20,9 @@
         <EDrawer v-model="drawerModel" fixed nav class="secondary">
             <div class="nav__header primary">
                 <div class="d-flex justify-center">
-                    <EAvatar :icon="$icon.roles.directorate" color="white" />
+                    <!-- <EAvatar :icon="$icon.roles.directorate" color="white" /> -->
                 </div>
-                <EExpansion v-model="expansionModel">
+                <!-- <EExpansion v-model="expansionModel">
                     <template #header>
                         <div>
                             <h4>Ever Santiesteban Jimenez</h4>
@@ -30,10 +30,10 @@
                         </div>
 
                     </template>
-                </EExpansion>
+                </EExpansion> -->
             </div>
             <div class="nav__body">
-                <div class="secondary-links">
+                <!-- <div class="secondary-links">
                     <ETransitionExpand>
                         <div v-show="expansionModel">
                             <e-list>
@@ -44,7 +44,7 @@
                             </e-list>
                         </div>
                     </ETransitionExpand>
-                </div>
+                </div> -->
                 <div class="main-links">
                     <e-button v-for="({ icon, text, to }, index) in mainLinks" stacked :key="index" :to="to"
                         :prepend-icon="icon" x-large color="secondary">

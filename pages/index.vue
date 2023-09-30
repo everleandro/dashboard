@@ -1,9 +1,9 @@
 <template>
     <div>
         <h1>Dashboard</h1>
-        <div class="d-flex flex-row">
+        <div class="">
 
-            <ETabGroup v-model="tab" direction="vertical" color="primary">
+            <ETabGroup v-model="tab"  color="primary">
                 <ETab value="option-1">
                     <EIcon :name="$icon.schedule" />
                 </ETab>

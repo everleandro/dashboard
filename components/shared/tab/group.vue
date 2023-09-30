@@ -17,7 +17,7 @@ export interface TabGroup {
 }
 </script>
 <script lang="ts" setup>
-export interface Props { modelValue?: string | number, color?: string, inactiveColor?: 'secondary', direction?: string, tabAlign: string }
+export interface Props { modelValue?: string | number, color?: string, inactiveColor?: 'secondary', direction?: string, tabAlign?: string }
 const props = withDefaults(defineProps<Props>(), { color: 'primary', inactiveColor: 'secondary', tabAlign: 'start', direction: 'horizontal' })
 const emit = defineEmits<{ (e: 'update:modelValue', value: number | string): void }>()
 
